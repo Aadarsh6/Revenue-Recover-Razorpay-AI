@@ -20,13 +20,15 @@ async function main() {
   const rawBody = JSON.stringify(event.payload)
 
   // Generate a valid Razorpay-style signature
-  const signature = crypto
-    .createHmac(
-      "sha256",
-      process.env.RAZORPAY_WEBHOOK_SECRET as string
-    )
-    .update(rawBody)
-    .digest("hex")
+    const signature = "This is  a fake signature"
+
+//   const signature = crypto
+//     .createHmac(
+//       "sha256",
+//       process.env.RAZORPAY_WEBHOOK_SECRET as string
+//     )
+//     .update(rawBody)
+//     .digest("hex")
 
   console.log("Replaying event:", EVENT_ID)
   console.log("Signature:", signature)
