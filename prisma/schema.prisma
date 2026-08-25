@@ -1,0 +1,26 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  // url      = env("DATABASE_URL")
+}
+
+model WebhookEvent {
+  id          Int                @id @default(autoincrement())
+  eventId     String             @unique
+  eventType   String
+  payload     Json
+  status      WebhookEventStatus @default(PENDING)
+  createdAt   DateTime           @default(now())
+  processedAt DateTime?
+}
+
+enum WebhookEventStatus {
+  PENDING
+  PROCESSED
+  IGNORED
+  FAILED
+}
