@@ -14,7 +14,8 @@
     "@prisma/adapter-pg": "^7.9.1",
     "@prisma/client": "^7.9.1",
     "express": "^5.2.1",
-    "pg": "^8.23.0"
+    "pg": "^8.23.0",
+    "razorpay": "^2.9.8"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",
