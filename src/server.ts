@@ -99,7 +99,7 @@ app.post(
           processedAt: new Date() 
         },
       });
-      console.log(`🛑 BLOCKED: Event ignored due to state: ${decision}. No money moved.`);
+      console.log(`BLOCKED: Event ignored due to state: ${decision}. No money moved.`);
       return; // Stops the pipeline dead in its tracks.
     }
 
@@ -113,10 +113,10 @@ app.post(
         processedAt: new Date()
       },
     });
-    console.log(`✅ Successfully Processed Event: ${eventId}`);
+    console.log(`Successfully Processed Event: ${eventId}`);
 
   } catch (error) {
-    console.error(`🔥 Processing FAILED for Event: ${eventId}`, error);
+    console.error(`Processing FAILED for Event: ${eventId}`, error);
     
     await prisma.webhookEvent.update({
       where: { id: newEvent.id },
@@ -129,4 +129,4 @@ app.post(
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+app.listen(PORT, () => console.log(` Server running on port ${PORT}`));

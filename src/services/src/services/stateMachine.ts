@@ -52,7 +52,7 @@ console.log("Running State Validator...");
   } catch (error: any) {
     // Handle API errors (e.g., payment ID doesn't exist)
     if (error.statusCode === 400 || error.statusCode === 404) {
-      console.log("🛑 NOT_FOUND: Payment ID does not exist in Razorpay.");
+      console.log("NOT_FOUND: Payment ID does not exist in Razorpay.");
       return { decision: "NOT_FOUND" };
     }
     // Throw unexpected errors to be caught by our outer try/catch block
