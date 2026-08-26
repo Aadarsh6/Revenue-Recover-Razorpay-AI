@@ -23,7 +23,7 @@ app.post(
       return res.status(400).send("Missing webhook headers")
     }
 
-    // Signature verification
+// 1. Signature Verification (Security Layer)
     const expectedSignature = crypto
       .createHmac(
         "sha256",
@@ -48,7 +48,7 @@ app.post(
 
     const eventType = body.event
 
-    //2 Store webhook event
+    // 2. Idempotency via DB Constraint (Race Condition Fix)
     let newEvent
     try {
       newEvent = await prisma.webhookEvent.create({
@@ -88,13 +88,10 @@ app.post(
   try {
     console.log(`Processing event ${eventId}(${eventType})`);
 
-    // await new Promise(resolve => setTimeout(resolve, 1000)); //fake delay
     const stateResult = await validateState(body);
     const decision:StateDecision = stateResult.decision;
 // Route based on the explicit decision
     if (decision !== "VALID_FAILURE") {
-      // Any state other than VALID_FAILURE is a BLOCK. 
-      // We log it and stop processing. The AI is never called.
       await prisma.webhookEvent.update({
         where: { id: newEvent.id },
         data: { 
