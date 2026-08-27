@@ -38,7 +38,6 @@ app.post(
       return res.status(400).send("Invalid signature");
     }
 
-
     // Parse body only AFTER signature verification
     let body;
     try {
@@ -47,7 +46,7 @@ app.post(
       return res.status(400).send("Invalid JSON");
     }
 
-    // FIX: Extract the exact string and paymentId before passing to the validator
+    // Extract the exact string and paymentId before passing to the validator
     const eventType: string = body.event;
     const paymentId: string = body.payload.payment.entity.id;
 
@@ -80,54 +79,52 @@ app.post(
     // 3. Acknowledge receipt immediately
     res.status(200).json({ status: "ok" });
 
-// ... inside your app.post route, replace the asynchronous processing block:
+    // 4. Asynchronous processing
+    try {
+      console.log(`Processing event ${eventId}(${eventType})`);
 
-  // 4. Asynchronous processing
-  try {
-    console.log(`Processing event ${eventId}(${eventType})`);
+      // Validate state against live Razorpay API
+      const stateResult: StateDecision = await validateState(eventType, paymentId);
+      
+      // Create Recovery Case (The Domain Object)
+      const recoveryCase = await createRecoveryCase(newEvent.id, paymentId, stateResult);
 
-    // Validate state against live Razorpay API
-    const stateResult: StateDecision = await validateState(eventType, paymentId);
-    
-    // 1. Create Recovery Case (The Domain Object)
-    const recoveryCase = await createRecoveryCase(newEvent.id, paymentId, stateResult);
+      // Route based on the Recovery Case status
+      if (recoveryCase.status !== 'OPEN') {
+        await prisma.webhookEvent.update({
+          where: { id: newEvent.id },
+          data: { 
+            status: recoveryCase.status === 'BLOCKED' ? 'IGNORED' : 'FAILED', 
+            processedAt: new Date() 
+          },
+        });
+        console.log(`🛑 Pipeline stopped. Recovery Case ${recoveryCase.id} is ${recoveryCase.status}. No money moved.`);
+        return; 
+      }
 
-    // 2. Route based on the Recovery Case status
-    if (recoveryCase.status !== 'OPEN') {
+      // If we reach here, the case is OPEN.
+      console.log(`➡️ Recovery Case ${recoveryCase.id} OPEN. Awaiting next steps (AI/Policy).`);
+      
       await prisma.webhookEvent.update({
         where: { id: newEvent.id },
         data: { 
-          status: recoveryCase.status === 'BLOCKED' ? 'IGNORED' : 'FAILED', 
-          processedAt: new Date() 
+          status: "PROCESSED",
+          processedAt: new Date()
         },
       });
-      console.log(`🛑 Pipeline stopped. Recovery Case ${recoveryCase.id} is ${recoveryCase.status}. No money moved.`);
-      return; 
+      console.log(`Successfully Processed Event: ${eventId}`);
+
+    } catch (error) {
+      console.error(`Processing FAILED for Event: ${eventId}`, error);
+      
+      await prisma.webhookEvent.update({
+        where: { id: newEvent.id },
+        data: { 
+          status: "FAILED",
+          processedAt: new Date()
+        },
+      });
     }
-
-    // If we reach here, the case is OPEN.
-    console.log(`Recovery Case ${recoveryCase.id} OPEN. Proceeding to Context Aggregation...`);
-
-    await prisma.webhookEvent.update({
-      where: { id: newEvent.id },
-      data: { 
-        status: "PROCESSED",
-        processedAt: new Date()
-      },
-    });
-    console.log(`Successfully Processed Event: ${eventId}`);
-
-  } catch (error) {
-    console.error(`Processing FAILED for Event: ${eventId}`, error);
-    
-    await prisma.webhookEvent.update({
-      where: { id: newEvent.id },
-      data: { 
-        status: "FAILED",
-        processedAt: new Date()
-      },
-    });
-  }
   }
 );
 
