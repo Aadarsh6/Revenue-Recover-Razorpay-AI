@@ -4,6 +4,7 @@ import crypto from "crypto";
 import prisma from "./lib/prismaClient";
 import { PrismaClientKnownRequestError } from "./generated/prisma/internal/prismaNamespace";
 import { validateState, StateDecision } from "./services/stateValidator";
+import { createRecoveryCase } from "./services/recoveryCaseService";
 
 dotenv.config();
 
@@ -79,28 +80,33 @@ app.post(
     // 3. Acknowledge receipt immediately
     res.status(200).json({ status: "ok" });
 
-    // 4. Asynchronous processing
-    try {
+// ... inside your app.post route, replace the asynchronous processing block:
+
+  // 4. Asynchronous processing
+  try {
     console.log(`Processing event ${eventId}(${eventType})`);
 
-    // FIX: stateResult is the StateDecision object
+    // Validate state against live Razorpay API
     const stateResult: StateDecision = await validateState(eventType, paymentId);
     
-    // Route based on the explicit decision string
-    if (stateResult.decision !== "VALID_FAILURE") {
+    // 1. Create Recovery Case (The Domain Object)
+    const recoveryCase = await createRecoveryCase(newEvent.id, paymentId, stateResult);
+
+    // 2. Route based on the Recovery Case status
+    if (recoveryCase.status !== 'OPEN') {
       await prisma.webhookEvent.update({
         where: { id: newEvent.id },
         data: { 
-          status: "IGNORED", 
+          status: recoveryCase.status === 'BLOCKED' ? 'IGNORED' : 'FAILED', 
           processedAt: new Date() 
         },
       });
-      console.log(`BLOCKED: Event ignored due to state: ${stateResult.decision}. No money moved.`);
-      return; // Stops the pipeline dead in its tracks.
+      console.log(`🛑 Pipeline stopped. Recovery Case ${recoveryCase.id} is ${recoveryCase.status}. No money moved.`);
+      return; 
     }
 
-    // If we reach here, the state is perfectly valid.
-    console.log("➡️ State is valid. Proceeding to Context Aggregation...");
+    // If we reach here, the case is OPEN.
+    console.log(`Recovery Case ${recoveryCase.id} OPEN. Proceeding to Context Aggregation...`);
 
     await prisma.webhookEvent.update({
       where: { id: newEvent.id },
