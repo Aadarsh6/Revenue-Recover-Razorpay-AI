@@ -8,6 +8,31 @@ datasource db {
   // url      = env("DATABASE_URL")
 }
 
+enum RecoveryStatus {
+  OPEN
+  AI_PROCESSING 
+  PENDING_HUMAN_REVIEW
+  AUTO_RECOVERED
+  BLOCKED
+  FAILED
+}
+
+model RecoveryCase{
+  id                  Int             @id @default(autoincrement())
+  paymentId           String          @unique //Razorpay id we will try to recover
+  webhookEventId      Int             @unique //link to trigger event
+  status              RecoveryStatus  @default(OPEN)
+  liveState           String          //The state razorpay will return
+  aiDiagnosis         String?         // Filled by AI Analyst later
+  aiAction            String?         // Filled by AI Analyst later
+  policyDecision      String?         // Filled by Policy Engine later
+  ceratedAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+
+  webhookEvent        WebhookEvent @relation(fields: [webhookEventId], references: [id])
+}
+
+
 model WebhookEvent {
   id          Int                @id @default(autoincrement())
   eventId     String             @unique
@@ -16,6 +41,8 @@ model WebhookEvent {
   status      WebhookEventStatus @default(PENDING)
   createdAt   DateTime           @default(now())
   processedAt DateTime?
+
+  recoveryCases         RecoveryCase[]
 }
 
 enum WebhookEventStatus {
@@ -24,3 +51,5 @@ enum WebhookEventStatus {
   IGNORED
   FAILED
 }
+
+
