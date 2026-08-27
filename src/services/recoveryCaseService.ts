@@ -5,7 +5,7 @@ import { RecoveryStatus } from '../generated/prisma/client';
 const INITIAL_STATUS_MAP: Record<StateDecision['decision'], RecoveryStatus> = {
   VALID_FAILURE: 'OPEN',
   ALREADY_CAPTURED: 'BLOCKED',
-  API_ERROR: 'FAILED',
+  API_ERROR: 'PENDING_HUMAN_REVIEW',
   INVALID_EVENT: 'BLOCKED',
   INVALID_STATE: 'BLOCKED',
 };
