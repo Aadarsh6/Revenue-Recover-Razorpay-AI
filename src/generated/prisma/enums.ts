@@ -9,6 +9,18 @@
 * 🟢 You can import this file directly.
 */
 
+export const RecoveryStatus = {
+  OPEN: 'OPEN',
+  AI_PROCESSING: 'AI_PROCESSING',
+  PENDING_HUMAN_REVIEW: 'PENDING_HUMAN_REVIEW',
+  AUTO_RECOVERED: 'AUTO_RECOVERED',
+  BLOCKED: 'BLOCKED',
+  FAILED: 'FAILED'
+} as const
+
+export type RecoveryStatus = (typeof RecoveryStatus)[keyof typeof RecoveryStatus]
+
+
 export const WebhookEventStatus = {
   PENDING: 'PENDING',
   PROCESSED: 'PROCESSED',

@@ -397,6 +397,7 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 
 
 export const ModelName = {
+  RecoveryCase: 'RecoveryCase',
   WebhookEvent: 'WebhookEvent'
 } as const
 
@@ -413,10 +414,84 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "webhookEvent"
+    modelProps: "recoveryCase" | "webhookEvent"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
+    RecoveryCase: {
+      payload: Prisma.$RecoveryCasePayload<ExtArgs>
+      fields: Prisma.RecoveryCaseFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.RecoveryCaseFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecoveryCasePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.RecoveryCaseFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecoveryCasePayload>
+        }
+        findFirst: {
+          args: Prisma.RecoveryCaseFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecoveryCasePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.RecoveryCaseFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecoveryCasePayload>
+        }
+        findMany: {
+          args: Prisma.RecoveryCaseFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecoveryCasePayload>[]
+        }
+        create: {
+          args: Prisma.RecoveryCaseCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecoveryCasePayload>
+        }
+        createMany: {
+          args: Prisma.RecoveryCaseCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.RecoveryCaseCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecoveryCasePayload>[]
+        }
+        delete: {
+          args: Prisma.RecoveryCaseDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecoveryCasePayload>
+        }
+        update: {
+          args: Prisma.RecoveryCaseUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecoveryCasePayload>
+        }
+        deleteMany: {
+          args: Prisma.RecoveryCaseDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.RecoveryCaseUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.RecoveryCaseUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecoveryCasePayload>[]
+        }
+        upsert: {
+          args: Prisma.RecoveryCaseUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecoveryCasePayload>
+        }
+        aggregate: {
+          args: Prisma.RecoveryCaseAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateRecoveryCase>
+        }
+        groupBy: {
+          args: Prisma.RecoveryCaseGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RecoveryCaseGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.RecoveryCaseCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RecoveryCaseCountAggregateOutputType> | number
+        }
+      }
+    }
     WebhookEvent: {
       payload: Prisma.$WebhookEventPayload<ExtArgs>
       fields: Prisma.WebhookEventFieldRefs
@@ -530,6 +605,22 @@ export const TransactionIsolationLevel = runtime.makeStrictEnum({
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
 
 
+export const RecoveryCaseScalarFieldEnum = {
+  id: 'id',
+  paymentId: 'paymentId',
+  webhookEventId: 'webhookEventId',
+  status: 'status',
+  liveState: 'liveState',
+  aiDiagnosis: 'aiDiagnosis',
+  aiAction: 'aiAction',
+  policyDecision: 'policyDecision',
+  ceratedAt: 'ceratedAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RecoveryCaseScalarFieldEnum = (typeof RecoveryCaseScalarFieldEnum)[keyof typeof RecoveryCaseScalarFieldEnum]
+
+
 export const WebhookEventScalarFieldEnum = {
   id: 'id',
   eventId: 'eventId',
@@ -566,6 +657,14 @@ export const QueryMode = {
 export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
 
 
+export const NullsOrder = {
+  first: 'first',
+  last: 'last'
+} as const
+
+export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
 export const JsonNullValueFilter = {
   DbNull: DbNull,
   JsonNull: JsonNull,
@@ -573,14 +672,6 @@ export const JsonNullValueFilter = {
 } as const
 
 export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
-
-
-export const NullsOrder = {
-  first: 'first',
-  last: 'last'
-} as const
-
-export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 
 
 
@@ -618,6 +709,34 @@ export type ListStringFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaMod
 
 
 /**
+ * Reference to a field of type 'RecoveryStatus'
+ */
+export type EnumRecoveryStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'RecoveryStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'RecoveryStatus[]'
+ */
+export type ListEnumRecoveryStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'RecoveryStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'DateTime'
+ */
+export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
+    
+
+
+/**
+ * Reference to a field of type 'DateTime[]'
+ */
+export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>
+    
+
+
+/**
  * Reference to a field of type 'Json'
  */
 export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
@@ -642,20 +761,6 @@ export type EnumWebhookEventStatusFieldRefInput<$PrismaModel> = FieldRefInputTyp
  * Reference to a field of type 'WebhookEventStatus[]'
  */
 export type ListEnumWebhookEventStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'WebhookEventStatus[]'>
-    
-
-
-/**
- * Reference to a field of type 'DateTime'
- */
-export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
-    
-
-
-/**
- * Reference to a field of type 'DateTime[]'
- */
-export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>
     
 
 
@@ -823,6 +928,7 @@ export interface PrismaClientOptionsWithAdapter extends PrismaClientBaseOptions 
  */
 export type PrismaClientOptions = PrismaClientOptionsWithAccelerateUrl | PrismaClientOptionsWithAdapter
 export type GlobalOmitConfig = {
+  recoveryCase?: Prisma.RecoveryCaseOmit
   webhookEvent?: Prisma.WebhookEventOmit
 }
 

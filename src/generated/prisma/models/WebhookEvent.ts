@@ -228,6 +228,7 @@ export type WebhookEventWhereInput = {
   status?: Prisma.EnumWebhookEventStatusFilter<"WebhookEvent"> | $Enums.WebhookEventStatus
   createdAt?: Prisma.DateTimeFilter<"WebhookEvent"> | Date | string
   processedAt?: Prisma.DateTimeNullableFilter<"WebhookEvent"> | Date | string | null
+  recoveryCases?: Prisma.RecoveryCaseListRelationFilter
 }
 
 export type WebhookEventOrderByWithRelationInput = {
@@ -238,6 +239,7 @@ export type WebhookEventOrderByWithRelationInput = {
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   processedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  recoveryCases?: Prisma.RecoveryCaseOrderByRelationAggregateInput
 }
 
 export type WebhookEventWhereUniqueInput = Prisma.AtLeast<{
@@ -251,6 +253,7 @@ export type WebhookEventWhereUniqueInput = Prisma.AtLeast<{
   status?: Prisma.EnumWebhookEventStatusFilter<"WebhookEvent"> | $Enums.WebhookEventStatus
   createdAt?: Prisma.DateTimeFilter<"WebhookEvent"> | Date | string
   processedAt?: Prisma.DateTimeNullableFilter<"WebhookEvent"> | Date | string | null
+  recoveryCases?: Prisma.RecoveryCaseListRelationFilter
 }, "id" | "eventId">
 
 export type WebhookEventOrderByWithAggregationInput = {
@@ -288,6 +291,7 @@ export type WebhookEventCreateInput = {
   status?: $Enums.WebhookEventStatus
   createdAt?: Date | string
   processedAt?: Date | string | null
+  recoveryCases?: Prisma.RecoveryCaseCreateNestedManyWithoutWebhookEventInput
 }
 
 export type WebhookEventUncheckedCreateInput = {
@@ -298,6 +302,7 @@ export type WebhookEventUncheckedCreateInput = {
   status?: $Enums.WebhookEventStatus
   createdAt?: Date | string
   processedAt?: Date | string | null
+  recoveryCases?: Prisma.RecoveryCaseUncheckedCreateNestedManyWithoutWebhookEventInput
 }
 
 export type WebhookEventUpdateInput = {
@@ -307,6 +312,7 @@ export type WebhookEventUpdateInput = {
   status?: Prisma.EnumWebhookEventStatusFieldUpdateOperationsInput | $Enums.WebhookEventStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recoveryCases?: Prisma.RecoveryCaseUpdateManyWithoutWebhookEventNestedInput
 }
 
 export type WebhookEventUncheckedUpdateInput = {
@@ -317,6 +323,7 @@ export type WebhookEventUncheckedUpdateInput = {
   status?: Prisma.EnumWebhookEventStatusFieldUpdateOperationsInput | $Enums.WebhookEventStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recoveryCases?: Prisma.RecoveryCaseUncheckedUpdateManyWithoutWebhookEventNestedInput
 }
 
 export type WebhookEventCreateManyInput = {
@@ -346,6 +353,11 @@ export type WebhookEventUncheckedUpdateManyInput = {
   status?: Prisma.EnumWebhookEventStatusFieldUpdateOperationsInput | $Enums.WebhookEventStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+}
+
+export type WebhookEventScalarRelationFilter = {
+  is?: Prisma.WebhookEventWhereInput
+  isNot?: Prisma.WebhookEventWhereInput
 }
 
 export type WebhookEventCountOrderByAggregateInput = {
@@ -384,30 +396,111 @@ export type WebhookEventSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
 }
 
-export type StringFieldUpdateOperationsInput = {
-  set?: string
+export type WebhookEventCreateNestedOneWithoutRecoveryCasesInput = {
+  create?: Prisma.XOR<Prisma.WebhookEventCreateWithoutRecoveryCasesInput, Prisma.WebhookEventUncheckedCreateWithoutRecoveryCasesInput>
+  connectOrCreate?: Prisma.WebhookEventCreateOrConnectWithoutRecoveryCasesInput
+  connect?: Prisma.WebhookEventWhereUniqueInput
+}
+
+export type WebhookEventUpdateOneRequiredWithoutRecoveryCasesNestedInput = {
+  create?: Prisma.XOR<Prisma.WebhookEventCreateWithoutRecoveryCasesInput, Prisma.WebhookEventUncheckedCreateWithoutRecoveryCasesInput>
+  connectOrCreate?: Prisma.WebhookEventCreateOrConnectWithoutRecoveryCasesInput
+  upsert?: Prisma.WebhookEventUpsertWithoutRecoveryCasesInput
+  connect?: Prisma.WebhookEventWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.WebhookEventUpdateToOneWithWhereWithoutRecoveryCasesInput, Prisma.WebhookEventUpdateWithoutRecoveryCasesInput>, Prisma.WebhookEventUncheckedUpdateWithoutRecoveryCasesInput>
 }
 
 export type EnumWebhookEventStatusFieldUpdateOperationsInput = {
   set?: $Enums.WebhookEventStatus
 }
 
-export type DateTimeFieldUpdateOperationsInput = {
-  set?: Date | string
-}
-
 export type NullableDateTimeFieldUpdateOperationsInput = {
   set?: Date | string | null
 }
 
-export type IntFieldUpdateOperationsInput = {
-  set?: number
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
+export type WebhookEventCreateWithoutRecoveryCasesInput = {
+  eventId: string
+  eventType: string
+  payload: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  status?: $Enums.WebhookEventStatus
+  createdAt?: Date | string
+  processedAt?: Date | string | null
 }
 
+export type WebhookEventUncheckedCreateWithoutRecoveryCasesInput = {
+  id?: number
+  eventId: string
+  eventType: string
+  payload: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  status?: $Enums.WebhookEventStatus
+  createdAt?: Date | string
+  processedAt?: Date | string | null
+}
+
+export type WebhookEventCreateOrConnectWithoutRecoveryCasesInput = {
+  where: Prisma.WebhookEventWhereUniqueInput
+  create: Prisma.XOR<Prisma.WebhookEventCreateWithoutRecoveryCasesInput, Prisma.WebhookEventUncheckedCreateWithoutRecoveryCasesInput>
+}
+
+export type WebhookEventUpsertWithoutRecoveryCasesInput = {
+  update: Prisma.XOR<Prisma.WebhookEventUpdateWithoutRecoveryCasesInput, Prisma.WebhookEventUncheckedUpdateWithoutRecoveryCasesInput>
+  create: Prisma.XOR<Prisma.WebhookEventCreateWithoutRecoveryCasesInput, Prisma.WebhookEventUncheckedCreateWithoutRecoveryCasesInput>
+  where?: Prisma.WebhookEventWhereInput
+}
+
+export type WebhookEventUpdateToOneWithWhereWithoutRecoveryCasesInput = {
+  where?: Prisma.WebhookEventWhereInput
+  data: Prisma.XOR<Prisma.WebhookEventUpdateWithoutRecoveryCasesInput, Prisma.WebhookEventUncheckedUpdateWithoutRecoveryCasesInput>
+}
+
+export type WebhookEventUpdateWithoutRecoveryCasesInput = {
+  eventId?: Prisma.StringFieldUpdateOperationsInput | string
+  eventType?: Prisma.StringFieldUpdateOperationsInput | string
+  payload?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  status?: Prisma.EnumWebhookEventStatusFieldUpdateOperationsInput | $Enums.WebhookEventStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+}
+
+export type WebhookEventUncheckedUpdateWithoutRecoveryCasesInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  eventId?: Prisma.StringFieldUpdateOperationsInput | string
+  eventType?: Prisma.StringFieldUpdateOperationsInput | string
+  payload?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  status?: Prisma.EnumWebhookEventStatusFieldUpdateOperationsInput | $Enums.WebhookEventStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+}
+
+
+/**
+ * Count Type WebhookEventCountOutputType
+ */
+
+export type WebhookEventCountOutputType = {
+  recoveryCases: number
+}
+
+export type WebhookEventCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  recoveryCases?: boolean | WebhookEventCountOutputTypeCountRecoveryCasesArgs
+}
+
+/**
+ * WebhookEventCountOutputType without action
+ */
+export type WebhookEventCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the WebhookEventCountOutputType
+   */
+  select?: Prisma.WebhookEventCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * WebhookEventCountOutputType without action
+ */
+export type WebhookEventCountOutputTypeCountRecoveryCasesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.RecoveryCaseWhereInput
+}
 
 
 export type WebhookEventSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -418,6 +511,8 @@ export type WebhookEventSelect<ExtArgs extends runtime.Types.Extensions.Internal
   status?: boolean
   createdAt?: boolean
   processedAt?: boolean
+  recoveryCases?: boolean | Prisma.WebhookEvent$recoveryCasesArgs<ExtArgs>
+  _count?: boolean | Prisma.WebhookEventCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["webhookEvent"]>
 
 export type WebhookEventSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -451,10 +546,18 @@ export type WebhookEventSelectScalar = {
 }
 
 export type WebhookEventOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "eventId" | "eventType" | "payload" | "status" | "createdAt" | "processedAt", ExtArgs["result"]["webhookEvent"]>
+export type WebhookEventInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  recoveryCases?: boolean | Prisma.WebhookEvent$recoveryCasesArgs<ExtArgs>
+  _count?: boolean | Prisma.WebhookEventCountOutputTypeDefaultArgs<ExtArgs>
+}
+export type WebhookEventIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type WebhookEventIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
 
 export type $WebhookEventPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "WebhookEvent"
-  objects: {}
+  objects: {
+    recoveryCases: Prisma.$RecoveryCasePayload<ExtArgs>[]
+  }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
     eventId: string
@@ -857,6 +960,7 @@ readonly fields: WebhookEventFieldRefs;
  */
 export interface Prisma__WebhookEventClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  recoveryCases<T extends Prisma.WebhookEvent$recoveryCasesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.WebhookEvent$recoveryCasesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RecoveryCasePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -910,6 +1014,10 @@ export type WebhookEventFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.
    */
   omit?: Prisma.WebhookEventOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.WebhookEventInclude<ExtArgs> | null
+  /**
    * Filter, which WebhookEvent to fetch.
    */
   where: Prisma.WebhookEventWhereUniqueInput
@@ -928,6 +1036,10 @@ export type WebhookEventFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Exte
    */
   omit?: Prisma.WebhookEventOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.WebhookEventInclude<ExtArgs> | null
+  /**
    * Filter, which WebhookEvent to fetch.
    */
   where: Prisma.WebhookEventWhereUniqueInput
@@ -945,6 +1057,10 @@ export type WebhookEventFindFirstArgs<ExtArgs extends runtime.Types.Extensions.I
    * Omit specific fields from the WebhookEvent
    */
   omit?: Prisma.WebhookEventOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.WebhookEventInclude<ExtArgs> | null
   /**
    * Filter, which WebhookEvent to fetch.
    */
@@ -994,6 +1110,10 @@ export type WebhookEventFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Exten
    */
   omit?: Prisma.WebhookEventOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.WebhookEventInclude<ExtArgs> | null
+  /**
    * Filter, which WebhookEvent to fetch.
    */
   where?: Prisma.WebhookEventWhereInput
@@ -1041,6 +1161,10 @@ export type WebhookEventFindManyArgs<ExtArgs extends runtime.Types.Extensions.In
    * Omit specific fields from the WebhookEvent
    */
   omit?: Prisma.WebhookEventOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.WebhookEventInclude<ExtArgs> | null
   /**
    * Filter, which WebhookEvents to fetch.
    */
@@ -1090,6 +1214,10 @@ export type WebhookEventCreateArgs<ExtArgs extends runtime.Types.Extensions.Inte
    */
   omit?: Prisma.WebhookEventOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.WebhookEventInclude<ExtArgs> | null
+  /**
    * The data needed to create a WebhookEvent.
    */
   data: Prisma.XOR<Prisma.WebhookEventCreateInput, Prisma.WebhookEventUncheckedCreateInput>
@@ -1137,6 +1265,10 @@ export type WebhookEventUpdateArgs<ExtArgs extends runtime.Types.Extensions.Inte
    * Omit specific fields from the WebhookEvent
    */
   omit?: Prisma.WebhookEventOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.WebhookEventInclude<ExtArgs> | null
   /**
    * The data needed to update a WebhookEvent.
    */
@@ -1204,6 +1336,10 @@ export type WebhookEventUpsertArgs<ExtArgs extends runtime.Types.Extensions.Inte
    */
   omit?: Prisma.WebhookEventOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.WebhookEventInclude<ExtArgs> | null
+  /**
    * The filter to search for the WebhookEvent to update in case it exists.
    */
   where: Prisma.WebhookEventWhereUniqueInput
@@ -1230,6 +1366,10 @@ export type WebhookEventDeleteArgs<ExtArgs extends runtime.Types.Extensions.Inte
    */
   omit?: Prisma.WebhookEventOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.WebhookEventInclude<ExtArgs> | null
+  /**
    * Filter which WebhookEvent to delete.
    */
   where: Prisma.WebhookEventWhereUniqueInput
@@ -1250,6 +1390,30 @@ export type WebhookEventDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.
 }
 
 /**
+ * WebhookEvent.recoveryCases
+ */
+export type WebhookEvent$recoveryCasesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the RecoveryCase
+   */
+  select?: Prisma.RecoveryCaseSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the RecoveryCase
+   */
+  omit?: Prisma.RecoveryCaseOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RecoveryCaseInclude<ExtArgs> | null
+  where?: Prisma.RecoveryCaseWhereInput
+  orderBy?: Prisma.RecoveryCaseOrderByWithRelationInput | Prisma.RecoveryCaseOrderByWithRelationInput[]
+  cursor?: Prisma.RecoveryCaseWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.RecoveryCaseScalarFieldEnum | Prisma.RecoveryCaseScalarFieldEnum[]
+}
+
+/**
  * WebhookEvent without action
  */
 export type WebhookEventDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1261,4 +1425,8 @@ export type WebhookEventDefaultArgs<ExtArgs extends runtime.Types.Extensions.Int
    * Omit specific fields from the WebhookEvent
    */
   omit?: Prisma.WebhookEventOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.WebhookEventInclude<ExtArgs> | null
 }

@@ -8,5 +8,6 @@
  *
  * 🟢 You can import this file directly.
  */
+export type * from './models/RecoveryCase.js'
 export type * from './models/WebhookEvent.js'
 export type * from './commonInputTypes.js'
