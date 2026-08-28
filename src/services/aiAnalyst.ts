@@ -20,7 +20,7 @@ export class AIAnalystService {
     this.genAI = new GoogleGenerativeAI(apiKey);
     
     this.model = this.genAI.getGenerativeModel({
-      model: 'gemini-pro',
+      model: 'gemini-1.5-pro-latest',
       generationConfig: {
         responseMimeType: 'application/json',
       },
