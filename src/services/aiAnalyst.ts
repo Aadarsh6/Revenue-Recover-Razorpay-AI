@@ -1,4 +1,3 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
 import { AggregatedContext } from './contextAggregator';
 
 export interface AIAnalysisResult {
@@ -9,30 +8,45 @@ export interface AIAnalysisResult {
 }
 
 export class AIAnalystService {
-  private genAI: GoogleGenerativeAI;
-  private model: any;
+  private apiKey: string;
+  private endpoint = 'https://api.groq.com/openai/v1/chat/completions';
+  private model = 'llama-3.1-8b-instant';
 
   constructor() {
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) {
-      throw new Error('GEMINI_API_KEY is missing in environment variables');
+    this.apiKey = process.env.GROQ_API_KEY || '';
+    if (!this.apiKey) {
+      throw new Error('GROQ_API_KEY is missing in environment variables');
     }
-    this.genAI = new GoogleGenerativeAI(apiKey);
-    
-    this.model = this.genAI.getGenerativeModel({
-      model: 'gemini-1.5-pro-latest',
-      generationConfig: {
-        responseMimeType: 'application/json',
-      },
-    });
   }
 
   async analyzeFailure(context: AggregatedContext): Promise<AIAnalysisResult> {
     const prompt = this.constructPrompt(context);
 
     try {
-      const result = await this.model.generateContent(prompt);
-      const responseText = result.response.text();
+      const response = await fetch(this.endpoint, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${this.apiKey}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          model: this.model,
+          messages: [
+            { role: "system", content: "You are an expert Fintech AI. You output ONLY valid JSON." },
+            { role: "user", content: prompt }
+          ],
+          response_format: { type: "json_object" },
+          temperature: 0.1
+        })
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Groq API error: ${response.status} ${errorText}`);
+      }
+
+      const data = await response.json();
+      const responseText = data.choices[0].message.content;
       
       const parsedResult = JSON.parse(responseText) as AIAnalysisResult;
 
@@ -49,10 +63,10 @@ export class AIAnalystService {
       return parsedResult;
 
     } catch (error) {
-      console.error('[AI Analyst] Error calling Gemini API:', error);
+      console.error('[AI Analyst] Error calling Groq API:', error);
       return {
         diagnosis: 'ai_analysis_exception',
-        evidence: ['Gemini API call failed or returned malformed JSON'],
+        evidence: ['Groq API call failed or returned malformed JSON'],
         recommended_action: 'ESCALATE_HUMAN',
         risk_level: 'HIGH'
       };
@@ -61,7 +75,6 @@ export class AIAnalystService {
 
   private constructPrompt(context: AggregatedContext): string {
     return `
-      You are an expert Fintech Revenue Recovery AI. 
       Analyze the following clean context JSON of a failed payment and diagnose the most likely reason for failure.
       Based on the customer's history, recommend a safe action to recover this revenue.
 
