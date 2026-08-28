@@ -5,6 +5,8 @@ import prisma from "./lib/prismaClient";
 import { PrismaClientKnownRequestError } from "./generated/prisma/internal/prismaNamespace";
 import { validateState, StateDecision } from "./services/stateValidator";
 import { createRecoveryCase } from "./services/recoveryCaseService";
+import { aggregateContext } from "./services/contextAggregator";
+import { AIAnalystService } from "./services/aiAnalyst";
 
 dotenv.config();
 
@@ -102,9 +104,36 @@ app.post(
         return; 
       }
 
-      // If we reach here, the case is OPEN.
-      console.log(`➡️ Recovery Case ${recoveryCase.id} OPEN. Awaiting next steps (AI/Policy).`);
+           // If we reach here, the case is OPEN.
+      console.log(`➡️ Recovery Case ${recoveryCase.id} OPEN. Proceeding to Context Aggregation...`);
+
+      // Explicit Type Guard: TypeScript needs to know for sure that livePayment exists
+      if (stateResult.decision !== 'VALID_FAILURE') {
+        console.error('System Error: Case is OPEN but state is not VALID_FAILURE. Aborting.');
+        return;
+      }
+
+      // 1. Aggregate Context (Raw Data -> Clean Facts)
+      const context = aggregateContext(stateResult.livePayment);
+      console.log(`Context built for ${context.payment.id}. Facts extracted.`);
+
+      // 2. AI Analyst (Facts -> Recommendation)
+      console.log("🧠 Sending clean context to Gemini AI for diagnosis...");
+      const aiService = new AIAnalystService();
+      const aiResult = await aiService.analyzeFailure(context);
+
+      console.log("🤖 AI Recommendation:", aiResult);
       
+      // Update Recovery Case with AI output
+      await prisma.recoveryCase.update({
+        where: { id: recoveryCase.id },
+        data: {
+          aiDiagnosis: aiResult.diagnosis,
+          aiAction: aiResult.recommended_action,
+          status: 'AI_PROCESSING'
+        }
+      });
+
       await prisma.webhookEvent.update({
         where: { id: newEvent.id },
         data: { 
