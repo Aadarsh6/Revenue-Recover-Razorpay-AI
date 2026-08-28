@@ -118,7 +118,7 @@ app.post(
       console.log(`Context built for ${context.payment.id}. Facts extracted.`);
 
       // 2. AI Analyst (Facts -> Recommendation)
-      console.log("🧠 Sending clean context to Gemini AI for diagnosis...");
+      console.log("🧠 Sending clean context to Qwen AI for diagnosis...");
       const aiService = new AIAnalystService();
       const aiResult = await aiService.analyzeFailure(context);
 
