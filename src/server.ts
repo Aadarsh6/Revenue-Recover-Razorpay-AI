@@ -179,49 +179,63 @@ app.post(
         });
         console.log("✅ Policy Engine authorized AUTONOMOUS execution. Case marked as PENDING_EXECUTION.");
         
-        // --- EXECUTION LAYER WITH ATOMIC LOCK ---
-        
-        // 1. ATOMIC LOCK: Try to transition from PENDING_EXECUTION to EXECUTING.
-        // If another process already grabbed it, updateResult.count will be 0.
+        // --- EXECUTION LAYER WITH ATOMIC LOCK & DUPLICATE CHECK ---
+
+        // 1. ATOMIC LOCK: Transition PENDING_EXECUTION -> EXECUTING
         const lockResult = await prisma.recoveryCase.updateMany({
           where: { id: recoveryCase.id, status: 'PENDING_EXECUTION' },
           data: { status: 'EXECUTING' }
         });
 
         if (lockResult.count === 0) {
-          console.log(`⚠️ Concurrency Control: Case ${recoveryCase.id} is already being executed by another process. Aborting this thread.`);
+          console.log(`⚠️ Concurrency Control: Case ${recoveryCase.id} is already being executed. Aborting.`);
           return;
         }
 
-        // 2. EXECUTE ACTION
-        const executor = new ExecutionLayer();
-        const executionResult = await executor.executeAction(stateResult.livePayment, aiResult);
+        // 2. PREVENT DUPLICATE EXECUTION (Check if attempt already exists)
+        const existingAttempt = await prisma.recoveryAttempt.findUnique({
+          where: { recoveryCaseId: recoveryCase.id }
+        });
 
-        // 3. PERSIST RECOVERY ATTEMPT & UPDATE FINAL STATUS
+        if (existingAttempt) {
+          console.log(`⚠️ Duplicate Execution Prevented: Attempt already exists for Case ${recoveryCase.id}.`);
+          await prisma.recoveryCase.update({
+            where: { id: recoveryCase.id },
+            data: { status: 'RECOVERY_LINK_CREATED' } // Assume it was completed previously
+          });
+          return;
+        }
+
+        // 3. EXECUTE ACTION (Pass recoveryCaseId for notes)
+        const executor = new ExecutionLayer();
+        const executionResult = await executor.executeAction(stateResult.livePayment, aiResult, recoveryCase.id);
+
+        // 4. PERSIST RECOVERY ATTEMPT & UPDATE FINAL STATUS
         await prisma.recoveryAttempt.create({
           data: {
             recoveryCaseId: recoveryCase.id,
             action: aiResult.recommended_action,
             razorpayLinkId: executionResult.razorpayResponse?.id || null,
             recoveryUrl: executionResult.razorpayResponse?.short_url || null,
-            status: executionResult.success ? 'SUCCESS' : 'FAILED',
+            status: executionResult.success ? 'LINK_CREATED' : 'FAILED',
             errorMessage: executionResult.error || null
           }
         });
 
         if (executionResult.success) {
+          // STEP 5: Do NOT call it AUTO_RECOVERED yet. The customer hasn't paid!
           await prisma.recoveryCase.update({
             where: { id: recoveryCase.id },
-            data: { status: 'RECOVERY_ACTION_COMPLETED' }
+            data: { status: 'RECOVERY_LINK_CREATED' }
           });
-          console.log(`🎉 Recovery Case ${recoveryCase.id} successfully EXECUTED and COMPLETED!`);
+          console.log(`🔗 Recovery Link saved to DB. Case ${recoveryCase.id} marked as RECOVERY_LINK_CREATED. Awaiting customer payment...`);
         } else {
-          // If Razorpay API fails, escalate to human
+          // Execution failed
           await prisma.recoveryCase.update({
             where: { id: recoveryCase.id },
-            data: { status: 'PENDING_HUMAN_REVIEW' } // Override to human because execution failed
+            data: { status: 'FAILED' }
           });
-          console.log(`⚠️ Execution failed. Case ${recoveryCase.id} escalated to HUMAN review.`);
+          console.log(`⚠️ Execution failed. Case ${recoveryCase.id} marked as FAILED.`);
         }
       }
 
