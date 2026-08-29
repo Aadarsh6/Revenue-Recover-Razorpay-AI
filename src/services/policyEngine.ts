@@ -1,7 +1,7 @@
-import Razorpay from 'razorpay';
 import { AIAnalysisResult } from './aiAnalyst';
 import { LivePayment } from './stateValidator';
 import prisma from '../lib/prismaClient';
+import Razorpay from 'razorpay';
 
 export type PolicyDecision = 'AUTO' | 'HUMAN' | 'BLOCK';
 
@@ -10,7 +10,6 @@ export interface PolicyResult {
   reason: string;
 }
 
-// The Explicit Policy Matrix
 const POLICY_MATRIX: Record<AIAnalysisResult['recommended_action'], Record<AIAnalysisResult['risk_level'], PolicyDecision>> = {
   CREATE_RECOVERY_LINK: { LOW: 'AUTO', MEDIUM: 'AUTO', HIGH: 'HUMAN' },
   SEND_INVOICE_NOTIFICATION: { LOW: 'AUTO', MEDIUM: 'AUTO', HIGH: 'HUMAN' },
@@ -39,20 +38,24 @@ export async function evaluatePolicy(
         reason: `🛑 RACE CONDITION CAUGHT: Live payment status is now ${freshLivePayment.status}. Aborting to prevent duplicate collection.` 
       };
     }
-   } catch (error: any) {
-    console.error("[PolicyEngine] Razorpay API Error:", error.error?.description || error.message);
+  } catch (error) {
     return { decision: 'BLOCK', reason: 'Failed to re-fetch live state from Razorpay. Aborting for safety.' };
   }
 
-  // 2. Check if we already attempted recovery
+  // 2. Check if we already attempted recovery (Only check terminal/active states, NOT PENDING_EXECUTION)
   const existingCase = await prisma.recoveryCase.findUnique({
     where: { id: recoveryCaseId }
   });
 
-  if (existingCase && (existingCase.status === 'PENDING_EXECUTION' || existingCase.status === 'PENDING_HUMAN_REVIEW')) {
+  if (existingCase && (
+      existingCase.status === 'RECOVERY_LINK_CREATED' || 
+      existingCase.status === 'AUTO_RECOVERED' || 
+      existingCase.status === 'PENDING_HUMAN_REVIEW' ||
+      existingCase.status === 'BLOCKED'
+  )) {
     return { 
       decision: 'BLOCK', 
-      reason: `RecoveryCase ${recoveryCaseId} is already in status ${existingCase.status}.` 
+      reason: `RecoveryCase ${recoveryCaseId} is already in terminal status ${existingCase.status}.` 
     };
   }
 
