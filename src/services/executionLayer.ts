@@ -14,14 +14,14 @@ export class ExecutionLayer {
 
   async executeAction(
     livePayment: LivePayment,
-    aiResult: AIAnalysisResult
+    aiResult: AIAnalysisResult,
+    recoveryCaseId: number
   ): Promise<{ success: boolean; razorpayResponse?: any; error?: string }> {
     
-    console.log(`[Execution Layer] Executing action: ${aiResult.recommended_action} for payment ${livePayment.id}`);
+    console.log(`[Execution Layer] Executing action: ${aiResult.recommended_action} for Case ${recoveryCaseId}`);
 
     try {
       if (aiResult.recommended_action === 'CREATE_RECOVERY_LINK') {
-        // Cast payload to any to bypass SDK type strictness on 'methods'
         const payload: any = {
           amount: livePayment.amount,
           currency: livePayment.currency,
@@ -30,6 +30,12 @@ export class ExecutionLayer {
           customer: {
             contact: livePayment.contact || undefined,
             email: livePayment.email || undefined,
+          },
+          // STEP 7: Embed original payment ID and Case ID for tracking!
+          notes: {
+            original_failed_payment_id: livePayment.id,
+            revive_recovery_case_id: recoveryCaseId.toString(),
+            revive_ai_diagnosis: aiResult.diagnosis
           },
           options: {
             checkout: {
@@ -42,7 +48,6 @@ export class ExecutionLayer {
           }
         };
 
-        // Cast response to any to access short_url safely
         const paymentLink: any = await this.razorpay.paymentLink.create(payload);
         
         console.log(`[Execution Layer] ✅ Recovery Link Created: ${paymentLink.short_url}`);
@@ -51,7 +56,6 @@ export class ExecutionLayer {
       } else if (aiResult.recommended_action === 'SEND_INVOICE_NOTIFICATION') {
         console.log(`[Execution Layer] ✅ Simulated Invoice Notification sent.`);
         return { success: true, razorpayResponse: { simulated: true } };
-
       } else {
         return { success: false, error: 'Action not supported by Execution Layer' };
       }
