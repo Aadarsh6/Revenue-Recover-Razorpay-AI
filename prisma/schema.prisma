@@ -12,6 +12,7 @@ enum RecoveryStatus {
   OPEN
   AI_PROCESSING 
   PENDING_EXECUTION
+  EXECUTING
   PENDING_HUMAN_REVIEW
   AUTO_RECOVERED
   BLOCKED
@@ -39,6 +40,7 @@ model RecoveryCase{
 
   webhookEvent        WebhookEvent @relation(fields: [webhookEventId], references: [id])
   aiAnalysis          AIAnalysis[]
+  recoveryAttempts RecoveryAttempt[]
 }
 
 
@@ -81,3 +83,16 @@ model PaymentRecord{
   createdAt     DateTime @default(now())
 }
 
+model RecoveryAttempt {
+  id             Int      @id @default(autoincrement())
+  recoveryCaseId Int      @unique
+  action         String
+  razorpayLinkId String?
+  recoveryUrl    String?
+  status         String
+  errorMessage   String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  recoveryCase   RecoveryCase @relation(fields: [recoveryCaseId], references: [id])
+}
