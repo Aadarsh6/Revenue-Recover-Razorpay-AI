@@ -205,18 +205,77 @@ app.post(
         console.log("✅ Policy Engine authorized AUTONOMOUS execution. Proceeding to Execution Layer...");
       }
 
-      // ⬇️ POLICY ENGINE WILL GO HERE NEXT
-      // 3. Create AI Audit Record
-      // await prisma.aIAnalysis.create({
-      //   data: {
-      //     recoveryCaseId: recoveryCase.id,
-      //     diagnosis: aiResult.diagnosis,
-      //     evidence: aiResult.evidence,
-      //     recommendedAction: aiResult.recommended_action,
-      //     riskLevel: aiResult.risk_level,
-      //     model: 'qwen/qwen3.6-27b'
-      //   }
-      // });
+      // Step 4: Persist the result in AIAnalysis table
+      await prisma.aIAnalysis.upsert({
+        where: { recoveryCaseId: recoveryCase.id },
+        update: {
+          diagnosis: aiResult.diagnosis,
+          evidence: aiResult.evidence,
+          recommendedAction: aiResult.recommended_action,
+          riskLevel: aiResult.risk_level,
+          model: 'openai/gpt-oss-20b'
+        },
+        create: {
+          recoveryCaseId: recoveryCase.id,
+          diagnosis: aiResult.diagnosis,
+          evidence: aiResult.evidence,
+          recommendedAction: aiResult.recommended_action,
+          riskLevel: aiResult.risk_level,
+          model: 'openai/gpt-oss-20b'
+        }
+      });
+
+      // Step 5: Update RecoveryCase with quick summary fields
+      await prisma.recoveryCase.update({
+        where: { id: recoveryCase.id },
+        data: {
+          aiDiagnosis: aiResult.diagnosis,
+          aiAction: aiResult.recommended_action
+        }
+      });
+
+      // Step 6: Pass to Policy Engine
+      console.log("⚖️ Evaluating Policy Engine...");
+      // Pass paymentId so Policy Engine can fetch fresh state
+      const PolicyResult = await evaluatePolicy(recoveryCase.id, paymentId, aiResult);
+      
+      console.log(`Policy Decision: ${policyResult.decision} - ${policyResult.reason}`);
+
+      // Step 7: Apply Policy Decision & Persist to DB
+      if (policyResult.decision === 'BLOCK') {
+        await prisma.recoveryCase.update({
+          where: { id: recoveryCase.id },
+          data: { status: 'BLOCKED', policyDecision: 'BLOCK' }
+        });
+        console.log(`🛑 Pipeline stopped by Policy Engine. Case marked as BLOCKED.`);
+      } else if (policyResult.decision === 'HUMAN') {
+        await prisma.recoveryCase.update({
+          where: { id: recoveryCase.id },
+          data: { status: 'PENDING_HUMAN_REVIEW', policyDecision: 'HUMAN' }
+        });
+        console.log(`👤 Escalated to HUMAN review by Policy Engine.`);
+      } else {
+        // AUTO: Transition to PENDING_EXECUTION
+        await prisma.recoveryCase.update({
+          where: { id: recoveryCase.id },
+          data: { 
+            status: 'PENDING_EXECUTION', 
+            policyDecision: 'AUTO'
+          }
+        });
+        console.log("✅ Policy Engine authorized AUTONOMOUS execution. Case marked as PENDING_EXECUTION.");
+        
+        // Execution Layer will go here next!
+      }
+
+      await prisma.webhookEvent.update({
+        where: { id: newEvent.id },
+        data: { 
+          status: "PROCESSED",
+          processedAt: new Date()
+        },
+      });
+      console.log(`Successfully Processed Event: ${eventId}`);
 
       await prisma.webhookEvent.update({
         where: { id: newEvent.id },
