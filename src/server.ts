@@ -133,13 +133,13 @@ app.post(
       });
 
       // Step 2: Call AI Analyst
-          // Step 2: Call AI Analyst
+           // Step 2: Call AI Analyst
       console.log("🧠 Sending clean context to Groq AI for diagnosis...");
       const aiService = new AIAnalystService();
       const aiResult = await aiService.analyzeFailure(context);
       console.log("🤖 AI Recommendation:", aiResult);
       
-      // Step 3: Persist the result in AIAnalysis (Upsert to handle any retries safely)
+      // Step 3: Persist the result in AIAnalysis table (Upsert to handle any retries safely)
       await prisma.aIAnalysis.upsert({
         where: { recoveryCaseId: recoveryCase.id },
         update: {
@@ -168,6 +168,7 @@ app.post(
         }
       });
 
+      // ⬇️ POLICY ENGINE WILL GO HERE NEXT
       // 3. Create AI Audit Record
       // await prisma.aIAnalysis.create({
       //   data: {
