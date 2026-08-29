@@ -21,8 +21,8 @@ export class ExecutionLayer {
 
     try {
       if (aiResult.recommended_action === 'CREATE_RECOVERY_LINK') {
-        // Create a Standard Payment Link for the exact failed amount
-        const paymentLink = await this.razorpay.paymentLink.create({
+        // Cast payload to any to bypass SDK type strictness on 'methods'
+        const payload: any = {
           amount: livePayment.amount,
           currency: livePayment.currency,
           accept_partial: false,
@@ -34,27 +34,25 @@ export class ExecutionLayer {
           options: {
             checkout: {
               methods: {
-                // Prioritize UPI as the AI usually recommends this for method mismatches
                 upi: true,
                 card: true,
                 netbanking: true,
               }
             }
           }
-        });
+        };
+
+        // Cast response to any to access short_url safely
+        const paymentLink: any = await this.razorpay.paymentLink.create(payload);
         
         console.log(`[Execution Layer] ✅ Recovery Link Created: ${paymentLink.short_url}`);
         return { success: true, razorpayResponse: paymentLink };
 
       } else if (aiResult.recommended_action === 'SEND_INVOICE_NOTIFICATION') {
-        // For the demo, we assume the failed payment was tied to an invoice.
-        // In a real system, the Context Aggregator would extract the invoice_id.
-        // Here we just simulate the execution success.
         console.log(`[Execution Layer] ✅ Simulated Invoice Notification sent.`);
         return { success: true, razorpayResponse: { simulated: true } };
 
       } else {
-        // Should not happen if Policy Engine is working, but fail-safe anyway
         return { success: false, error: 'Action not supported by Execution Layer' };
       }
 
