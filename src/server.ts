@@ -133,12 +133,13 @@ app.post(
       });
 
       // Step 2: Call AI Analyst
+          // Step 2: Call AI Analyst
       console.log("🧠 Sending clean context to Groq AI for diagnosis...");
       const aiService = new AIAnalystService();
       const aiResult = await aiService.analyzeFailure(context);
       console.log("🤖 AI Recommendation:", aiResult);
       
-      // Step 3: Persist the result in AIAnalysis table (Upsert to handle any retries safely)
+      // Step 3: Persist the result in AIAnalysis (Upsert to handle any retries safely)
       await prisma.aIAnalysis.upsert({
         where: { recoveryCaseId: recoveryCase.id },
         update: {
@@ -146,7 +147,7 @@ app.post(
           evidence: aiResult.evidence,
           recommendedAction: aiResult.recommended_action,
           riskLevel: aiResult.risk_level,
-          model: 'qwen/qwen3.6-27b'
+          model: 'llama-3.3-70b-versatile'
         },
         create: {
           recoveryCaseId: recoveryCase.id,
@@ -154,7 +155,7 @@ app.post(
           evidence: aiResult.evidence,
           recommendedAction: aiResult.recommended_action,
           riskLevel: aiResult.risk_level,
-          model: 'qwen/qwen3.6-27b'
+          model: 'llama-3.3-70b-versatile'
         }
       });
 
