@@ -396,14 +396,9 @@ export type RecoveryAttemptUncheckedUpdateManyInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
-export type RecoveryAttemptListRelationFilter = {
-  every?: Prisma.RecoveryAttemptWhereInput
-  some?: Prisma.RecoveryAttemptWhereInput
-  none?: Prisma.RecoveryAttemptWhereInput
-}
-
-export type RecoveryAttemptOrderByRelationAggregateInput = {
-  _count?: Prisma.SortOrder
+export type RecoveryAttemptNullableScalarRelationFilter = {
+  is?: Prisma.RecoveryAttemptWhereInput | null
+  isNot?: Prisma.RecoveryAttemptWhereInput | null
 }
 
 export type RecoveryAttemptCountOrderByAggregateInput = {
@@ -452,46 +447,36 @@ export type RecoveryAttemptSumOrderByAggregateInput = {
   recoveryCaseId?: Prisma.SortOrder
 }
 
-export type RecoveryAttemptCreateNestedManyWithoutRecoveryCaseInput = {
-  create?: Prisma.XOR<Prisma.RecoveryAttemptCreateWithoutRecoveryCaseInput, Prisma.RecoveryAttemptUncheckedCreateWithoutRecoveryCaseInput> | Prisma.RecoveryAttemptCreateWithoutRecoveryCaseInput[] | Prisma.RecoveryAttemptUncheckedCreateWithoutRecoveryCaseInput[]
-  connectOrCreate?: Prisma.RecoveryAttemptCreateOrConnectWithoutRecoveryCaseInput | Prisma.RecoveryAttemptCreateOrConnectWithoutRecoveryCaseInput[]
-  createMany?: Prisma.RecoveryAttemptCreateManyRecoveryCaseInputEnvelope
-  connect?: Prisma.RecoveryAttemptWhereUniqueInput | Prisma.RecoveryAttemptWhereUniqueInput[]
+export type RecoveryAttemptCreateNestedOneWithoutRecoveryCaseInput = {
+  create?: Prisma.XOR<Prisma.RecoveryAttemptCreateWithoutRecoveryCaseInput, Prisma.RecoveryAttemptUncheckedCreateWithoutRecoveryCaseInput>
+  connectOrCreate?: Prisma.RecoveryAttemptCreateOrConnectWithoutRecoveryCaseInput
+  connect?: Prisma.RecoveryAttemptWhereUniqueInput
 }
 
-export type RecoveryAttemptUncheckedCreateNestedManyWithoutRecoveryCaseInput = {
-  create?: Prisma.XOR<Prisma.RecoveryAttemptCreateWithoutRecoveryCaseInput, Prisma.RecoveryAttemptUncheckedCreateWithoutRecoveryCaseInput> | Prisma.RecoveryAttemptCreateWithoutRecoveryCaseInput[] | Prisma.RecoveryAttemptUncheckedCreateWithoutRecoveryCaseInput[]
-  connectOrCreate?: Prisma.RecoveryAttemptCreateOrConnectWithoutRecoveryCaseInput | Prisma.RecoveryAttemptCreateOrConnectWithoutRecoveryCaseInput[]
-  createMany?: Prisma.RecoveryAttemptCreateManyRecoveryCaseInputEnvelope
-  connect?: Prisma.RecoveryAttemptWhereUniqueInput | Prisma.RecoveryAttemptWhereUniqueInput[]
+export type RecoveryAttemptUncheckedCreateNestedOneWithoutRecoveryCaseInput = {
+  create?: Prisma.XOR<Prisma.RecoveryAttemptCreateWithoutRecoveryCaseInput, Prisma.RecoveryAttemptUncheckedCreateWithoutRecoveryCaseInput>
+  connectOrCreate?: Prisma.RecoveryAttemptCreateOrConnectWithoutRecoveryCaseInput
+  connect?: Prisma.RecoveryAttemptWhereUniqueInput
 }
 
-export type RecoveryAttemptUpdateManyWithoutRecoveryCaseNestedInput = {
-  create?: Prisma.XOR<Prisma.RecoveryAttemptCreateWithoutRecoveryCaseInput, Prisma.RecoveryAttemptUncheckedCreateWithoutRecoveryCaseInput> | Prisma.RecoveryAttemptCreateWithoutRecoveryCaseInput[] | Prisma.RecoveryAttemptUncheckedCreateWithoutRecoveryCaseInput[]
-  connectOrCreate?: Prisma.RecoveryAttemptCreateOrConnectWithoutRecoveryCaseInput | Prisma.RecoveryAttemptCreateOrConnectWithoutRecoveryCaseInput[]
-  upsert?: Prisma.RecoveryAttemptUpsertWithWhereUniqueWithoutRecoveryCaseInput | Prisma.RecoveryAttemptUpsertWithWhereUniqueWithoutRecoveryCaseInput[]
-  createMany?: Prisma.RecoveryAttemptCreateManyRecoveryCaseInputEnvelope
-  set?: Prisma.RecoveryAttemptWhereUniqueInput | Prisma.RecoveryAttemptWhereUniqueInput[]
-  disconnect?: Prisma.RecoveryAttemptWhereUniqueInput | Prisma.RecoveryAttemptWhereUniqueInput[]
-  delete?: Prisma.RecoveryAttemptWhereUniqueInput | Prisma.RecoveryAttemptWhereUniqueInput[]
-  connect?: Prisma.RecoveryAttemptWhereUniqueInput | Prisma.RecoveryAttemptWhereUniqueInput[]
-  update?: Prisma.RecoveryAttemptUpdateWithWhereUniqueWithoutRecoveryCaseInput | Prisma.RecoveryAttemptUpdateWithWhereUniqueWithoutRecoveryCaseInput[]
-  updateMany?: Prisma.RecoveryAttemptUpdateManyWithWhereWithoutRecoveryCaseInput | Prisma.RecoveryAttemptUpdateManyWithWhereWithoutRecoveryCaseInput[]
-  deleteMany?: Prisma.RecoveryAttemptScalarWhereInput | Prisma.RecoveryAttemptScalarWhereInput[]
+export type RecoveryAttemptUpdateOneWithoutRecoveryCaseNestedInput = {
+  create?: Prisma.XOR<Prisma.RecoveryAttemptCreateWithoutRecoveryCaseInput, Prisma.RecoveryAttemptUncheckedCreateWithoutRecoveryCaseInput>
+  connectOrCreate?: Prisma.RecoveryAttemptCreateOrConnectWithoutRecoveryCaseInput
+  upsert?: Prisma.RecoveryAttemptUpsertWithoutRecoveryCaseInput
+  disconnect?: Prisma.RecoveryAttemptWhereInput | boolean
+  delete?: Prisma.RecoveryAttemptWhereInput | boolean
+  connect?: Prisma.RecoveryAttemptWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.RecoveryAttemptUpdateToOneWithWhereWithoutRecoveryCaseInput, Prisma.RecoveryAttemptUpdateWithoutRecoveryCaseInput>, Prisma.RecoveryAttemptUncheckedUpdateWithoutRecoveryCaseInput>
 }
 
-export type RecoveryAttemptUncheckedUpdateManyWithoutRecoveryCaseNestedInput = {
-  create?: Prisma.XOR<Prisma.RecoveryAttemptCreateWithoutRecoveryCaseInput, Prisma.RecoveryAttemptUncheckedCreateWithoutRecoveryCaseInput> | Prisma.RecoveryAttemptCreateWithoutRecoveryCaseInput[] | Prisma.RecoveryAttemptUncheckedCreateWithoutRecoveryCaseInput[]
-  connectOrCreate?: Prisma.RecoveryAttemptCreateOrConnectWithoutRecoveryCaseInput | Prisma.RecoveryAttemptCreateOrConnectWithoutRecoveryCaseInput[]
-  upsert?: Prisma.RecoveryAttemptUpsertWithWhereUniqueWithoutRecoveryCaseInput | Prisma.RecoveryAttemptUpsertWithWhereUniqueWithoutRecoveryCaseInput[]
-  createMany?: Prisma.RecoveryAttemptCreateManyRecoveryCaseInputEnvelope
-  set?: Prisma.RecoveryAttemptWhereUniqueInput | Prisma.RecoveryAttemptWhereUniqueInput[]
-  disconnect?: Prisma.RecoveryAttemptWhereUniqueInput | Prisma.RecoveryAttemptWhereUniqueInput[]
-  delete?: Prisma.RecoveryAttemptWhereUniqueInput | Prisma.RecoveryAttemptWhereUniqueInput[]
-  connect?: Prisma.RecoveryAttemptWhereUniqueInput | Prisma.RecoveryAttemptWhereUniqueInput[]
-  update?: Prisma.RecoveryAttemptUpdateWithWhereUniqueWithoutRecoveryCaseInput | Prisma.RecoveryAttemptUpdateWithWhereUniqueWithoutRecoveryCaseInput[]
-  updateMany?: Prisma.RecoveryAttemptUpdateManyWithWhereWithoutRecoveryCaseInput | Prisma.RecoveryAttemptUpdateManyWithWhereWithoutRecoveryCaseInput[]
-  deleteMany?: Prisma.RecoveryAttemptScalarWhereInput | Prisma.RecoveryAttemptScalarWhereInput[]
+export type RecoveryAttemptUncheckedUpdateOneWithoutRecoveryCaseNestedInput = {
+  create?: Prisma.XOR<Prisma.RecoveryAttemptCreateWithoutRecoveryCaseInput, Prisma.RecoveryAttemptUncheckedCreateWithoutRecoveryCaseInput>
+  connectOrCreate?: Prisma.RecoveryAttemptCreateOrConnectWithoutRecoveryCaseInput
+  upsert?: Prisma.RecoveryAttemptUpsertWithoutRecoveryCaseInput
+  disconnect?: Prisma.RecoveryAttemptWhereInput | boolean
+  delete?: Prisma.RecoveryAttemptWhereInput | boolean
+  connect?: Prisma.RecoveryAttemptWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.RecoveryAttemptUpdateToOneWithWhereWithoutRecoveryCaseInput, Prisma.RecoveryAttemptUpdateWithoutRecoveryCaseInput>, Prisma.RecoveryAttemptUncheckedUpdateWithoutRecoveryCaseInput>
 }
 
 export type RecoveryAttemptCreateWithoutRecoveryCaseInput = {
@@ -520,51 +505,15 @@ export type RecoveryAttemptCreateOrConnectWithoutRecoveryCaseInput = {
   create: Prisma.XOR<Prisma.RecoveryAttemptCreateWithoutRecoveryCaseInput, Prisma.RecoveryAttemptUncheckedCreateWithoutRecoveryCaseInput>
 }
 
-export type RecoveryAttemptCreateManyRecoveryCaseInputEnvelope = {
-  data: Prisma.RecoveryAttemptCreateManyRecoveryCaseInput | Prisma.RecoveryAttemptCreateManyRecoveryCaseInput[]
-  skipDuplicates?: boolean
-}
-
-export type RecoveryAttemptUpsertWithWhereUniqueWithoutRecoveryCaseInput = {
-  where: Prisma.RecoveryAttemptWhereUniqueInput
+export type RecoveryAttemptUpsertWithoutRecoveryCaseInput = {
   update: Prisma.XOR<Prisma.RecoveryAttemptUpdateWithoutRecoveryCaseInput, Prisma.RecoveryAttemptUncheckedUpdateWithoutRecoveryCaseInput>
   create: Prisma.XOR<Prisma.RecoveryAttemptCreateWithoutRecoveryCaseInput, Prisma.RecoveryAttemptUncheckedCreateWithoutRecoveryCaseInput>
+  where?: Prisma.RecoveryAttemptWhereInput
 }
 
-export type RecoveryAttemptUpdateWithWhereUniqueWithoutRecoveryCaseInput = {
-  where: Prisma.RecoveryAttemptWhereUniqueInput
+export type RecoveryAttemptUpdateToOneWithWhereWithoutRecoveryCaseInput = {
+  where?: Prisma.RecoveryAttemptWhereInput
   data: Prisma.XOR<Prisma.RecoveryAttemptUpdateWithoutRecoveryCaseInput, Prisma.RecoveryAttemptUncheckedUpdateWithoutRecoveryCaseInput>
-}
-
-export type RecoveryAttemptUpdateManyWithWhereWithoutRecoveryCaseInput = {
-  where: Prisma.RecoveryAttemptScalarWhereInput
-  data: Prisma.XOR<Prisma.RecoveryAttemptUpdateManyMutationInput, Prisma.RecoveryAttemptUncheckedUpdateManyWithoutRecoveryCaseInput>
-}
-
-export type RecoveryAttemptScalarWhereInput = {
-  AND?: Prisma.RecoveryAttemptScalarWhereInput | Prisma.RecoveryAttemptScalarWhereInput[]
-  OR?: Prisma.RecoveryAttemptScalarWhereInput[]
-  NOT?: Prisma.RecoveryAttemptScalarWhereInput | Prisma.RecoveryAttemptScalarWhereInput[]
-  id?: Prisma.IntFilter<"RecoveryAttempt"> | number
-  recoveryCaseId?: Prisma.IntFilter<"RecoveryAttempt"> | number
-  action?: Prisma.StringFilter<"RecoveryAttempt"> | string
-  razorpayLinkId?: Prisma.StringNullableFilter<"RecoveryAttempt"> | string | null
-  recoveryUrl?: Prisma.StringNullableFilter<"RecoveryAttempt"> | string | null
-  status?: Prisma.StringFilter<"RecoveryAttempt"> | string
-  errorMessage?: Prisma.StringNullableFilter<"RecoveryAttempt"> | string | null
-  createdAt?: Prisma.DateTimeFilter<"RecoveryAttempt"> | Date | string
-  updatedAt?: Prisma.DateTimeFilter<"RecoveryAttempt"> | Date | string
-}
-
-export type RecoveryAttemptCreateManyRecoveryCaseInput = {
-  id?: number
-  action: string
-  razorpayLinkId?: string | null
-  recoveryUrl?: string | null
-  status: string
-  errorMessage?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
 }
 
 export type RecoveryAttemptUpdateWithoutRecoveryCaseInput = {
@@ -578,17 +527,6 @@ export type RecoveryAttemptUpdateWithoutRecoveryCaseInput = {
 }
 
 export type RecoveryAttemptUncheckedUpdateWithoutRecoveryCaseInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  action?: Prisma.StringFieldUpdateOperationsInput | string
-  razorpayLinkId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  recoveryUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  status?: Prisma.StringFieldUpdateOperationsInput | string
-  errorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-}
-
-export type RecoveryAttemptUncheckedUpdateManyWithoutRecoveryCaseInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   action?: Prisma.StringFieldUpdateOperationsInput | string
   razorpayLinkId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
