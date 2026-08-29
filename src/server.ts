@@ -76,7 +76,7 @@ app.post(
       
       const stateResult: StateDecision = await validateState(eventType, paymentId);
       
-      // Save Payment Record for history
+      // 1. Save Payment Record for history
       if (stateResult.decision === 'VALID_FAILURE' || stateResult.decision === 'ALREADY_CAPTURED' || stateResult.decision === 'VALID_CAPTURE') {
         await prisma.paymentRecord.upsert({
           where: { paymentId },
@@ -93,9 +93,7 @@ app.post(
         });
       }
 
-      const recoveryCase = await createRecoveryCase(newEvent.id, paymentId, stateResult);
-
-      // --- CLOSE THE LOOP: Handle successful recovery payments ---
+      // 2. --- CLOSE THE LOOP: Intercept successful recovery payments FIRST ---
       if (stateResult.decision === 'VALID_CAPTURE') {
         const notes = stateResult.livePayment.notes;
         const recoveryCaseId = notes?.revive_recovery_case_id;
@@ -105,27 +103,29 @@ app.post(
           
           await prisma.recoveryCase.update({
             where: { id: parseInt(recoveryCaseId) },
-            data: { status: 'RECOVERY_LINK_CREATED' }
+            data: { status: 'AUTO_RECOVERED' as any }
           });
 
           await prisma.recoveryAttempt.updateMany({
             where: { recoveryCaseId: parseInt(recoveryCaseId) },
-            data: { status: 'SUCCESS' }
+            data: { status: 'SUCCESS' as any }
           });
 
-          console.log(`🎉🎉 LOOP CLOSED! Case ${recoveryCaseId} recovery completed!`);
+          console.log(`🎉🎉 LOOP CLOSED! Case ${recoveryCaseId} is now AUTO_RECOVERED!`);
         } else {
-          console.log('✅ Payment captured, but no recovery notes found. Normal payment, ignoring.');
+          console.log('✅ Normal payment captured (no recovery notes). Ignoring.');
         }
 
         await prisma.webhookEvent.update({
           where: { id: newEvent.id },
           data: { status: "PROCESSED", processedAt: new Date() },
         });
-        return; // Stop processing, it's a successful payment!
+        return; // Stop processing! Do not create a new RecoveryCase for a successful payment.
       }
 
-      // --- Normal Failed Payment Flow ---
+      // 3. --- Normal Failed Payment Flow ---
+      const recoveryCase = await createRecoveryCase(newEvent.id, paymentId, stateResult);
+
       if (recoveryCase.status !== 'OPEN') {
         await prisma.webhookEvent.update({
           where: { id: newEvent.id },

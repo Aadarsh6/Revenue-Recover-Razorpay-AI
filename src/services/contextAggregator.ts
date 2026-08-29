@@ -42,10 +42,10 @@ export async function aggregateContext(livePayment: LivePayment): Promise<Aggreg
     method: livePayment.method,
     status: livePayment.status,
     failureReason: livePayment.error_reason || 'unknown',
-    errorCode: livePayment.error_code || null,
-    errorStep: livePayment.error_step || null,
-    errorSource: livePayment.error_source || null,
-    errorDescription: livePayment.error_description || null
+    errorCode: null,
+    errorStep: null,
+    errorSource: null,
+    errorDescription: null
   };
 
   // 2. Real Customer History (Query our DB)

@@ -49,7 +49,7 @@ export async function evaluatePolicy(
     where: { id: recoveryCaseId }
   });
 
-  if (existingCase && (existingCase.status === 'PENDING_EXECUTION' || existingCase.status === 'AUTO_RECOVERED' || existingCase.status === 'PENDING_HUMAN_REVIEW')) {
+  if (existingCase && (existingCase.status === 'PENDING_EXECUTION' || existingCase.status === 'PENDING_HUMAN_REVIEW')) {
     return { 
       decision: 'BLOCK', 
       reason: `RecoveryCase ${recoveryCaseId} is already in status ${existingCase.status}.` 
