@@ -83,10 +83,10 @@ export class AIAnalystService {
       ${JSON.stringify(context, null, 2)}
 
       INSTRUCTIONS:
-      1. "diagnosis": Provide a short snake_case string identifying the issue (e.g., "payment_method_mismatch", "insufficient_funds", "transient_bank_error").
-      2. "evidence": An array of strings explaining WHY you made this diagnosis based on the context.
-      3. "recommended_action": MUST be exactly one of ["CREATE_RECOVERY_LINK", "SEND_INVOICE_NOTIFICATION", "ESCALATE_HUMAN", "BLOCK"]. If customer has a preferred method different from failed method, use "CREATE_RECOVERY_LINK".
-      4. "risk_level": MUST be exactly one of ["LOW", "MEDIUM", "HIGH"]. Low if customer has good history, High if unknown or suspicious.
+      1. "diagnosis": A short snake_case string identifying the issue (e.g., "payment_method_mismatch").
+      2. "evidence": An array of SHORT strings explaining WHY (e.g., ["Failed via card", "4 past UPI successes"]).
+      3. "recommended_action": MUST be exactly one of ["CREATE_RECOVERY_LINK", "SEND_INVOICE_NOTIFICATION", "ESCALATE_HUMAN", "BLOCK"].
+      4. "risk_level": MUST be exactly one of ["LOW", "MEDIUM", "HIGH"].
 
       OUTPUT FORMAT: Strict JSON matching this TypeScript interface:
       {
