@@ -291,6 +291,7 @@ app.post(
 );
 
 // API Route for the Dashboard
+// API Route for the Dashboard
 app.get("/api/cases", async (req: Request, res: Response) => {
   try {
     const cases = await prisma.recoveryCase.findMany({
@@ -303,8 +304,9 @@ app.get("/api/cases", async (req: Request, res: Response) => {
       }
     });
     res.json(cases);
-  } catch (error) {
-    res.status(500).json({ error: "Failed to fetch cases" });
+  } catch (error: any) {
+    console.error("[API Error] Failed to fetch cases:", error);
+    res.status(500).json({ error: "Failed to fetch cases", details: error.message });
   }
 });
 
