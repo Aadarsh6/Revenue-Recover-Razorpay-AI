@@ -1,12 +1,17 @@
 import { LivePayment } from './stateValidator';
+import prisma from '../lib/prismaClient';
 
 interface PaymentContext {
   id: string;
-  amount: number; // in rupees
+  amount: number;
   currency: string;
   method: string;
   status: string;
   failureReason: string;
+  errorCode: string | null;
+  errorStep: string | null;
+  errorSource: string | null;
+  errorDescription: string | null;
 }
 
 interface CustomerContext {
@@ -28,29 +33,45 @@ export interface AggregatedContext {
   recovery: RecoveryContext;
 }
 
-// --- The Aggregator Function ---
-export function aggregateContext(livePayment: LivePayment): AggregatedContext {
-  // 1. Extract Payment Facts (convert paise to rupees)
+export async function aggregateContext(livePayment: LivePayment): Promise<AggregatedContext> {
+  // 1. Real Payment Facts
   const payment: PaymentContext = {
     id: livePayment.id,
     amount: livePayment.amount / 100,
     currency: livePayment.currency,
     method: livePayment.method,
     status: livePayment.status,
-    failureReason: 'payment_cancelled' // Mocked for demo
+    failureReason: livePayment.error_reason || 'unknown',
+    errorCode: livePayment.error_code || null,
+    errorStep: livePayment.error_step || null,
+    errorSource: livePayment.error_source || null,
+    errorDescription: livePayment.error_description || null
   };
 
-  // 2. Extract/Query Customer Facts (Mocked for demo)
-  const customer: CustomerContext = {
-    contact: 'customer@example.com',
-    previousSuccessfulPayments: 4,
-    successfulMethods: {
-      upi: 4,
-      card: 0
-    }
+  // 2. Real Customer History (Query our DB)
+  const customerIdentifier = livePayment.contact || livePayment.email;
+  let customer: CustomerContext = {
+    contact: customerIdentifier || 'unknown',
+    previousSuccessfulPayments: 0,
+    successfulMethods: { upi: 0, card: 0 }
   };
 
-  // 3. Extract Recovery Facts (Mocked empty for now)
+  if (customerIdentifier) {
+    const pastPayments = await prisma.paymentRecord.findMany({
+      where: {
+        status: 'captured',
+        OR: [ { contact: customerIdentifier }, { email: customerIdentifier } ]
+      }
+    });
+
+    customer.previousSuccessfulPayments = pastPayments.length;
+    pastPayments.forEach(p => {
+      if (p.method === 'upi') customer.successfulMethods.upi++;
+      if (p.method === 'card') customer.successfulMethods.card++;
+    });
+  }
+
+  // 3. Recovery Context (Mocked empty for now)
   const recovery: RecoveryContext = {
     previousActions: []
   };
