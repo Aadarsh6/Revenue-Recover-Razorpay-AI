@@ -10,8 +10,8 @@ export interface AIAnalysisResult {
 export class AIAnalystService {
   private apiKey: string;
   private endpoint = 'https://api.groq.com/openai/v1/chat/completions';
-  private model = 'llama-3.3-70b-versatile'; // Switched to non-reasoning model
-
+  private model = 'openai/gpt-oss-20b';
+  
   constructor() {
     this.apiKey = process.env.GROQ_API_KEY || '';
     if (!this.apiKey) {

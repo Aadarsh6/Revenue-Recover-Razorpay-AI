@@ -147,7 +147,7 @@ app.post(
           evidence: aiResult.evidence,
           recommendedAction: aiResult.recommended_action,
           riskLevel: aiResult.risk_level,
-          model: 'llama-3.3-70b-versatile'
+          model: 'openai/gpt-oss-20b'
         },
         create: {
           recoveryCaseId: recoveryCase.id,
@@ -155,7 +155,7 @@ app.post(
           evidence: aiResult.evidence,
           recommendedAction: aiResult.recommended_action,
           riskLevel: aiResult.risk_level,
-          model: 'llama-3.3-70b-versatile'
+          model: 'openai/gpt-oss-20b'
         }
       });
 
