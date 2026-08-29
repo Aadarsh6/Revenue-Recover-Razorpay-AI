@@ -11,6 +11,7 @@ datasource db {
 enum RecoveryStatus {
   OPEN
   AI_PROCESSING 
+  PENDING_EXECUTION
   PENDING_HUMAN_REVIEW
   AUTO_RECOVERED
   BLOCKED
