@@ -22,26 +22,22 @@ app.post(
     const signature = req.headers["x-razorpay-signature"];
     const eventId = req.headers["x-razorpay-event-id"];
 
-    // Validate headers
     if (typeof signature !== "string" || typeof eventId !== "string") {
       return res.status(400).send("Missing webhook headers");
     }
 
-    // 1. Signature Verification (Security Layer)
     const expectedSignature = crypto
       .createHmac("sha256", process.env.RAZORPAY_WEBHOOK_SECRET as string)
       .update(rawBody)
       .digest("hex");
 
-    const skipSignatureValidation =
-      process.env.SKIP_SIGNATURE_VALIDATION === "true";
+    const skipSignatureValidation = process.env.SKIP_SIGNATURE_VALIDATION === "true";
 
     if (!skipSignatureValidation && signature !== expectedSignature) {
       console.error("Invalid signature, rejecting webhook");
       return res.status(400).send("Invalid signature");
     }
 
-    // Parse body only AFTER signature verification
     let body;
     try {
       body = JSON.parse(rawBody);
@@ -49,11 +45,9 @@ app.post(
       return res.status(400).send("Invalid JSON");
     }
 
-    // Extract the exact string and paymentId before passing to the validator
     const eventType: string = body.event;
     const paymentId: string = body.payload.payment.entity.id;
 
-    // 2. Idempotency via DB Constraint (Race Condition Fix)
     let newEvent;
     try {
       newEvent = await prisma.webhookEvent.create({
@@ -65,21 +59,14 @@ app.post(
         },
       });
     } catch (error) {
-      if (
-        error instanceof PrismaClientKnownRequestError &&
-        error.code === "P2002"
-      ) {
+      if (error instanceof PrismaClientKnownRequestError && error.code === "P2002") {
         console.error(`Duplicate webhook received: ${eventId}`);
-        return res.status(200).json({
-          status: "duplicate ignored",
-        });
+        return res.status(200).json({ status: "duplicate ignored" });
       }
-
       console.error("Failed to create webhook event:", error);
       return res.status(500).send("Internal server error");
     }
 
-    // 3. Acknowledge receipt immediately
     res.status(200).json({ status: "ok" });
 
     // 4. Asynchronous processing
@@ -87,10 +74,10 @@ app.post(
       console.log(`Processing event ${eventId}(${eventType})`);
       
       const stateResult: StateDecision = await validateState(eventType, paymentId);
-      // Save Payment Record for future history tracking
+      
       await prisma.paymentRecord.upsert({
         where: { paymentId },
-        update: {}, // If exists, do nothing
+        update: {},
         create: {
           paymentId,
           contact: stateResult.decision === 'VALID_FAILURE' || stateResult.decision === 'ALREADY_CAPTURED' ? stateResult.livePayment.contact : null,
@@ -123,24 +110,19 @@ app.post(
 
       console.log(`➡️ Recovery Case ${recoveryCase.id} OPEN. Proceeding to Context Aggregation...`);
 
-      // 1. Aggregate Context (Now async)
       const context = await aggregateContext(stateResult.livePayment);
       console.log(`Context built for ${context.payment.id}. Real facts extracted.`);
 
-      // Step 1: Update Status to AI_PROCESSING
       await prisma.recoveryCase.update({
         where: { id: recoveryCase.id },
         data: { status: 'AI_PROCESSING' }
       });
 
-      // Step 2: Call AI Analyst
-           // Step 2: Call AI Analyst
       console.log("🧠 Sending clean context to Groq AI for diagnosis...");
       const aiService = new AIAnalystService();
       const aiResult = await aiService.analyzeFailure(context);
       console.log("🤖 AI Recommendation:", aiResult);
       
-      // Step 3: Persist the result in AIAnalysis table (Upsert to handle any retries safely)
       await prisma.aIAnalysis.upsert({
         where: { recoveryCaseId: recoveryCase.id },
         update: {
@@ -160,7 +142,6 @@ app.post(
         }
       });
 
-      // Step 4: Update RecoveryCase with quick summary fields
       await prisma.recoveryCase.update({
         where: { id: recoveryCase.id },
         data: {
@@ -169,79 +150,11 @@ app.post(
         }
       });
 
-            // Step 4: Update RecoveryCase with quick summary fields
-      await prisma.recoveryCase.update({
-        where: { id: recoveryCase.id },
-        data: {
-          aiDiagnosis: aiResult.diagnosis,
-          aiAction: aiResult.recommended_action
-        }
-      });
-
-      // Step 5: Pass to Policy Engine
       console.log("⚖️ Evaluating Policy Engine...");
-      const policyResult = await evaluatePolicy(recoveryCase.id, stateResult.livePayment, aiResult);
+      const policyResult = await evaluatePolicy(recoveryCase.id, paymentId, aiResult);
       
       console.log(`Policy Decision: ${policyResult.decision} - ${policyResult.reason}`);
 
-      // Step 6: Apply Policy Decision
-      if (policyResult.decision === 'BLOCK' || policyResult.decision === 'HUMAN') {
-        await prisma.recoveryCase.update({
-          where: { id: recoveryCase.id },
-          data: { 
-            status: policyResult.decision === 'BLOCK' ? 'BLOCKED' : 'PENDING_HUMAN_REVIEW',
-            policyDecision: policyResult.decision
-          }
-        });
-        console.log(`🛑 Pipeline stopped by Policy Engine. Case marked as ${policyResult.decision}.`);
-      } else {
-        await prisma.recoveryCase.update({
-          where: { id: recoveryCase.id },
-          data: { 
-            status: 'AUTO_RECOVERED', // Will be updated by Execution Layer later
-            policyDecision: policyResult.decision
-          }
-        });
-        console.log("✅ Policy Engine authorized AUTONOMOUS execution. Proceeding to Execution Layer...");
-      }
-
-      // Step 4: Persist the result in AIAnalysis table
-      await prisma.aIAnalysis.upsert({
-        where: { recoveryCaseId: recoveryCase.id },
-        update: {
-          diagnosis: aiResult.diagnosis,
-          evidence: aiResult.evidence,
-          recommendedAction: aiResult.recommended_action,
-          riskLevel: aiResult.risk_level,
-          model: 'openai/gpt-oss-20b'
-        },
-        create: {
-          recoveryCaseId: recoveryCase.id,
-          diagnosis: aiResult.diagnosis,
-          evidence: aiResult.evidence,
-          recommendedAction: aiResult.recommended_action,
-          riskLevel: aiResult.risk_level,
-          model: 'openai/gpt-oss-20b'
-        }
-      });
-
-      // Step 5: Update RecoveryCase with quick summary fields
-      await prisma.recoveryCase.update({
-        where: { id: recoveryCase.id },
-        data: {
-          aiDiagnosis: aiResult.diagnosis,
-          aiAction: aiResult.recommended_action
-        }
-      });
-
-      // Step 6: Pass to Policy Engine
-      console.log("⚖️ Evaluating Policy Engine...");
-      // Pass paymentId so Policy Engine can fetch fresh state
-      const PolicyResult = await evaluatePolicy(recoveryCase.id, paymentId, aiResult);
-      
-      console.log(`Policy Decision: ${policyResult.decision} - ${policyResult.reason}`);
-
-      // Step 7: Apply Policy Decision & Persist to DB
       if (policyResult.decision === 'BLOCK') {
         await prisma.recoveryCase.update({
           where: { id: recoveryCase.id },
@@ -255,7 +168,6 @@ app.post(
         });
         console.log(`👤 Escalated to HUMAN review by Policy Engine.`);
       } else {
-        // AUTO: Transition to PENDING_EXECUTION
         await prisma.recoveryCase.update({
           where: { id: recoveryCase.id },
           data: { 
@@ -264,18 +176,7 @@ app.post(
           }
         });
         console.log("✅ Policy Engine authorized AUTONOMOUS execution. Case marked as PENDING_EXECUTION.");
-        
-        // Execution Layer will go here next!
       }
-
-      await prisma.webhookEvent.update({
-        where: { id: newEvent.id },
-        data: { 
-          status: "PROCESSED",
-          processedAt: new Date()
-        },
-      });
-      console.log(`Successfully Processed Event: ${eventId}`);
 
       await prisma.webhookEvent.update({
         where: { id: newEvent.id },

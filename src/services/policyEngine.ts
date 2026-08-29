@@ -39,7 +39,8 @@ export async function evaluatePolicy(
         reason: `🛑 RACE CONDITION CAUGHT: Live payment status is now ${freshLivePayment.status}. Aborting to prevent duplicate collection.` 
       };
     }
-  } catch (error) {
+   } catch (error: any) {
+    console.error("[PolicyEngine] Razorpay API Error:", error.error?.description || error.message);
     return { decision: 'BLOCK', reason: 'Failed to re-fetch live state from Razorpay. Aborting for safety.' };
   }
 
