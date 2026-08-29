@@ -30,10 +30,10 @@ model RecoveryCase{
   webhookEventId      Int             @unique //link to trigger event
   status              RecoveryStatus  @default(OPEN)
   liveState           String          //The state razorpay will return
-  aiDiagnosis         String?         // Filled by AI Analyst later
-  aiAction            String?         // Filled by AI Analyst later
-  policyDecision      String?         // Filled by Policy Engine later
-  ceratedAt           DateTime       @default(now())
+  aiDiagnosis         String?         // Filled by AI Analyst later Added for quick summary  
+  aiAction            String?         // Filled by AI Analyst later Added for quick summary
+  policyDecision      String?         // Filled by Policy Engine later  Added for quick summary
+  createdAt           DateTime       @default(now())
   updatedAt           DateTime       @updatedAt
 
   webhookEvent        WebhookEvent @relation(fields: [webhookEventId], references: [id])

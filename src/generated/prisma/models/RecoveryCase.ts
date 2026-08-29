@@ -45,7 +45,7 @@ export type RecoveryCaseMinAggregateOutputType = {
   aiDiagnosis: string | null
   aiAction: string | null
   policyDecision: string | null
-  ceratedAt: Date | null
+  createdAt: Date | null
   updatedAt: Date | null
 }
 
@@ -58,7 +58,7 @@ export type RecoveryCaseMaxAggregateOutputType = {
   aiDiagnosis: string | null
   aiAction: string | null
   policyDecision: string | null
-  ceratedAt: Date | null
+  createdAt: Date | null
   updatedAt: Date | null
 }
 
@@ -71,7 +71,7 @@ export type RecoveryCaseCountAggregateOutputType = {
   aiDiagnosis: number
   aiAction: number
   policyDecision: number
-  ceratedAt: number
+  createdAt: number
   updatedAt: number
   _all: number
 }
@@ -96,7 +96,7 @@ export type RecoveryCaseMinAggregateInputType = {
   aiDiagnosis?: true
   aiAction?: true
   policyDecision?: true
-  ceratedAt?: true
+  createdAt?: true
   updatedAt?: true
 }
 
@@ -109,7 +109,7 @@ export type RecoveryCaseMaxAggregateInputType = {
   aiDiagnosis?: true
   aiAction?: true
   policyDecision?: true
-  ceratedAt?: true
+  createdAt?: true
   updatedAt?: true
 }
 
@@ -122,7 +122,7 @@ export type RecoveryCaseCountAggregateInputType = {
   aiDiagnosis?: true
   aiAction?: true
   policyDecision?: true
-  ceratedAt?: true
+  createdAt?: true
   updatedAt?: true
   _all?: true
 }
@@ -222,7 +222,7 @@ export type RecoveryCaseGroupByOutputType = {
   aiDiagnosis: string | null
   aiAction: string | null
   policyDecision: string | null
-  ceratedAt: Date
+  createdAt: Date
   updatedAt: Date
   _count: RecoveryCaseCountAggregateOutputType | null
   _avg: RecoveryCaseAvgAggregateOutputType | null
@@ -258,7 +258,7 @@ export type RecoveryCaseWhereInput = {
   aiDiagnosis?: Prisma.StringNullableFilter<"RecoveryCase"> | string | null
   aiAction?: Prisma.StringNullableFilter<"RecoveryCase"> | string | null
   policyDecision?: Prisma.StringNullableFilter<"RecoveryCase"> | string | null
-  ceratedAt?: Prisma.DateTimeFilter<"RecoveryCase"> | Date | string
+  createdAt?: Prisma.DateTimeFilter<"RecoveryCase"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"RecoveryCase"> | Date | string
   webhookEvent?: Prisma.XOR<Prisma.WebhookEventScalarRelationFilter, Prisma.WebhookEventWhereInput>
   aiAnalysis?: Prisma.AIAnalysisListRelationFilter
@@ -273,7 +273,7 @@ export type RecoveryCaseOrderByWithRelationInput = {
   aiDiagnosis?: Prisma.SortOrderInput | Prisma.SortOrder
   aiAction?: Prisma.SortOrderInput | Prisma.SortOrder
   policyDecision?: Prisma.SortOrderInput | Prisma.SortOrder
-  ceratedAt?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   webhookEvent?: Prisma.WebhookEventOrderByWithRelationInput
   aiAnalysis?: Prisma.AIAnalysisOrderByRelationAggregateInput
@@ -291,7 +291,7 @@ export type RecoveryCaseWhereUniqueInput = Prisma.AtLeast<{
   aiDiagnosis?: Prisma.StringNullableFilter<"RecoveryCase"> | string | null
   aiAction?: Prisma.StringNullableFilter<"RecoveryCase"> | string | null
   policyDecision?: Prisma.StringNullableFilter<"RecoveryCase"> | string | null
-  ceratedAt?: Prisma.DateTimeFilter<"RecoveryCase"> | Date | string
+  createdAt?: Prisma.DateTimeFilter<"RecoveryCase"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"RecoveryCase"> | Date | string
   webhookEvent?: Prisma.XOR<Prisma.WebhookEventScalarRelationFilter, Prisma.WebhookEventWhereInput>
   aiAnalysis?: Prisma.AIAnalysisListRelationFilter
@@ -306,7 +306,7 @@ export type RecoveryCaseOrderByWithAggregationInput = {
   aiDiagnosis?: Prisma.SortOrderInput | Prisma.SortOrder
   aiAction?: Prisma.SortOrderInput | Prisma.SortOrder
   policyDecision?: Prisma.SortOrderInput | Prisma.SortOrder
-  ceratedAt?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.RecoveryCaseCountOrderByAggregateInput
   _avg?: Prisma.RecoveryCaseAvgOrderByAggregateInput
@@ -327,7 +327,7 @@ export type RecoveryCaseScalarWhereWithAggregatesInput = {
   aiDiagnosis?: Prisma.StringNullableWithAggregatesFilter<"RecoveryCase"> | string | null
   aiAction?: Prisma.StringNullableWithAggregatesFilter<"RecoveryCase"> | string | null
   policyDecision?: Prisma.StringNullableWithAggregatesFilter<"RecoveryCase"> | string | null
-  ceratedAt?: Prisma.DateTimeWithAggregatesFilter<"RecoveryCase"> | Date | string
+  createdAt?: Prisma.DateTimeWithAggregatesFilter<"RecoveryCase"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"RecoveryCase"> | Date | string
 }
 
@@ -338,7 +338,7 @@ export type RecoveryCaseCreateInput = {
   aiDiagnosis?: string | null
   aiAction?: string | null
   policyDecision?: string | null
-  ceratedAt?: Date | string
+  createdAt?: Date | string
   updatedAt?: Date | string
   webhookEvent: Prisma.WebhookEventCreateNestedOneWithoutRecoveryCasesInput
   aiAnalysis?: Prisma.AIAnalysisCreateNestedManyWithoutRecoveryCaseInput
@@ -353,7 +353,7 @@ export type RecoveryCaseUncheckedCreateInput = {
   aiDiagnosis?: string | null
   aiAction?: string | null
   policyDecision?: string | null
-  ceratedAt?: Date | string
+  createdAt?: Date | string
   updatedAt?: Date | string
   aiAnalysis?: Prisma.AIAnalysisUncheckedCreateNestedManyWithoutRecoveryCaseInput
 }
@@ -365,7 +365,7 @@ export type RecoveryCaseUpdateInput = {
   aiDiagnosis?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   aiAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   policyDecision?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ceratedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   webhookEvent?: Prisma.WebhookEventUpdateOneRequiredWithoutRecoveryCasesNestedInput
   aiAnalysis?: Prisma.AIAnalysisUpdateManyWithoutRecoveryCaseNestedInput
@@ -380,7 +380,7 @@ export type RecoveryCaseUncheckedUpdateInput = {
   aiDiagnosis?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   aiAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   policyDecision?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ceratedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   aiAnalysis?: Prisma.AIAnalysisUncheckedUpdateManyWithoutRecoveryCaseNestedInput
 }
@@ -394,7 +394,7 @@ export type RecoveryCaseCreateManyInput = {
   aiDiagnosis?: string | null
   aiAction?: string | null
   policyDecision?: string | null
-  ceratedAt?: Date | string
+  createdAt?: Date | string
   updatedAt?: Date | string
 }
 
@@ -405,7 +405,7 @@ export type RecoveryCaseUpdateManyMutationInput = {
   aiDiagnosis?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   aiAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   policyDecision?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ceratedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -418,7 +418,7 @@ export type RecoveryCaseUncheckedUpdateManyInput = {
   aiDiagnosis?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   aiAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   policyDecision?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ceratedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -431,7 +431,7 @@ export type RecoveryCaseCountOrderByAggregateInput = {
   aiDiagnosis?: Prisma.SortOrder
   aiAction?: Prisma.SortOrder
   policyDecision?: Prisma.SortOrder
-  ceratedAt?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
@@ -449,7 +449,7 @@ export type RecoveryCaseMaxOrderByAggregateInput = {
   aiDiagnosis?: Prisma.SortOrder
   aiAction?: Prisma.SortOrder
   policyDecision?: Prisma.SortOrder
-  ceratedAt?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
@@ -462,7 +462,7 @@ export type RecoveryCaseMinOrderByAggregateInput = {
   aiDiagnosis?: Prisma.SortOrder
   aiAction?: Prisma.SortOrder
   policyDecision?: Prisma.SortOrder
-  ceratedAt?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
@@ -573,7 +573,7 @@ export type RecoveryCaseCreateWithoutWebhookEventInput = {
   aiDiagnosis?: string | null
   aiAction?: string | null
   policyDecision?: string | null
-  ceratedAt?: Date | string
+  createdAt?: Date | string
   updatedAt?: Date | string
   aiAnalysis?: Prisma.AIAnalysisCreateNestedManyWithoutRecoveryCaseInput
 }
@@ -586,7 +586,7 @@ export type RecoveryCaseUncheckedCreateWithoutWebhookEventInput = {
   aiDiagnosis?: string | null
   aiAction?: string | null
   policyDecision?: string | null
-  ceratedAt?: Date | string
+  createdAt?: Date | string
   updatedAt?: Date | string
   aiAnalysis?: Prisma.AIAnalysisUncheckedCreateNestedManyWithoutRecoveryCaseInput
 }
@@ -629,7 +629,7 @@ export type RecoveryCaseScalarWhereInput = {
   aiDiagnosis?: Prisma.StringNullableFilter<"RecoveryCase"> | string | null
   aiAction?: Prisma.StringNullableFilter<"RecoveryCase"> | string | null
   policyDecision?: Prisma.StringNullableFilter<"RecoveryCase"> | string | null
-  ceratedAt?: Prisma.DateTimeFilter<"RecoveryCase"> | Date | string
+  createdAt?: Prisma.DateTimeFilter<"RecoveryCase"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"RecoveryCase"> | Date | string
 }
 
@@ -640,7 +640,7 @@ export type RecoveryCaseCreateWithoutAiAnalysisInput = {
   aiDiagnosis?: string | null
   aiAction?: string | null
   policyDecision?: string | null
-  ceratedAt?: Date | string
+  createdAt?: Date | string
   updatedAt?: Date | string
   webhookEvent: Prisma.WebhookEventCreateNestedOneWithoutRecoveryCasesInput
 }
@@ -654,7 +654,7 @@ export type RecoveryCaseUncheckedCreateWithoutAiAnalysisInput = {
   aiDiagnosis?: string | null
   aiAction?: string | null
   policyDecision?: string | null
-  ceratedAt?: Date | string
+  createdAt?: Date | string
   updatedAt?: Date | string
 }
 
@@ -681,7 +681,7 @@ export type RecoveryCaseUpdateWithoutAiAnalysisInput = {
   aiDiagnosis?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   aiAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   policyDecision?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ceratedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   webhookEvent?: Prisma.WebhookEventUpdateOneRequiredWithoutRecoveryCasesNestedInput
 }
@@ -695,7 +695,7 @@ export type RecoveryCaseUncheckedUpdateWithoutAiAnalysisInput = {
   aiDiagnosis?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   aiAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   policyDecision?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ceratedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -707,7 +707,7 @@ export type RecoveryCaseCreateManyWebhookEventInput = {
   aiDiagnosis?: string | null
   aiAction?: string | null
   policyDecision?: string | null
-  ceratedAt?: Date | string
+  createdAt?: Date | string
   updatedAt?: Date | string
 }
 
@@ -718,7 +718,7 @@ export type RecoveryCaseUpdateWithoutWebhookEventInput = {
   aiDiagnosis?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   aiAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   policyDecision?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ceratedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   aiAnalysis?: Prisma.AIAnalysisUpdateManyWithoutRecoveryCaseNestedInput
 }
@@ -731,7 +731,7 @@ export type RecoveryCaseUncheckedUpdateWithoutWebhookEventInput = {
   aiDiagnosis?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   aiAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   policyDecision?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ceratedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   aiAnalysis?: Prisma.AIAnalysisUncheckedUpdateManyWithoutRecoveryCaseNestedInput
 }
@@ -744,7 +744,7 @@ export type RecoveryCaseUncheckedUpdateManyWithoutWebhookEventInput = {
   aiDiagnosis?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   aiAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   policyDecision?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ceratedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -788,7 +788,7 @@ export type RecoveryCaseSelect<ExtArgs extends runtime.Types.Extensions.Internal
   aiDiagnosis?: boolean
   aiAction?: boolean
   policyDecision?: boolean
-  ceratedAt?: boolean
+  createdAt?: boolean
   updatedAt?: boolean
   webhookEvent?: boolean | Prisma.WebhookEventDefaultArgs<ExtArgs>
   aiAnalysis?: boolean | Prisma.RecoveryCase$aiAnalysisArgs<ExtArgs>
@@ -804,7 +804,7 @@ export type RecoveryCaseSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   aiDiagnosis?: boolean
   aiAction?: boolean
   policyDecision?: boolean
-  ceratedAt?: boolean
+  createdAt?: boolean
   updatedAt?: boolean
   webhookEvent?: boolean | Prisma.WebhookEventDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["recoveryCase"]>
@@ -818,7 +818,7 @@ export type RecoveryCaseSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   aiDiagnosis?: boolean
   aiAction?: boolean
   policyDecision?: boolean
-  ceratedAt?: boolean
+  createdAt?: boolean
   updatedAt?: boolean
   webhookEvent?: boolean | Prisma.WebhookEventDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["recoveryCase"]>
@@ -832,11 +832,11 @@ export type RecoveryCaseSelectScalar = {
   aiDiagnosis?: boolean
   aiAction?: boolean
   policyDecision?: boolean
-  ceratedAt?: boolean
+  createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type RecoveryCaseOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "paymentId" | "webhookEventId" | "status" | "liveState" | "aiDiagnosis" | "aiAction" | "policyDecision" | "ceratedAt" | "updatedAt", ExtArgs["result"]["recoveryCase"]>
+export type RecoveryCaseOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "paymentId" | "webhookEventId" | "status" | "liveState" | "aiDiagnosis" | "aiAction" | "policyDecision" | "createdAt" | "updatedAt", ExtArgs["result"]["recoveryCase"]>
 export type RecoveryCaseInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   webhookEvent?: boolean | Prisma.WebhookEventDefaultArgs<ExtArgs>
   aiAnalysis?: boolean | Prisma.RecoveryCase$aiAnalysisArgs<ExtArgs>
@@ -864,7 +864,7 @@ export type $RecoveryCasePayload<ExtArgs extends runtime.Types.Extensions.Intern
     aiDiagnosis: string | null
     aiAction: string | null
     policyDecision: string | null
-    ceratedAt: Date
+    createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["recoveryCase"]>
   composites: {}
@@ -1299,7 +1299,7 @@ export interface RecoveryCaseFieldRefs {
   readonly aiDiagnosis: Prisma.FieldRef<"RecoveryCase", 'String'>
   readonly aiAction: Prisma.FieldRef<"RecoveryCase", 'String'>
   readonly policyDecision: Prisma.FieldRef<"RecoveryCase", 'String'>
-  readonly ceratedAt: Prisma.FieldRef<"RecoveryCase", 'DateTime'>
+  readonly createdAt: Prisma.FieldRef<"RecoveryCase", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"RecoveryCase", 'DateTime'>
 }
     

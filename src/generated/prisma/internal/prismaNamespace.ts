@@ -764,7 +764,7 @@ export const RecoveryCaseScalarFieldEnum = {
   aiDiagnosis: 'aiDiagnosis',
   aiAction: 'aiAction',
   policyDecision: 'policyDecision',
-  ceratedAt: 'ceratedAt',
+  createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 

@@ -19,6 +19,10 @@ export class AIAnalystService {
     }
   }
 
+  
+
+
+
   async analyzeFailure(context: AggregatedContext): Promise<AIAnalysisResult> {
     const prompt = this.constructPrompt(context);
 
@@ -49,12 +53,14 @@ export class AIAnalystService {
       const data = await response.json();
       let responseText = data.choices[0].message.content;
 
-      // Manual extraction: find the first { and the last } 
-      const firstBrace = responseText.indexOf('{');
-      const lastBrace = responseText.lastIndexOf('}');
+    //    console.log("[AI Analyst] Raw Groq Response:", responseText);
+
+      // Manual extraction: find the LAST { and the LAST } to skip reasoning text
+      const lastBrace = responseText.lastIndexOf('{');
+      const lastClosingBrace = responseText.lastIndexOf('}');
       
-      if (firstBrace !== -1 && lastBrace !== -1) {
-        responseText = responseText.substring(firstBrace, lastBrace + 1);
+      if (lastBrace !== -1 && lastClosingBrace !== -1) {
+        responseText = responseText.substring(lastBrace, lastClosingBrace + 1);
       }
 
       const parsedResult = JSON.parse(responseText) as AIAnalysisResult;

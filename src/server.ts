@@ -85,8 +85,8 @@ app.post(
     try {
       console.log(`Processing event ${eventId}(${eventType})`);
       
-      // Save Payment Record for future history tracking
       const stateResult: StateDecision = await validateState(eventType, paymentId);
+      // Save Payment Record for future history tracking
       await prisma.paymentRecord.upsert({
         where: { paymentId },
         update: {}, // If exists, do nothing
@@ -126,22 +126,29 @@ app.post(
       const context = await aggregateContext(stateResult.livePayment);
       console.log(`Context built for ${context.payment.id}. Real facts extracted.`);
 
-      // 2. AI Analyst
-      console.log("🧠 Sending clean context to Groq AI for diagnosis...");
-      const aiService = new AIAnalystService();
-      const aiResult = await aiService.analyzeFailure(context);
-
-      console.log("🤖 AI Recommendation:", aiResult);
-      
-      // Update Recovery Case Status
+      // Step 1: Update Status to AI_PROCESSING
       await prisma.recoveryCase.update({
         where: { id: recoveryCase.id },
         data: { status: 'AI_PROCESSING' }
       });
 
-      // 3. Create AI Audit Record
-      await prisma.aIAnalysis.create({
-        data: {
+      // Step 2: Call AI Analyst
+      console.log("🧠 Sending clean context to Groq AI for diagnosis...");
+      const aiService = new AIAnalystService();
+      const aiResult = await aiService.analyzeFailure(context);
+      console.log("🤖 AI Recommendation:", aiResult);
+      
+      // Step 3: Persist the result in AIAnalysis table (Upsert to handle any retries safely)
+      await prisma.aIAnalysis.upsert({
+        where: { recoveryCaseId: recoveryCase.id },
+        update: {
+          diagnosis: aiResult.diagnosis,
+          evidence: aiResult.evidence,
+          recommendedAction: aiResult.recommended_action,
+          riskLevel: aiResult.risk_level,
+          model: 'qwen/qwen3.6-27b'
+        },
+        create: {
           recoveryCaseId: recoveryCase.id,
           diagnosis: aiResult.diagnosis,
           evidence: aiResult.evidence,
@@ -150,6 +157,27 @@ app.post(
           model: 'qwen/qwen3.6-27b'
         }
       });
+
+      // Step 4: Update RecoveryCase with quick summary fields
+      await prisma.recoveryCase.update({
+        where: { id: recoveryCase.id },
+        data: {
+          aiDiagnosis: aiResult.diagnosis,
+          aiAction: aiResult.recommended_action
+        }
+      });
+
+      // 3. Create AI Audit Record
+      // await prisma.aIAnalysis.create({
+      //   data: {
+      //     recoveryCaseId: recoveryCase.id,
+      //     diagnosis: aiResult.diagnosis,
+      //     evidence: aiResult.evidence,
+      //     recommendedAction: aiResult.recommended_action,
+      //     riskLevel: aiResult.risk_level,
+      //     model: 'qwen/qwen3.6-27b'
+      //   }
+      // });
 
       await prisma.webhookEvent.update({
         where: { id: newEvent.id },
