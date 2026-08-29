@@ -105,6 +105,8 @@ export class AIAnalystService {
       result &&
       typeof result.diagnosis === 'string' &&
       Array.isArray(result.evidence) &&
+      // Ensure every item in the array is a string
+      result.evidence.every((item: any) => typeof item === 'string') &&
       validActions.includes(result.recommended_action) &&
       validRisks.includes(result.risk_level)
     );
