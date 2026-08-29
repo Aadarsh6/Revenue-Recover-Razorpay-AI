@@ -8,6 +8,7 @@ import { createRecoveryCase } from "./services/recoveryCaseService";
 import { aggregateContext } from "./services/contextAggregator";
 import { AIAnalystService } from "./services/aiAnalyst";
 import { evaluatePolicy } from "./services/policyEngine";
+import { ExecutionLayer } from "./services/executionLayer";
 
 dotenv.config();
 
