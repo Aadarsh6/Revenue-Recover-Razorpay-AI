@@ -84,14 +84,25 @@ app.post(
     // 4. Asynchronous processing
     try {
       console.log(`Processing event ${eventId}(${eventType})`);
-
-      // Validate state against live Razorpay API
-      const stateResult: StateDecision = await validateState(eventType, paymentId);
       
-      // Create Recovery Case (The Domain Object)
+      // Save Payment Record for future history tracking
+      const stateResult: StateDecision = await validateState(eventType, paymentId);
+      await prisma.paymentRecord.upsert({
+        where: { paymentId },
+        update: {}, // If exists, do nothing
+        create: {
+          paymentId,
+          contact: stateResult.decision === 'VALID_FAILURE' || stateResult.decision === 'ALREADY_CAPTURED' ? stateResult.livePayment.contact : null,
+          email: stateResult.decision === 'VALID_FAILURE' || stateResult.decision === 'ALREADY_CAPTURED' ? stateResult.livePayment.email : null,
+          amount: stateResult.decision === 'VALID_FAILURE' || stateResult.decision === 'ALREADY_CAPTURED' ? stateResult.livePayment.amount : 0,
+          currency: stateResult.decision === 'VALID_FAILURE' || stateResult.decision === 'ALREADY_CAPTURED' ? stateResult.livePayment.currency : 'INR',
+          method: stateResult.decision === 'VALID_FAILURE' || stateResult.decision === 'ALREADY_CAPTURED' ? stateResult.livePayment.method : 'unknown',
+          status: stateResult.decision === 'VALID_FAILURE' || stateResult.decision === 'ALREADY_CAPTURED' ? stateResult.livePayment.status : 'unknown',
+        }
+      });
+
       const recoveryCase = await createRecoveryCase(newEvent.id, paymentId, stateResult);
 
-      // Route based on the Recovery Case status
       if (recoveryCase.status !== 'OPEN') {
         await prisma.webhookEvent.update({
           where: { id: newEvent.id },
@@ -104,33 +115,39 @@ app.post(
         return; 
       }
 
-           // If we reach here, the case is OPEN.
-      console.log(`➡️ Recovery Case ${recoveryCase.id} OPEN. Proceeding to Context Aggregation...`);
-
-      // Explicit Type Guard: TypeScript needs to know for sure that livePayment exists
       if (stateResult.decision !== 'VALID_FAILURE') {
         console.error('System Error: Case is OPEN but state is not VALID_FAILURE. Aborting.');
         return;
       }
 
-      // 1. Aggregate Context (Raw Data -> Clean Facts)
-      const context = aggregateContext(stateResult.livePayment);
-      console.log(`Context built for ${context.payment.id}. Facts extracted.`);
+      console.log(`➡️ Recovery Case ${recoveryCase.id} OPEN. Proceeding to Context Aggregation...`);
 
-      // 2. AI Analyst (Facts -> Recommendation)
-      console.log("🧠 Sending clean context to Qwen AI for diagnosis...");
+      // 1. Aggregate Context (Now async)
+      const context = await aggregateContext(stateResult.livePayment);
+      console.log(`Context built for ${context.payment.id}. Real facts extracted.`);
+
+      // 2. AI Analyst
+      console.log("🧠 Sending clean context to Groq AI for diagnosis...");
       const aiService = new AIAnalystService();
       const aiResult = await aiService.analyzeFailure(context);
 
       console.log("🤖 AI Recommendation:", aiResult);
       
-      // Update Recovery Case with AI output
+      // Update Recovery Case Status
       await prisma.recoveryCase.update({
         where: { id: recoveryCase.id },
+        data: { status: 'AI_PROCESSING' }
+      });
+
+      // 3. Create AI Audit Record
+      await prisma.aIAnalysis.create({
         data: {
-          aiDiagnosis: aiResult.diagnosis,
-          aiAction: aiResult.recommended_action,
-          status: 'AI_PROCESSING'
+          recoveryCaseId: recoveryCase.id,
+          diagnosis: aiResult.diagnosis,
+          evidence: aiResult.evidence,
+          recommendedAction: aiResult.recommended_action,
+          riskLevel: aiResult.risk_level,
+          model: 'qwen/qwen3.6-27b'
         }
       });
 
