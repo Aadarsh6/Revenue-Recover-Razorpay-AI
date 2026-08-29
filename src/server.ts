@@ -167,7 +167,8 @@ app.post(
           data: { status: 'PENDING_HUMAN_REVIEW', policyDecision: 'HUMAN' }
         });
         console.log(`👤 Escalated to HUMAN review by Policy Engine.`);
-      } else {
+            } else {
+        // AUTO: Transition to PENDING_EXECUTION
         await prisma.recoveryCase.update({
           where: { id: recoveryCase.id },
           data: { 
@@ -176,6 +177,25 @@ app.post(
           }
         });
         console.log("✅ Policy Engine authorized AUTONOMOUS execution. Case marked as PENDING_EXECUTION.");
+        
+        // --- EXECUTION LAYER ---
+        const executor = new ExecutionLayer();
+        const executionResult = await executor.executeAction(stateResult.livePayment, aiResult);
+
+        if (executionResult.success) {
+          await prisma.recoveryCase.update({
+            where: { id: recoveryCase.id },
+            data: { status: 'AUTO_RECOVERED' }
+          });
+          console.log(`🎉 Recovery Case ${recoveryCase.id} successfully AUTO_RECOVERED!`);
+        } else {
+          // If Razorpay API fails, escalate to human
+          await prisma.recoveryCase.update({
+            where: { id: recoveryCase.id },
+            data: { status: 'PENDING_HUMAN_REVIEW' } // Override to human because execution failed
+          });
+          console.log(`⚠️ Execution failed. Case ${recoveryCase.id} escalated to HUMAN review.`);
+        }
       }
 
       await prisma.webhookEvent.update({
