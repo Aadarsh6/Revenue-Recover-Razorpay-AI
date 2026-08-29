@@ -290,5 +290,23 @@ app.post(
   }
 );
 
+// API Route for the Dashboard
+app.get("/api/cases", async (req: Request, res: Response) => {
+  try {
+    const cases = await prisma.recoveryCase.findMany({
+      include: {
+        aiAnalysis: true,
+        recoveryAttempt: true,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      }
+    });
+    res.json(cases);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch cases" });
+  }
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(` Server running on port ${PORT}`));
