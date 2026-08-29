@@ -3,11 +3,18 @@ import Razorpay from 'razorpay';
 // Fix 2: Strict typing for the live payment state
 export type LivePayment = {
   id: string;
-  status: string; // 'captured', 'failed', 'attempted', etc.
-  amount: number; // in paise
+  status: string;
+  amount: number;
   currency: string;
   method: string;
   order_id: string | null;
+  email?: string;
+  contact?: string;
+  error_reason?: string | null;
+  error_code?: string | null;
+  error_step?: string | null;
+  error_source?: string | null;
+  error_description?: string | null;
 };
 
 export type StateDecision = 
