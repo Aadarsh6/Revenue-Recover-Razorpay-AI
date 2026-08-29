@@ -1,8 +1,10 @@
 import Razorpay from 'razorpay';
 
+export type PaymentStatus = 'created' | 'authorized' | 'captured' | 'failed' | 'refunded';
+
 export type LivePayment = {
   id: string;
-  status: string;
+  status: PaymentStatus;
   amount: number;
   currency: string;
   method: string;
@@ -27,7 +29,6 @@ const razorpay = new Razorpay({
 });
 
 export async function validateState(eventType: string, paymentId: string): Promise<StateDecision> {
-  // 1. Handle payment.failed
   if (eventType === 'payment.failed') {
     try {
       const livePayment = await razorpay.payments.fetch(paymentId) as LivePayment;
@@ -49,7 +50,6 @@ export async function validateState(eventType: string, paymentId: string): Promi
     }
   }
 
-  // 2. Handle payment.captured (Closing the Loop)
   if (eventType === 'payment.captured') {
     try {
       const livePayment = await razorpay.payments.fetch(paymentId) as LivePayment;
@@ -64,7 +64,6 @@ export async function validateState(eventType: string, paymentId: string): Promi
     }
   }
 
-  // 3. Ignore other events for now
   console.log(`[StateValidator] Ignoring event type: ${eventType}`);
   return { decision: 'INVALID_EVENT' };
 }
