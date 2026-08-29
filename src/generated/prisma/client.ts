@@ -61,3 +61,8 @@ export type AIAnalysis = Prisma.AIAnalysisModel
  * 
  */
 export type PaymentRecord = Prisma.PaymentRecordModel
+/**
+ * Model RecoveryAttempt
+ * 
+ */
+export type RecoveryAttempt = Prisma.RecoveryAttemptModel

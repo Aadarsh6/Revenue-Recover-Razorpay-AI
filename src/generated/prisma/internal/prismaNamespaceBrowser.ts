@@ -54,7 +54,8 @@ export const ModelName = {
   RecoveryCase: 'RecoveryCase',
   WebhookEvent: 'WebhookEvent',
   AIAnalysis: 'AIAnalysis',
-  PaymentRecord: 'PaymentRecord'
+  PaymentRecord: 'PaymentRecord',
+  RecoveryAttempt: 'RecoveryAttempt'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -129,6 +130,21 @@ export const PaymentRecordScalarFieldEnum = {
 } as const
 
 export type PaymentRecordScalarFieldEnum = (typeof PaymentRecordScalarFieldEnum)[keyof typeof PaymentRecordScalarFieldEnum]
+
+
+export const RecoveryAttemptScalarFieldEnum = {
+  id: 'id',
+  recoveryCaseId: 'recoveryCaseId',
+  action: 'action',
+  razorpayLinkId: 'razorpayLinkId',
+  recoveryUrl: 'recoveryUrl',
+  status: 'status',
+  errorMessage: 'errorMessage',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RecoveryAttemptScalarFieldEnum = (typeof RecoveryAttemptScalarFieldEnum)[keyof typeof RecoveryAttemptScalarFieldEnum]
 
 
 export const SortOrder = {

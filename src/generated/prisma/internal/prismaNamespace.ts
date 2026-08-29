@@ -400,7 +400,8 @@ export const ModelName = {
   RecoveryCase: 'RecoveryCase',
   WebhookEvent: 'WebhookEvent',
   AIAnalysis: 'AIAnalysis',
-  PaymentRecord: 'PaymentRecord'
+  PaymentRecord: 'PaymentRecord',
+  RecoveryAttempt: 'RecoveryAttempt'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -416,7 +417,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "recoveryCase" | "webhookEvent" | "aIAnalysis" | "paymentRecord"
+    modelProps: "recoveryCase" | "webhookEvent" | "aIAnalysis" | "paymentRecord" | "recoveryAttempt"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -716,6 +717,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    RecoveryAttempt: {
+      payload: Prisma.$RecoveryAttemptPayload<ExtArgs>
+      fields: Prisma.RecoveryAttemptFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.RecoveryAttemptFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecoveryAttemptPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.RecoveryAttemptFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecoveryAttemptPayload>
+        }
+        findFirst: {
+          args: Prisma.RecoveryAttemptFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecoveryAttemptPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.RecoveryAttemptFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecoveryAttemptPayload>
+        }
+        findMany: {
+          args: Prisma.RecoveryAttemptFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecoveryAttemptPayload>[]
+        }
+        create: {
+          args: Prisma.RecoveryAttemptCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecoveryAttemptPayload>
+        }
+        createMany: {
+          args: Prisma.RecoveryAttemptCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.RecoveryAttemptCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecoveryAttemptPayload>[]
+        }
+        delete: {
+          args: Prisma.RecoveryAttemptDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecoveryAttemptPayload>
+        }
+        update: {
+          args: Prisma.RecoveryAttemptUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecoveryAttemptPayload>
+        }
+        deleteMany: {
+          args: Prisma.RecoveryAttemptDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.RecoveryAttemptUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.RecoveryAttemptUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecoveryAttemptPayload>[]
+        }
+        upsert: {
+          args: Prisma.RecoveryAttemptUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecoveryAttemptPayload>
+        }
+        aggregate: {
+          args: Prisma.RecoveryAttemptAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateRecoveryAttempt>
+        }
+        groupBy: {
+          args: Prisma.RecoveryAttemptGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RecoveryAttemptGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.RecoveryAttemptCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RecoveryAttemptCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -811,6 +886,21 @@ export const PaymentRecordScalarFieldEnum = {
 } as const
 
 export type PaymentRecordScalarFieldEnum = (typeof PaymentRecordScalarFieldEnum)[keyof typeof PaymentRecordScalarFieldEnum]
+
+
+export const RecoveryAttemptScalarFieldEnum = {
+  id: 'id',
+  recoveryCaseId: 'recoveryCaseId',
+  action: 'action',
+  razorpayLinkId: 'razorpayLinkId',
+  recoveryUrl: 'recoveryUrl',
+  status: 'status',
+  errorMessage: 'errorMessage',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RecoveryAttemptScalarFieldEnum = (typeof RecoveryAttemptScalarFieldEnum)[keyof typeof RecoveryAttemptScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1111,6 +1201,7 @@ export type GlobalOmitConfig = {
   webhookEvent?: Prisma.WebhookEventOmit
   aIAnalysis?: Prisma.AIAnalysisOmit
   paymentRecord?: Prisma.PaymentRecordOmit
+  recoveryAttempt?: Prisma.RecoveryAttemptOmit
 }
 
 /* Types for Logging */

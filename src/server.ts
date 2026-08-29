@@ -168,7 +168,7 @@ app.post(
           data: { status: 'PENDING_HUMAN_REVIEW', policyDecision: 'HUMAN' }
         });
         console.log(`👤 Escalated to HUMAN review by Policy Engine.`);
-            } else {
+      } else {
         // AUTO: Transition to PENDING_EXECUTION
         await prisma.recoveryCase.update({
           where: { id: recoveryCase.id },
@@ -179,16 +179,42 @@ app.post(
         });
         console.log("✅ Policy Engine authorized AUTONOMOUS execution. Case marked as PENDING_EXECUTION.");
         
-        // --- EXECUTION LAYER ---
+        // --- EXECUTION LAYER WITH ATOMIC LOCK ---
+        
+        // 1. ATOMIC LOCK: Try to transition from PENDING_EXECUTION to EXECUTING.
+        // If another process already grabbed it, updateResult.count will be 0.
+        const lockResult = await prisma.recoveryCase.updateMany({
+          where: { id: recoveryCase.id, status: 'PENDING_EXECUTION' },
+          data: { status: 'EXECUTING' }
+        });
+
+        if (lockResult.count === 0) {
+          console.log(`⚠️ Concurrency Control: Case ${recoveryCase.id} is already being executed by another process. Aborting this thread.`);
+          return;
+        }
+
+        // 2. EXECUTE ACTION
         const executor = new ExecutionLayer();
         const executionResult = await executor.executeAction(stateResult.livePayment, aiResult);
+
+        // 3. PERSIST RECOVERY ATTEMPT & UPDATE FINAL STATUS
+        await prisma.recoveryAttempt.create({
+          data: {
+            recoveryCaseId: recoveryCase.id,
+            action: aiResult.recommended_action,
+            razorpayLinkId: executionResult.razorpayResponse?.id || null,
+            recoveryUrl: executionResult.razorpayResponse?.short_url || null,
+            status: executionResult.success ? 'SUCCESS' : 'FAILED',
+            errorMessage: executionResult.error || null
+          }
+        });
 
         if (executionResult.success) {
           await prisma.recoveryCase.update({
             where: { id: recoveryCase.id },
-            data: { status: 'AUTO_RECOVERED' }
+            data: { status: 'RECOVERY_ACTION_COMPLETED' }
           });
-          console.log(`🎉 Recovery Case ${recoveryCase.id} successfully AUTO_RECOVERED!`);
+          console.log(`🎉 Recovery Case ${recoveryCase.id} successfully EXECUTED and COMPLETED!`);
         } else {
           // If Razorpay API fails, escalate to human
           await prisma.recoveryCase.update({
