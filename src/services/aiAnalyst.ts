@@ -32,10 +32,10 @@ export class AIAnalystService {
         body: JSON.stringify({
           model: this.model,
           messages: [
-            { role: "system", content: "You are an expert Fintech AI. You output ONLY valid JSON." },
+            { role: "system", content: "You are an expert Fintech AI. You output ONLY valid JSON, with no markdown formatting." },
             { role: "user", content: prompt }
           ],
-          response_format: { type: "json_object" },
+          // Removed response_format to prevent 400 API errors
           temperature: 0.1,
           max_tokens: 1024
         })
@@ -47,8 +47,16 @@ export class AIAnalystService {
       }
 
       const data = await response.json();
-      const responseText = data.choices[0].message.content;
+      let responseText = data.choices[0].message.content;
+
+      // Manual extraction: find the first { and the last } 
+      const firstBrace = responseText.indexOf('{');
+      const lastBrace = responseText.lastIndexOf('}');
       
+      if (firstBrace !== -1 && lastBrace !== -1) {
+        responseText = responseText.substring(firstBrace, lastBrace + 1);
+      }
+
       const parsedResult = JSON.parse(responseText) as AIAnalysisResult;
 
       if (!this.validateAIResult(parsedResult)) {
