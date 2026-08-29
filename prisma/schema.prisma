@@ -41,7 +41,7 @@ model RecoveryCase{
 
   webhookEvent        WebhookEvent @relation(fields: [webhookEventId], references: [id])
   aiAnalysis          AIAnalysis[]
-  recoveryAttempts RecoveryAttempt?
+  recoveryAttempt RecoveryAttempt?
 }
 
 

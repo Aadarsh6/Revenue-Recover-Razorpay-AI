@@ -262,7 +262,7 @@ export type RecoveryCaseWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"RecoveryCase"> | Date | string
   webhookEvent?: Prisma.XOR<Prisma.WebhookEventScalarRelationFilter, Prisma.WebhookEventWhereInput>
   aiAnalysis?: Prisma.AIAnalysisListRelationFilter
-  recoveryAttempts?: Prisma.XOR<Prisma.RecoveryAttemptNullableScalarRelationFilter, Prisma.RecoveryAttemptWhereInput> | null
+  recoveryAttempt?: Prisma.XOR<Prisma.RecoveryAttemptNullableScalarRelationFilter, Prisma.RecoveryAttemptWhereInput> | null
 }
 
 export type RecoveryCaseOrderByWithRelationInput = {
@@ -278,7 +278,7 @@ export type RecoveryCaseOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   webhookEvent?: Prisma.WebhookEventOrderByWithRelationInput
   aiAnalysis?: Prisma.AIAnalysisOrderByRelationAggregateInput
-  recoveryAttempts?: Prisma.RecoveryAttemptOrderByWithRelationInput
+  recoveryAttempt?: Prisma.RecoveryAttemptOrderByWithRelationInput
 }
 
 export type RecoveryCaseWhereUniqueInput = Prisma.AtLeast<{
@@ -297,7 +297,7 @@ export type RecoveryCaseWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"RecoveryCase"> | Date | string
   webhookEvent?: Prisma.XOR<Prisma.WebhookEventScalarRelationFilter, Prisma.WebhookEventWhereInput>
   aiAnalysis?: Prisma.AIAnalysisListRelationFilter
-  recoveryAttempts?: Prisma.XOR<Prisma.RecoveryAttemptNullableScalarRelationFilter, Prisma.RecoveryAttemptWhereInput> | null
+  recoveryAttempt?: Prisma.XOR<Prisma.RecoveryAttemptNullableScalarRelationFilter, Prisma.RecoveryAttemptWhereInput> | null
 }, "id" | "paymentId" | "webhookEventId">
 
 export type RecoveryCaseOrderByWithAggregationInput = {
@@ -345,7 +345,7 @@ export type RecoveryCaseCreateInput = {
   updatedAt?: Date | string
   webhookEvent: Prisma.WebhookEventCreateNestedOneWithoutRecoveryCasesInput
   aiAnalysis?: Prisma.AIAnalysisCreateNestedManyWithoutRecoveryCaseInput
-  recoveryAttempts?: Prisma.RecoveryAttemptCreateNestedOneWithoutRecoveryCaseInput
+  recoveryAttempt?: Prisma.RecoveryAttemptCreateNestedOneWithoutRecoveryCaseInput
 }
 
 export type RecoveryCaseUncheckedCreateInput = {
@@ -360,7 +360,7 @@ export type RecoveryCaseUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   aiAnalysis?: Prisma.AIAnalysisUncheckedCreateNestedManyWithoutRecoveryCaseInput
-  recoveryAttempts?: Prisma.RecoveryAttemptUncheckedCreateNestedOneWithoutRecoveryCaseInput
+  recoveryAttempt?: Prisma.RecoveryAttemptUncheckedCreateNestedOneWithoutRecoveryCaseInput
 }
 
 export type RecoveryCaseUpdateInput = {
@@ -374,7 +374,7 @@ export type RecoveryCaseUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   webhookEvent?: Prisma.WebhookEventUpdateOneRequiredWithoutRecoveryCasesNestedInput
   aiAnalysis?: Prisma.AIAnalysisUpdateManyWithoutRecoveryCaseNestedInput
-  recoveryAttempts?: Prisma.RecoveryAttemptUpdateOneWithoutRecoveryCaseNestedInput
+  recoveryAttempt?: Prisma.RecoveryAttemptUpdateOneWithoutRecoveryCaseNestedInput
 }
 
 export type RecoveryCaseUncheckedUpdateInput = {
@@ -389,7 +389,7 @@ export type RecoveryCaseUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   aiAnalysis?: Prisma.AIAnalysisUncheckedUpdateManyWithoutRecoveryCaseNestedInput
-  recoveryAttempts?: Prisma.RecoveryAttemptUncheckedUpdateOneWithoutRecoveryCaseNestedInput
+  recoveryAttempt?: Prisma.RecoveryAttemptUncheckedUpdateOneWithoutRecoveryCaseNestedInput
 }
 
 export type RecoveryCaseCreateManyInput = {
@@ -573,18 +573,18 @@ export type RecoveryCaseUpdateOneRequiredWithoutAiAnalysisNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.RecoveryCaseUpdateToOneWithWhereWithoutAiAnalysisInput, Prisma.RecoveryCaseUpdateWithoutAiAnalysisInput>, Prisma.RecoveryCaseUncheckedUpdateWithoutAiAnalysisInput>
 }
 
-export type RecoveryCaseCreateNestedOneWithoutRecoveryAttemptsInput = {
-  create?: Prisma.XOR<Prisma.RecoveryCaseCreateWithoutRecoveryAttemptsInput, Prisma.RecoveryCaseUncheckedCreateWithoutRecoveryAttemptsInput>
-  connectOrCreate?: Prisma.RecoveryCaseCreateOrConnectWithoutRecoveryAttemptsInput
+export type RecoveryCaseCreateNestedOneWithoutRecoveryAttemptInput = {
+  create?: Prisma.XOR<Prisma.RecoveryCaseCreateWithoutRecoveryAttemptInput, Prisma.RecoveryCaseUncheckedCreateWithoutRecoveryAttemptInput>
+  connectOrCreate?: Prisma.RecoveryCaseCreateOrConnectWithoutRecoveryAttemptInput
   connect?: Prisma.RecoveryCaseWhereUniqueInput
 }
 
-export type RecoveryCaseUpdateOneRequiredWithoutRecoveryAttemptsNestedInput = {
-  create?: Prisma.XOR<Prisma.RecoveryCaseCreateWithoutRecoveryAttemptsInput, Prisma.RecoveryCaseUncheckedCreateWithoutRecoveryAttemptsInput>
-  connectOrCreate?: Prisma.RecoveryCaseCreateOrConnectWithoutRecoveryAttemptsInput
-  upsert?: Prisma.RecoveryCaseUpsertWithoutRecoveryAttemptsInput
+export type RecoveryCaseUpdateOneRequiredWithoutRecoveryAttemptNestedInput = {
+  create?: Prisma.XOR<Prisma.RecoveryCaseCreateWithoutRecoveryAttemptInput, Prisma.RecoveryCaseUncheckedCreateWithoutRecoveryAttemptInput>
+  connectOrCreate?: Prisma.RecoveryCaseCreateOrConnectWithoutRecoveryAttemptInput
+  upsert?: Prisma.RecoveryCaseUpsertWithoutRecoveryAttemptInput
   connect?: Prisma.RecoveryCaseWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.RecoveryCaseUpdateToOneWithWhereWithoutRecoveryAttemptsInput, Prisma.RecoveryCaseUpdateWithoutRecoveryAttemptsInput>, Prisma.RecoveryCaseUncheckedUpdateWithoutRecoveryAttemptsInput>
+  update?: Prisma.XOR<Prisma.XOR<Prisma.RecoveryCaseUpdateToOneWithWhereWithoutRecoveryAttemptInput, Prisma.RecoveryCaseUpdateWithoutRecoveryAttemptInput>, Prisma.RecoveryCaseUncheckedUpdateWithoutRecoveryAttemptInput>
 }
 
 export type RecoveryCaseCreateWithoutWebhookEventInput = {
@@ -597,7 +597,7 @@ export type RecoveryCaseCreateWithoutWebhookEventInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   aiAnalysis?: Prisma.AIAnalysisCreateNestedManyWithoutRecoveryCaseInput
-  recoveryAttempts?: Prisma.RecoveryAttemptCreateNestedOneWithoutRecoveryCaseInput
+  recoveryAttempt?: Prisma.RecoveryAttemptCreateNestedOneWithoutRecoveryCaseInput
 }
 
 export type RecoveryCaseUncheckedCreateWithoutWebhookEventInput = {
@@ -611,7 +611,7 @@ export type RecoveryCaseUncheckedCreateWithoutWebhookEventInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   aiAnalysis?: Prisma.AIAnalysisUncheckedCreateNestedManyWithoutRecoveryCaseInput
-  recoveryAttempts?: Prisma.RecoveryAttemptUncheckedCreateNestedOneWithoutRecoveryCaseInput
+  recoveryAttempt?: Prisma.RecoveryAttemptUncheckedCreateNestedOneWithoutRecoveryCaseInput
 }
 
 export type RecoveryCaseCreateOrConnectWithoutWebhookEventInput = {
@@ -666,7 +666,7 @@ export type RecoveryCaseCreateWithoutAiAnalysisInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   webhookEvent: Prisma.WebhookEventCreateNestedOneWithoutRecoveryCasesInput
-  recoveryAttempts?: Prisma.RecoveryAttemptCreateNestedOneWithoutRecoveryCaseInput
+  recoveryAttempt?: Prisma.RecoveryAttemptCreateNestedOneWithoutRecoveryCaseInput
 }
 
 export type RecoveryCaseUncheckedCreateWithoutAiAnalysisInput = {
@@ -680,7 +680,7 @@ export type RecoveryCaseUncheckedCreateWithoutAiAnalysisInput = {
   policyDecision?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  recoveryAttempts?: Prisma.RecoveryAttemptUncheckedCreateNestedOneWithoutRecoveryCaseInput
+  recoveryAttempt?: Prisma.RecoveryAttemptUncheckedCreateNestedOneWithoutRecoveryCaseInput
 }
 
 export type RecoveryCaseCreateOrConnectWithoutAiAnalysisInput = {
@@ -709,7 +709,7 @@ export type RecoveryCaseUpdateWithoutAiAnalysisInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   webhookEvent?: Prisma.WebhookEventUpdateOneRequiredWithoutRecoveryCasesNestedInput
-  recoveryAttempts?: Prisma.RecoveryAttemptUpdateOneWithoutRecoveryCaseNestedInput
+  recoveryAttempt?: Prisma.RecoveryAttemptUpdateOneWithoutRecoveryCaseNestedInput
 }
 
 export type RecoveryCaseUncheckedUpdateWithoutAiAnalysisInput = {
@@ -723,10 +723,10 @@ export type RecoveryCaseUncheckedUpdateWithoutAiAnalysisInput = {
   policyDecision?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  recoveryAttempts?: Prisma.RecoveryAttemptUncheckedUpdateOneWithoutRecoveryCaseNestedInput
+  recoveryAttempt?: Prisma.RecoveryAttemptUncheckedUpdateOneWithoutRecoveryCaseNestedInput
 }
 
-export type RecoveryCaseCreateWithoutRecoveryAttemptsInput = {
+export type RecoveryCaseCreateWithoutRecoveryAttemptInput = {
   paymentId: string
   status?: $Enums.RecoveryStatus
   liveState: string
@@ -739,7 +739,7 @@ export type RecoveryCaseCreateWithoutRecoveryAttemptsInput = {
   aiAnalysis?: Prisma.AIAnalysisCreateNestedManyWithoutRecoveryCaseInput
 }
 
-export type RecoveryCaseUncheckedCreateWithoutRecoveryAttemptsInput = {
+export type RecoveryCaseUncheckedCreateWithoutRecoveryAttemptInput = {
   id?: number
   paymentId: string
   webhookEventId: number
@@ -753,23 +753,23 @@ export type RecoveryCaseUncheckedCreateWithoutRecoveryAttemptsInput = {
   aiAnalysis?: Prisma.AIAnalysisUncheckedCreateNestedManyWithoutRecoveryCaseInput
 }
 
-export type RecoveryCaseCreateOrConnectWithoutRecoveryAttemptsInput = {
+export type RecoveryCaseCreateOrConnectWithoutRecoveryAttemptInput = {
   where: Prisma.RecoveryCaseWhereUniqueInput
-  create: Prisma.XOR<Prisma.RecoveryCaseCreateWithoutRecoveryAttemptsInput, Prisma.RecoveryCaseUncheckedCreateWithoutRecoveryAttemptsInput>
+  create: Prisma.XOR<Prisma.RecoveryCaseCreateWithoutRecoveryAttemptInput, Prisma.RecoveryCaseUncheckedCreateWithoutRecoveryAttemptInput>
 }
 
-export type RecoveryCaseUpsertWithoutRecoveryAttemptsInput = {
-  update: Prisma.XOR<Prisma.RecoveryCaseUpdateWithoutRecoveryAttemptsInput, Prisma.RecoveryCaseUncheckedUpdateWithoutRecoveryAttemptsInput>
-  create: Prisma.XOR<Prisma.RecoveryCaseCreateWithoutRecoveryAttemptsInput, Prisma.RecoveryCaseUncheckedCreateWithoutRecoveryAttemptsInput>
+export type RecoveryCaseUpsertWithoutRecoveryAttemptInput = {
+  update: Prisma.XOR<Prisma.RecoveryCaseUpdateWithoutRecoveryAttemptInput, Prisma.RecoveryCaseUncheckedUpdateWithoutRecoveryAttemptInput>
+  create: Prisma.XOR<Prisma.RecoveryCaseCreateWithoutRecoveryAttemptInput, Prisma.RecoveryCaseUncheckedCreateWithoutRecoveryAttemptInput>
   where?: Prisma.RecoveryCaseWhereInput
 }
 
-export type RecoveryCaseUpdateToOneWithWhereWithoutRecoveryAttemptsInput = {
+export type RecoveryCaseUpdateToOneWithWhereWithoutRecoveryAttemptInput = {
   where?: Prisma.RecoveryCaseWhereInput
-  data: Prisma.XOR<Prisma.RecoveryCaseUpdateWithoutRecoveryAttemptsInput, Prisma.RecoveryCaseUncheckedUpdateWithoutRecoveryAttemptsInput>
+  data: Prisma.XOR<Prisma.RecoveryCaseUpdateWithoutRecoveryAttemptInput, Prisma.RecoveryCaseUncheckedUpdateWithoutRecoveryAttemptInput>
 }
 
-export type RecoveryCaseUpdateWithoutRecoveryAttemptsInput = {
+export type RecoveryCaseUpdateWithoutRecoveryAttemptInput = {
   paymentId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumRecoveryStatusFieldUpdateOperationsInput | $Enums.RecoveryStatus
   liveState?: Prisma.StringFieldUpdateOperationsInput | string
@@ -782,7 +782,7 @@ export type RecoveryCaseUpdateWithoutRecoveryAttemptsInput = {
   aiAnalysis?: Prisma.AIAnalysisUpdateManyWithoutRecoveryCaseNestedInput
 }
 
-export type RecoveryCaseUncheckedUpdateWithoutRecoveryAttemptsInput = {
+export type RecoveryCaseUncheckedUpdateWithoutRecoveryAttemptInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   paymentId?: Prisma.StringFieldUpdateOperationsInput | string
   webhookEventId?: Prisma.IntFieldUpdateOperationsInput | number
@@ -818,7 +818,7 @@ export type RecoveryCaseUpdateWithoutWebhookEventInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   aiAnalysis?: Prisma.AIAnalysisUpdateManyWithoutRecoveryCaseNestedInput
-  recoveryAttempts?: Prisma.RecoveryAttemptUpdateOneWithoutRecoveryCaseNestedInput
+  recoveryAttempt?: Prisma.RecoveryAttemptUpdateOneWithoutRecoveryCaseNestedInput
 }
 
 export type RecoveryCaseUncheckedUpdateWithoutWebhookEventInput = {
@@ -832,7 +832,7 @@ export type RecoveryCaseUncheckedUpdateWithoutWebhookEventInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   aiAnalysis?: Prisma.AIAnalysisUncheckedUpdateManyWithoutRecoveryCaseNestedInput
-  recoveryAttempts?: Prisma.RecoveryAttemptUncheckedUpdateOneWithoutRecoveryCaseNestedInput
+  recoveryAttempt?: Prisma.RecoveryAttemptUncheckedUpdateOneWithoutRecoveryCaseNestedInput
 }
 
 export type RecoveryCaseUncheckedUpdateManyWithoutWebhookEventInput = {
@@ -891,7 +891,7 @@ export type RecoveryCaseSelect<ExtArgs extends runtime.Types.Extensions.Internal
   updatedAt?: boolean
   webhookEvent?: boolean | Prisma.WebhookEventDefaultArgs<ExtArgs>
   aiAnalysis?: boolean | Prisma.RecoveryCase$aiAnalysisArgs<ExtArgs>
-  recoveryAttempts?: boolean | Prisma.RecoveryCase$recoveryAttemptsArgs<ExtArgs>
+  recoveryAttempt?: boolean | Prisma.RecoveryCase$recoveryAttemptArgs<ExtArgs>
   _count?: boolean | Prisma.RecoveryCaseCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["recoveryCase"]>
 
@@ -940,7 +940,7 @@ export type RecoveryCaseOmit<ExtArgs extends runtime.Types.Extensions.InternalAr
 export type RecoveryCaseInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   webhookEvent?: boolean | Prisma.WebhookEventDefaultArgs<ExtArgs>
   aiAnalysis?: boolean | Prisma.RecoveryCase$aiAnalysisArgs<ExtArgs>
-  recoveryAttempts?: boolean | Prisma.RecoveryCase$recoveryAttemptsArgs<ExtArgs>
+  recoveryAttempt?: boolean | Prisma.RecoveryCase$recoveryAttemptArgs<ExtArgs>
   _count?: boolean | Prisma.RecoveryCaseCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type RecoveryCaseIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -955,7 +955,7 @@ export type $RecoveryCasePayload<ExtArgs extends runtime.Types.Extensions.Intern
   objects: {
     webhookEvent: Prisma.$WebhookEventPayload<ExtArgs>
     aiAnalysis: Prisma.$AIAnalysisPayload<ExtArgs>[]
-    recoveryAttempts: Prisma.$RecoveryAttemptPayload<ExtArgs> | null
+    recoveryAttempt: Prisma.$RecoveryAttemptPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -1364,7 +1364,7 @@ export interface Prisma__RecoveryCaseClient<T, Null = never, ExtArgs extends run
   readonly [Symbol.toStringTag]: "PrismaPromise"
   webhookEvent<T extends Prisma.WebhookEventDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.WebhookEventDefaultArgs<ExtArgs>>): Prisma.Prisma__WebhookEventClient<runtime.Types.Result.GetResult<Prisma.$WebhookEventPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   aiAnalysis<T extends Prisma.RecoveryCase$aiAnalysisArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RecoveryCase$aiAnalysisArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AIAnalysisPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  recoveryAttempts<T extends Prisma.RecoveryCase$recoveryAttemptsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RecoveryCase$recoveryAttemptsArgs<ExtArgs>>): Prisma.Prisma__RecoveryAttemptClient<runtime.Types.Result.GetResult<Prisma.$RecoveryAttemptPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  recoveryAttempt<T extends Prisma.RecoveryCase$recoveryAttemptArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RecoveryCase$recoveryAttemptArgs<ExtArgs>>): Prisma.Prisma__RecoveryAttemptClient<runtime.Types.Result.GetResult<Prisma.$RecoveryAttemptPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1829,9 +1829,9 @@ export type RecoveryCase$aiAnalysisArgs<ExtArgs extends runtime.Types.Extensions
 }
 
 /**
- * RecoveryCase.recoveryAttempts
+ * RecoveryCase.recoveryAttempt
  */
-export type RecoveryCase$recoveryAttemptsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type RecoveryCase$recoveryAttemptArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
    * Select specific fields to fetch from the RecoveryAttempt
    */

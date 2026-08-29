@@ -324,7 +324,7 @@ export type RecoveryAttemptCreateInput = {
   errorMessage?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  recoveryCase: Prisma.RecoveryCaseCreateNestedOneWithoutRecoveryAttemptsInput
+  recoveryCase: Prisma.RecoveryCaseCreateNestedOneWithoutRecoveryAttemptInput
 }
 
 export type RecoveryAttemptUncheckedCreateInput = {
@@ -347,7 +347,7 @@ export type RecoveryAttemptUpdateInput = {
   errorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  recoveryCase?: Prisma.RecoveryCaseUpdateOneRequiredWithoutRecoveryAttemptsNestedInput
+  recoveryCase?: Prisma.RecoveryCaseUpdateOneRequiredWithoutRecoveryAttemptNestedInput
 }
 
 export type RecoveryAttemptUncheckedUpdateInput = {
