@@ -1,3 +1,4 @@
+import Razorpay from 'razorpay';
 import { AIAnalysisResult } from './aiAnalyst';
 import { LivePayment } from './stateValidator';
 import prisma from '../lib/prismaClient';
@@ -9,53 +10,59 @@ export interface PolicyResult {
   reason: string;
 }
 
+// The Explicit Policy Matrix
+const POLICY_MATRIX: Record<AIAnalysisResult['recommended_action'], Record<AIAnalysisResult['risk_level'], PolicyDecision>> = {
+  CREATE_RECOVERY_LINK: { LOW: 'AUTO', MEDIUM: 'AUTO', HIGH: 'HUMAN' },
+  SEND_INVOICE_NOTIFICATION: { LOW: 'AUTO', MEDIUM: 'AUTO', HIGH: 'HUMAN' },
+  ESCALATE_HUMAN: { LOW: 'HUMAN', MEDIUM: 'HUMAN', HIGH: 'HUMAN' },
+  BLOCK: { LOW: 'BLOCK', MEDIUM: 'BLOCK', HIGH: 'BLOCK' }
+};
+
 export async function evaluatePolicy(
   recoveryCaseId: number,
-  livePayment: LivePayment,
+  paymentId: string,
   aiResult: AIAnalysisResult
 ): Promise<PolicyResult> {
   
-  // 1. Guard Clause: Is the payment still actually failed?
-  // The AI might have taken 2 seconds to respond. What if the customer paid in those 2 seconds?
-  if (livePayment.status !== 'failed') {
-    return { 
-      decision: 'BLOCK', 
-      reason: `Live payment status is now ${livePayment.status}. Aborting to prevent duplicate collection.` 
-    };
+  // 1. 🔥 RE-FETCH LIVE RAZORPAY STATE IMMEDIATELY BEFORE EXECUTION
+  try {
+    const razorpay = new Razorpay({
+      key_id: process.env.RAZORPAY_KEY_ID!,
+      key_secret: process.env.RAZORPAY_KEY_SECRET!
+    });
+
+    const freshLivePayment = await razorpay.payments.fetch(paymentId) as LivePayment;
+
+    if (freshLivePayment.status !== 'failed') {
+      return { 
+        decision: 'BLOCK', 
+        reason: `🛑 RACE CONDITION CAUGHT: Live payment status is now ${freshLivePayment.status}. Aborting to prevent duplicate collection.` 
+      };
+    }
+  } catch (error) {
+    return { decision: 'BLOCK', reason: 'Failed to re-fetch live state from Razorpay. Aborting for safety.' };
   }
 
-  // 2. Guard Clause: Has the AI recommended something unsafe?
-  if (aiResult.recommended_action === 'BLOCK' || aiResult.recommended_action === 'ESCALATE_HUMAN') {
-    return { 
-      decision: 'HUMAN', 
-      reason: `AI explicitly requested ${aiResult.recommended_action}.` 
-    };
-  }
-
-  // 3. Guard Clause: Is the risk level too high for autonomous action?
-  if (aiResult.risk_level === 'HIGH') {
-    return { 
-      decision: 'HUMAN', 
-      reason: 'AI risk level is HIGH. Requires human review.' 
-    };
-  }
-
-  // 4. Guard Clause: Have we already attempted recovery for this case?
-  // (This prevents spamming the customer if we receive multiple webhooks for the same failure)
+  // 2. Check if we already attempted recovery
   const existingCase = await prisma.recoveryCase.findUnique({
     where: { id: recoveryCaseId }
   });
 
-  if (existingCase && (existingCase.status === 'AUTO_RECOVERED' || existingCase.status === 'PENDING_HUMAN_REVIEW')) {
+  if (existingCase && (existingCase.status === 'PENDING_EXECUTION' || existingCase.status === 'AUTO_RECOVERED' || existingCase.status === 'PENDING_HUMAN_REVIEW')) {
     return { 
       decision: 'BLOCK', 
       reason: `RecoveryCase ${recoveryCaseId} is already in status ${existingCase.status}.` 
     };
   }
 
-  // 5. If all checks pass, authorize autonomous execution
-  return { 
-    decision: 'AUTO', 
-    reason: `AI recommended ${aiResult.recommended_action} with ${aiResult.risk_level} risk. All policy checks passed.` 
-  };
+  // 3. Evaluate using the Explicit Policy Matrix
+  const decision = POLICY_MATRIX[aiResult.recommended_action][aiResult.risk_level];
+
+  if (decision === 'AUTO') {
+    return { decision: 'AUTO', reason: `Policy Matrix allows ${aiResult.recommended_action} with ${aiResult.risk_level} risk. Live state verified.` };
+  } else if (decision === 'HUMAN') {
+    return { decision: 'HUMAN', reason: `Policy Matrix requires human review for ${aiResult.recommended_action} with ${aiResult.risk_level} risk.` };
+  } else {
+    return { decision: 'BLOCK', reason: `Policy Matrix blocked action.` };
+  }
 }
