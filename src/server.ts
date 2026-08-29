@@ -76,22 +76,56 @@ app.post(
       
       const stateResult: StateDecision = await validateState(eventType, paymentId);
       
-      await prisma.paymentRecord.upsert({
-        where: { paymentId },
-        update: {},
-        create: {
-          paymentId,
-          contact: stateResult.decision === 'VALID_FAILURE' || stateResult.decision === 'ALREADY_CAPTURED' ? stateResult.livePayment.contact : null,
-          email: stateResult.decision === 'VALID_FAILURE' || stateResult.decision === 'ALREADY_CAPTURED' ? stateResult.livePayment.email : null,
-          amount: stateResult.decision === 'VALID_FAILURE' || stateResult.decision === 'ALREADY_CAPTURED' ? stateResult.livePayment.amount : 0,
-          currency: stateResult.decision === 'VALID_FAILURE' || stateResult.decision === 'ALREADY_CAPTURED' ? stateResult.livePayment.currency : 'INR',
-          method: stateResult.decision === 'VALID_FAILURE' || stateResult.decision === 'ALREADY_CAPTURED' ? stateResult.livePayment.method : 'unknown',
-          status: stateResult.decision === 'VALID_FAILURE' || stateResult.decision === 'ALREADY_CAPTURED' ? stateResult.livePayment.status : 'unknown',
-        }
-      });
+      // Save Payment Record for history
+      if (stateResult.decision === 'VALID_FAILURE' || stateResult.decision === 'ALREADY_CAPTURED' || stateResult.decision === 'VALID_CAPTURE') {
+        await prisma.paymentRecord.upsert({
+          where: { paymentId },
+          update: {},
+          create: {
+            paymentId,
+            contact: stateResult.livePayment.contact,
+            email: stateResult.livePayment.email,
+            amount: stateResult.livePayment.amount,
+            currency: stateResult.livePayment.currency,
+            method: stateResult.livePayment.method,
+            status: stateResult.livePayment.status,
+          }
+        });
+      }
 
       const recoveryCase = await createRecoveryCase(newEvent.id, paymentId, stateResult);
 
+      // --- CLOSE THE LOOP: Handle successful recovery payments ---
+      if (stateResult.decision === 'VALID_CAPTURE') {
+        const notes = stateResult.livePayment.notes;
+        const recoveryCaseId = notes?.revive_recovery_case_id;
+
+        if (recoveryCaseId) {
+          console.log(`🔔 Recovery payment detected for Case ${recoveryCaseId}! Closing the loop...`);
+          
+          await prisma.recoveryCase.update({
+            where: { id: parseInt(recoveryCaseId) },
+            data: { status: 'RECOVERY_LINK_CREATED' }
+          });
+
+          await prisma.recoveryAttempt.updateMany({
+            where: { recoveryCaseId: parseInt(recoveryCaseId) },
+            data: { status: 'SUCCESS' }
+          });
+
+          console.log(`🎉🎉 LOOP CLOSED! Case ${recoveryCaseId} recovery completed!`);
+        } else {
+          console.log('✅ Payment captured, but no recovery notes found. Normal payment, ignoring.');
+        }
+
+        await prisma.webhookEvent.update({
+          where: { id: newEvent.id },
+          data: { status: "PROCESSED", processedAt: new Date() },
+        });
+        return; // Stop processing, it's a successful payment!
+      }
+
+      // --- Normal Failed Payment Flow ---
       if (recoveryCase.status !== 'OPEN') {
         await prisma.webhookEvent.update({
           where: { id: newEvent.id },
@@ -181,7 +215,6 @@ app.post(
         
         // --- EXECUTION LAYER WITH ATOMIC LOCK & DUPLICATE CHECK ---
 
-        // 1. ATOMIC LOCK: Transition PENDING_EXECUTION -> EXECUTING
         const lockResult = await prisma.recoveryCase.updateMany({
           where: { id: recoveryCase.id, status: 'PENDING_EXECUTION' },
           data: { status: 'EXECUTING' }
@@ -192,7 +225,6 @@ app.post(
           return;
         }
 
-        // 2. PREVENT DUPLICATE EXECUTION (Check if attempt already exists)
         const existingAttempt = await prisma.recoveryAttempt.findUnique({
           where: { recoveryCaseId: recoveryCase.id }
         });
@@ -201,16 +233,14 @@ app.post(
           console.log(`⚠️ Duplicate Execution Prevented: Attempt already exists for Case ${recoveryCase.id}.`);
           await prisma.recoveryCase.update({
             where: { id: recoveryCase.id },
-            data: { status: 'RECOVERY_LINK_CREATED' } // Assume it was completed previously
+            data: { status: 'RECOVERY_LINK_CREATED' }
           });
           return;
         }
 
-        // 3. EXECUTE ACTION (Pass recoveryCaseId for notes)
         const executor = new ExecutionLayer();
         const executionResult = await executor.executeAction(stateResult.livePayment, aiResult, recoveryCase.id);
 
-        // 4. PERSIST RECOVERY ATTEMPT & UPDATE FINAL STATUS
         await prisma.recoveryAttempt.create({
           data: {
             recoveryCaseId: recoveryCase.id,
@@ -223,14 +253,12 @@ app.post(
         });
 
         if (executionResult.success) {
-          // STEP 5: Do NOT call it AUTO_RECOVERED yet. The customer hasn't paid!
           await prisma.recoveryCase.update({
             where: { id: recoveryCase.id },
             data: { status: 'RECOVERY_LINK_CREATED' }
           });
           console.log(`🔗 Recovery Link saved to DB. Case ${recoveryCase.id} marked as RECOVERY_LINK_CREATED. Awaiting customer payment...`);
         } else {
-          // Execution failed
           await prisma.recoveryCase.update({
             where: { id: recoveryCase.id },
             data: { status: 'FAILED' }

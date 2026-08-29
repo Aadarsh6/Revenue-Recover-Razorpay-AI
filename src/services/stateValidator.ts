@@ -1,6 +1,5 @@
 import Razorpay from 'razorpay';
 
-// Fix 2: Strict typing for the live payment state
 export type LivePayment = {
   id: string;
   status: string;
@@ -11,55 +10,61 @@ export type LivePayment = {
   email?: string;
   contact?: string;
   error_reason?: string | null;
-  error_code?: string | null;
-  error_step?: string | null;
-  error_source?: string | null;
-  error_description?: string | null;
+  notes?: any;
 };
 
 export type StateDecision = 
   | { decision: 'VALID_FAILURE'; livePayment: LivePayment }
+  | { decision: 'VALID_CAPTURE'; livePayment: LivePayment }
   | { decision: 'ALREADY_CAPTURED'; livePayment: LivePayment }
   | { decision: 'INVALID_EVENT' }
   | { decision: 'INVALID_STATE' }
   | { decision: 'API_ERROR' };
 
-// Initialize Razorpay instance
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID!,
   key_secret: process.env.RAZORPAY_KEY_SECRET!
 });
 
-// Fix 1 & 3: Standalone function acting as our State Validator
 export async function validateState(eventType: string, paymentId: string): Promise<StateDecision> {
-  // Explicit event routing
-  if (eventType !== 'payment.failed') {
-    console.log(`[StateValidator] Ignoring event type: ${eventType}`);
-    return { decision: 'INVALID_EVENT' };
+  // 1. Handle payment.failed
+  if (eventType === 'payment.failed') {
+    try {
+      const livePayment = await razorpay.payments.fetch(paymentId) as LivePayment;
+      
+      if (livePayment.status === 'captured') {
+        console.warn(`[StateValidator] 🛑 GUARD TRIGGERED: Webhook was payment.failed, but live state is captured for ${paymentId}`);
+        return { decision: 'ALREADY_CAPTURED', livePayment };
+      }
+      if (livePayment.status === 'failed') {
+        console.log(`[StateValidator] ✅ VALID_FAILURE confirmed for ${paymentId}`);
+        return { decision: 'VALID_FAILURE', livePayment };
+      }
+      
+      console.warn(`[StateValidator] Unexpected state '${livePayment.status}' for ${paymentId}`);
+      return { decision: 'INVALID_STATE' };
+    } catch (error) {
+      console.error(`[StateValidator] Razorpay API error fetching ${paymentId}:`, error);
+      return { decision: 'API_ERROR' };
+    }
   }
 
-  try {
-    // Fetch live state from Razorpay API
-    const livePayment = await razorpay.payments.fetch(paymentId) as LivePayment;
-
-    // THE GUARD CASE: Webhook says failed, but Razorpay API says captured.
-    if (livePayment.status === 'captured') {
-      console.warn(`[StateValidator] 🛑 GUARD TRIGGERED: Webhook was payment.failed, but live state is captured for ${paymentId}`);
-      return { decision: 'ALREADY_CAPTURED', livePayment };
+  // 2. Handle payment.captured (Closing the Loop)
+  if (eventType === 'payment.captured') {
+    try {
+      const livePayment = await razorpay.payments.fetch(paymentId) as LivePayment;
+      if (livePayment.status === 'captured') {
+        console.log(`[StateValidator] ✅ VALID_CAPTURE confirmed for ${paymentId}`);
+        return { decision: 'VALID_CAPTURE', livePayment };
+      }
+      return { decision: 'INVALID_STATE' };
+    } catch (error) {
+      console.error(`[StateValidator] Razorpay API error fetching ${paymentId}:`, error);
+      return { decision: 'API_ERROR' };
     }
-
-    // Happy path: Webhook says failed, Razorpay agrees
-    if (livePayment.status === 'failed') {
-      console.log(`[StateValidator] ✅ VALID_FAILURE confirmed for ${paymentId}`);
-      return { decision: 'VALID_FAILURE', livePayment };
-    }
-
-    // If it's 'attempted' or any other state, it's not a confirmed failure. Do not process.
-    console.warn(`[StateValidator] Unexpected state '${livePayment.status}' for ${paymentId}`);
-    return { decision: 'INVALID_STATE' };
-
-  } catch (error) {
-    console.error(`[StateValidator] Razorpay API error fetching ${paymentId}:`, error);
-    return { decision: 'API_ERROR' };
   }
+
+  // 3. Ignore other events for now
+  console.log(`[StateValidator] Ignoring event type: ${eventType}`);
+  return { decision: 'INVALID_EVENT' };
 }
