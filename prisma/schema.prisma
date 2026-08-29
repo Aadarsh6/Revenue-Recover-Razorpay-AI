@@ -17,6 +17,13 @@ enum RecoveryStatus {
   FAILED
 }
 
+enum WebhookEventStatus {
+  PENDING
+  PROCESSED
+  IGNORED
+  FAILED
+}
+
 model RecoveryCase{
   id                  Int             @id @default(autoincrement())
   paymentId           String          @unique //Razorpay id we will try to recover
@@ -30,6 +37,7 @@ model RecoveryCase{
   updatedAt           DateTime       @updatedAt
 
   webhookEvent        WebhookEvent @relation(fields: [webhookEventId], references: [id])
+  aiAnalysis          AIAnalysis[]
 }
 
 
@@ -45,11 +53,30 @@ model WebhookEvent {
   recoveryCases         RecoveryCase[]
 }
 
-enum WebhookEventStatus {
-  PENDING
-  PROCESSED
-  IGNORED
-  FAILED
+model AIAnalysis{
+  id                  Int @id @default(autoincrement())
+  recoveryCaseId      Int @unique
+  diagnosis           String  
+  evidence            String[]
+  recommendedAction   String
+  riskLevel           String
+  model               String
+  createdAt           DateTime @default(now())
+
+  recoveryCase        RecoveryCase @relation(fields: [recoveryCaseId], references: [id])
 }
 
+//To track real customer payment history
+
+model PaymentRecord{
+  id            Int       @id @default(autoincrement())
+  paymentId     String    @unique
+  contact       String?
+  email         String?
+  amount        Int
+  currency      String
+  method        String
+  status        String
+  createdAt     DateTime @default(now())
+}
 

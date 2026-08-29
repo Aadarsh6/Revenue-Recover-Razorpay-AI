@@ -261,6 +261,7 @@ export type RecoveryCaseWhereInput = {
   ceratedAt?: Prisma.DateTimeFilter<"RecoveryCase"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"RecoveryCase"> | Date | string
   webhookEvent?: Prisma.XOR<Prisma.WebhookEventScalarRelationFilter, Prisma.WebhookEventWhereInput>
+  aiAnalysis?: Prisma.AIAnalysisListRelationFilter
 }
 
 export type RecoveryCaseOrderByWithRelationInput = {
@@ -275,6 +276,7 @@ export type RecoveryCaseOrderByWithRelationInput = {
   ceratedAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   webhookEvent?: Prisma.WebhookEventOrderByWithRelationInput
+  aiAnalysis?: Prisma.AIAnalysisOrderByRelationAggregateInput
 }
 
 export type RecoveryCaseWhereUniqueInput = Prisma.AtLeast<{
@@ -292,6 +294,7 @@ export type RecoveryCaseWhereUniqueInput = Prisma.AtLeast<{
   ceratedAt?: Prisma.DateTimeFilter<"RecoveryCase"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"RecoveryCase"> | Date | string
   webhookEvent?: Prisma.XOR<Prisma.WebhookEventScalarRelationFilter, Prisma.WebhookEventWhereInput>
+  aiAnalysis?: Prisma.AIAnalysisListRelationFilter
 }, "id" | "paymentId" | "webhookEventId">
 
 export type RecoveryCaseOrderByWithAggregationInput = {
@@ -338,6 +341,7 @@ export type RecoveryCaseCreateInput = {
   ceratedAt?: Date | string
   updatedAt?: Date | string
   webhookEvent: Prisma.WebhookEventCreateNestedOneWithoutRecoveryCasesInput
+  aiAnalysis?: Prisma.AIAnalysisCreateNestedManyWithoutRecoveryCaseInput
 }
 
 export type RecoveryCaseUncheckedCreateInput = {
@@ -351,6 +355,7 @@ export type RecoveryCaseUncheckedCreateInput = {
   policyDecision?: string | null
   ceratedAt?: Date | string
   updatedAt?: Date | string
+  aiAnalysis?: Prisma.AIAnalysisUncheckedCreateNestedManyWithoutRecoveryCaseInput
 }
 
 export type RecoveryCaseUpdateInput = {
@@ -363,6 +368,7 @@ export type RecoveryCaseUpdateInput = {
   ceratedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   webhookEvent?: Prisma.WebhookEventUpdateOneRequiredWithoutRecoveryCasesNestedInput
+  aiAnalysis?: Prisma.AIAnalysisUpdateManyWithoutRecoveryCaseNestedInput
 }
 
 export type RecoveryCaseUncheckedUpdateInput = {
@@ -376,6 +382,7 @@ export type RecoveryCaseUncheckedUpdateInput = {
   policyDecision?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ceratedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  aiAnalysis?: Prisma.AIAnalysisUncheckedUpdateManyWithoutRecoveryCaseNestedInput
 }
 
 export type RecoveryCaseCreateManyInput = {
@@ -474,6 +481,11 @@ export type RecoveryCaseOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
 }
 
+export type RecoveryCaseScalarRelationFilter = {
+  is?: Prisma.RecoveryCaseWhereInput
+  isNot?: Prisma.RecoveryCaseWhereInput
+}
+
 export type StringFieldUpdateOperationsInput = {
   set?: string
 }
@@ -540,6 +552,20 @@ export type RecoveryCaseUncheckedUpdateManyWithoutWebhookEventNestedInput = {
   deleteMany?: Prisma.RecoveryCaseScalarWhereInput | Prisma.RecoveryCaseScalarWhereInput[]
 }
 
+export type RecoveryCaseCreateNestedOneWithoutAiAnalysisInput = {
+  create?: Prisma.XOR<Prisma.RecoveryCaseCreateWithoutAiAnalysisInput, Prisma.RecoveryCaseUncheckedCreateWithoutAiAnalysisInput>
+  connectOrCreate?: Prisma.RecoveryCaseCreateOrConnectWithoutAiAnalysisInput
+  connect?: Prisma.RecoveryCaseWhereUniqueInput
+}
+
+export type RecoveryCaseUpdateOneRequiredWithoutAiAnalysisNestedInput = {
+  create?: Prisma.XOR<Prisma.RecoveryCaseCreateWithoutAiAnalysisInput, Prisma.RecoveryCaseUncheckedCreateWithoutAiAnalysisInput>
+  connectOrCreate?: Prisma.RecoveryCaseCreateOrConnectWithoutAiAnalysisInput
+  upsert?: Prisma.RecoveryCaseUpsertWithoutAiAnalysisInput
+  connect?: Prisma.RecoveryCaseWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.RecoveryCaseUpdateToOneWithWhereWithoutAiAnalysisInput, Prisma.RecoveryCaseUpdateWithoutAiAnalysisInput>, Prisma.RecoveryCaseUncheckedUpdateWithoutAiAnalysisInput>
+}
+
 export type RecoveryCaseCreateWithoutWebhookEventInput = {
   paymentId: string
   status?: $Enums.RecoveryStatus
@@ -549,6 +575,7 @@ export type RecoveryCaseCreateWithoutWebhookEventInput = {
   policyDecision?: string | null
   ceratedAt?: Date | string
   updatedAt?: Date | string
+  aiAnalysis?: Prisma.AIAnalysisCreateNestedManyWithoutRecoveryCaseInput
 }
 
 export type RecoveryCaseUncheckedCreateWithoutWebhookEventInput = {
@@ -561,6 +588,7 @@ export type RecoveryCaseUncheckedCreateWithoutWebhookEventInput = {
   policyDecision?: string | null
   ceratedAt?: Date | string
   updatedAt?: Date | string
+  aiAnalysis?: Prisma.AIAnalysisUncheckedCreateNestedManyWithoutRecoveryCaseInput
 }
 
 export type RecoveryCaseCreateOrConnectWithoutWebhookEventInput = {
@@ -605,6 +633,72 @@ export type RecoveryCaseScalarWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"RecoveryCase"> | Date | string
 }
 
+export type RecoveryCaseCreateWithoutAiAnalysisInput = {
+  paymentId: string
+  status?: $Enums.RecoveryStatus
+  liveState: string
+  aiDiagnosis?: string | null
+  aiAction?: string | null
+  policyDecision?: string | null
+  ceratedAt?: Date | string
+  updatedAt?: Date | string
+  webhookEvent: Prisma.WebhookEventCreateNestedOneWithoutRecoveryCasesInput
+}
+
+export type RecoveryCaseUncheckedCreateWithoutAiAnalysisInput = {
+  id?: number
+  paymentId: string
+  webhookEventId: number
+  status?: $Enums.RecoveryStatus
+  liveState: string
+  aiDiagnosis?: string | null
+  aiAction?: string | null
+  policyDecision?: string | null
+  ceratedAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type RecoveryCaseCreateOrConnectWithoutAiAnalysisInput = {
+  where: Prisma.RecoveryCaseWhereUniqueInput
+  create: Prisma.XOR<Prisma.RecoveryCaseCreateWithoutAiAnalysisInput, Prisma.RecoveryCaseUncheckedCreateWithoutAiAnalysisInput>
+}
+
+export type RecoveryCaseUpsertWithoutAiAnalysisInput = {
+  update: Prisma.XOR<Prisma.RecoveryCaseUpdateWithoutAiAnalysisInput, Prisma.RecoveryCaseUncheckedUpdateWithoutAiAnalysisInput>
+  create: Prisma.XOR<Prisma.RecoveryCaseCreateWithoutAiAnalysisInput, Prisma.RecoveryCaseUncheckedCreateWithoutAiAnalysisInput>
+  where?: Prisma.RecoveryCaseWhereInput
+}
+
+export type RecoveryCaseUpdateToOneWithWhereWithoutAiAnalysisInput = {
+  where?: Prisma.RecoveryCaseWhereInput
+  data: Prisma.XOR<Prisma.RecoveryCaseUpdateWithoutAiAnalysisInput, Prisma.RecoveryCaseUncheckedUpdateWithoutAiAnalysisInput>
+}
+
+export type RecoveryCaseUpdateWithoutAiAnalysisInput = {
+  paymentId?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumRecoveryStatusFieldUpdateOperationsInput | $Enums.RecoveryStatus
+  liveState?: Prisma.StringFieldUpdateOperationsInput | string
+  aiDiagnosis?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  policyDecision?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ceratedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  webhookEvent?: Prisma.WebhookEventUpdateOneRequiredWithoutRecoveryCasesNestedInput
+}
+
+export type RecoveryCaseUncheckedUpdateWithoutAiAnalysisInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  paymentId?: Prisma.StringFieldUpdateOperationsInput | string
+  webhookEventId?: Prisma.IntFieldUpdateOperationsInput | number
+  status?: Prisma.EnumRecoveryStatusFieldUpdateOperationsInput | $Enums.RecoveryStatus
+  liveState?: Prisma.StringFieldUpdateOperationsInput | string
+  aiDiagnosis?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  policyDecision?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ceratedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type RecoveryCaseCreateManyWebhookEventInput = {
   id?: number
   paymentId: string
@@ -626,6 +720,7 @@ export type RecoveryCaseUpdateWithoutWebhookEventInput = {
   policyDecision?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ceratedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  aiAnalysis?: Prisma.AIAnalysisUpdateManyWithoutRecoveryCaseNestedInput
 }
 
 export type RecoveryCaseUncheckedUpdateWithoutWebhookEventInput = {
@@ -638,6 +733,7 @@ export type RecoveryCaseUncheckedUpdateWithoutWebhookEventInput = {
   policyDecision?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ceratedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  aiAnalysis?: Prisma.AIAnalysisUncheckedUpdateManyWithoutRecoveryCaseNestedInput
 }
 
 export type RecoveryCaseUncheckedUpdateManyWithoutWebhookEventInput = {
@@ -653,6 +749,35 @@ export type RecoveryCaseUncheckedUpdateManyWithoutWebhookEventInput = {
 }
 
 
+/**
+ * Count Type RecoveryCaseCountOutputType
+ */
+
+export type RecoveryCaseCountOutputType = {
+  aiAnalysis: number
+}
+
+export type RecoveryCaseCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  aiAnalysis?: boolean | RecoveryCaseCountOutputTypeCountAiAnalysisArgs
+}
+
+/**
+ * RecoveryCaseCountOutputType without action
+ */
+export type RecoveryCaseCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the RecoveryCaseCountOutputType
+   */
+  select?: Prisma.RecoveryCaseCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * RecoveryCaseCountOutputType without action
+ */
+export type RecoveryCaseCountOutputTypeCountAiAnalysisArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.AIAnalysisWhereInput
+}
+
 
 export type RecoveryCaseSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -666,6 +791,8 @@ export type RecoveryCaseSelect<ExtArgs extends runtime.Types.Extensions.Internal
   ceratedAt?: boolean
   updatedAt?: boolean
   webhookEvent?: boolean | Prisma.WebhookEventDefaultArgs<ExtArgs>
+  aiAnalysis?: boolean | Prisma.RecoveryCase$aiAnalysisArgs<ExtArgs>
+  _count?: boolean | Prisma.RecoveryCaseCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["recoveryCase"]>
 
 export type RecoveryCaseSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -712,6 +839,8 @@ export type RecoveryCaseSelectScalar = {
 export type RecoveryCaseOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "paymentId" | "webhookEventId" | "status" | "liveState" | "aiDiagnosis" | "aiAction" | "policyDecision" | "ceratedAt" | "updatedAt", ExtArgs["result"]["recoveryCase"]>
 export type RecoveryCaseInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   webhookEvent?: boolean | Prisma.WebhookEventDefaultArgs<ExtArgs>
+  aiAnalysis?: boolean | Prisma.RecoveryCase$aiAnalysisArgs<ExtArgs>
+  _count?: boolean | Prisma.RecoveryCaseCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type RecoveryCaseIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   webhookEvent?: boolean | Prisma.WebhookEventDefaultArgs<ExtArgs>
@@ -724,6 +853,7 @@ export type $RecoveryCasePayload<ExtArgs extends runtime.Types.Extensions.Intern
   name: "RecoveryCase"
   objects: {
     webhookEvent: Prisma.$WebhookEventPayload<ExtArgs>
+    aiAnalysis: Prisma.$AIAnalysisPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -1131,6 +1261,7 @@ readonly fields: RecoveryCaseFieldRefs;
 export interface Prisma__RecoveryCaseClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   webhookEvent<T extends Prisma.WebhookEventDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.WebhookEventDefaultArgs<ExtArgs>>): Prisma.Prisma__WebhookEventClient<runtime.Types.Result.GetResult<Prisma.$WebhookEventPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  aiAnalysis<T extends Prisma.RecoveryCase$aiAnalysisArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RecoveryCase$aiAnalysisArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AIAnalysisPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1568,6 +1699,30 @@ export type RecoveryCaseDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.
    * Limit how many RecoveryCases to delete.
    */
   limit?: number
+}
+
+/**
+ * RecoveryCase.aiAnalysis
+ */
+export type RecoveryCase$aiAnalysisArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the AIAnalysis
+   */
+  select?: Prisma.AIAnalysisSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the AIAnalysis
+   */
+  omit?: Prisma.AIAnalysisOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AIAnalysisInclude<ExtArgs> | null
+  where?: Prisma.AIAnalysisWhereInput
+  orderBy?: Prisma.AIAnalysisOrderByWithRelationInput | Prisma.AIAnalysisOrderByWithRelationInput[]
+  cursor?: Prisma.AIAnalysisWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.AIAnalysisScalarFieldEnum | Prisma.AIAnalysisScalarFieldEnum[]
 }
 
 /**

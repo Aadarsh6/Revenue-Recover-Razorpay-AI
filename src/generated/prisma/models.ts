@@ -10,4 +10,6 @@
  */
 export type * from './models/RecoveryCase.js'
 export type * from './models/WebhookEvent.js'
+export type * from './models/AIAnalysis.js'
+export type * from './models/PaymentRecord.js'
 export type * from './commonInputTypes.js'

@@ -52,7 +52,9 @@ export const AnyNull = runtime.AnyNull
 
 export const ModelName = {
   RecoveryCase: 'RecoveryCase',
-  WebhookEvent: 'WebhookEvent'
+  WebhookEvent: 'WebhookEvent',
+  AIAnalysis: 'AIAnalysis',
+  PaymentRecord: 'PaymentRecord'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -98,6 +100,35 @@ export const WebhookEventScalarFieldEnum = {
 } as const
 
 export type WebhookEventScalarFieldEnum = (typeof WebhookEventScalarFieldEnum)[keyof typeof WebhookEventScalarFieldEnum]
+
+
+export const AIAnalysisScalarFieldEnum = {
+  id: 'id',
+  recoveryCaseId: 'recoveryCaseId',
+  diagnosis: 'diagnosis',
+  evidence: 'evidence',
+  recommendedAction: 'recommendedAction',
+  riskLevel: 'riskLevel',
+  model: 'model',
+  createdAt: 'createdAt'
+} as const
+
+export type AIAnalysisScalarFieldEnum = (typeof AIAnalysisScalarFieldEnum)[keyof typeof AIAnalysisScalarFieldEnum]
+
+
+export const PaymentRecordScalarFieldEnum = {
+  id: 'id',
+  paymentId: 'paymentId',
+  contact: 'contact',
+  email: 'email',
+  amount: 'amount',
+  currency: 'currency',
+  method: 'method',
+  status: 'status',
+  createdAt: 'createdAt'
+} as const
+
+export type PaymentRecordScalarFieldEnum = (typeof PaymentRecordScalarFieldEnum)[keyof typeof PaymentRecordScalarFieldEnum]
 
 
 export const SortOrder = {

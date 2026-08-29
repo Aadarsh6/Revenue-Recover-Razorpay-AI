@@ -51,3 +51,13 @@ export type RecoveryCase = Prisma.RecoveryCaseModel
  * 
  */
 export type WebhookEvent = Prisma.WebhookEventModel
+/**
+ * Model AIAnalysis
+ * 
+ */
+export type AIAnalysis = Prisma.AIAnalysisModel
+/**
+ * Model PaymentRecord
+ * 
+ */
+export type PaymentRecord = Prisma.PaymentRecordModel
