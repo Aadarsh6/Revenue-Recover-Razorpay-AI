@@ -10,18 +10,14 @@ export interface AIAnalysisResult {
 export class AIAnalystService {
   private apiKey: string;
   private endpoint = 'https://api.groq.com/openai/v1/chat/completions';
-  private model = 'qwen/qwen3.6-27b';
-  
+  private model = 'llama-3.3-70b-versatile'; // Switched to non-reasoning model
+
   constructor() {
     this.apiKey = process.env.GROQ_API_KEY || '';
     if (!this.apiKey) {
       throw new Error('GROQ_API_KEY is missing in environment variables');
     }
   }
-
-  
-
-
 
   async analyzeFailure(context: AggregatedContext): Promise<AIAnalysisResult> {
     const prompt = this.constructPrompt(context);
@@ -36,10 +32,10 @@ export class AIAnalystService {
         body: JSON.stringify({
           model: this.model,
           messages: [
-            { role: "system", content: "You are an expert Fintech AI. You output ONLY valid JSON, with no markdown formatting." },
+            { role: "system", content: "You are an expert Fintech AI. You output ONLY valid JSON." },
             { role: "user", content: prompt }
           ],
-          // Removed response_format to prevent 400 API errors
+          response_format: { type: "json_object" }, // Native JSON mode
           temperature: 0.1,
           max_tokens: 1024
         })
@@ -51,18 +47,9 @@ export class AIAnalystService {
       }
 
       const data = await response.json();
-      let responseText = data.choices[0].message.content;
+      const responseText = data.choices[0].message.content;
 
-    //    console.log("[AI Analyst] Raw Groq Response:", responseText);
-
-      // Manual extraction: find the LAST { and the LAST } to skip reasoning text
-      const lastBrace = responseText.lastIndexOf('{');
-      const lastClosingBrace = responseText.lastIndexOf('}');
-      
-      if (lastBrace !== -1 && lastClosingBrace !== -1) {
-        responseText = responseText.substring(lastBrace, lastClosingBrace + 1);
-      }
-
+      // Because we use response_format: json_object, this is guaranteed to be valid JSON
       const parsedResult = JSON.parse(responseText) as AIAnalysisResult;
 
       if (!this.validateAIResult(parsedResult)) {
@@ -120,7 +107,6 @@ export class AIAnalystService {
       result &&
       typeof result.diagnosis === 'string' &&
       Array.isArray(result.evidence) &&
-      // Ensure every item in the array is a string
       result.evidence.every((item: any) => typeof item === 'string') &&
       validActions.includes(result.recommended_action) &&
       validRisks.includes(result.risk_level)
