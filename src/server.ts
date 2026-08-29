@@ -7,6 +7,7 @@ import { validateState, StateDecision } from "./services/stateValidator";
 import { createRecoveryCase } from "./services/recoveryCaseService";
 import { aggregateContext } from "./services/contextAggregator";
 import { AIAnalystService } from "./services/aiAnalyst";
+import { evaluatePolicy } from "./services/policyEngine";
 
 dotenv.config();
 
@@ -167,6 +168,42 @@ app.post(
           aiAction: aiResult.recommended_action
         }
       });
+
+            // Step 4: Update RecoveryCase with quick summary fields
+      await prisma.recoveryCase.update({
+        where: { id: recoveryCase.id },
+        data: {
+          aiDiagnosis: aiResult.diagnosis,
+          aiAction: aiResult.recommended_action
+        }
+      });
+
+      // Step 5: Pass to Policy Engine
+      console.log("⚖️ Evaluating Policy Engine...");
+      const policyResult = await evaluatePolicy(recoveryCase.id, stateResult.livePayment, aiResult);
+      
+      console.log(`Policy Decision: ${policyResult.decision} - ${policyResult.reason}`);
+
+      // Step 6: Apply Policy Decision
+      if (policyResult.decision === 'BLOCK' || policyResult.decision === 'HUMAN') {
+        await prisma.recoveryCase.update({
+          where: { id: recoveryCase.id },
+          data: { 
+            status: policyResult.decision === 'BLOCK' ? 'BLOCKED' : 'PENDING_HUMAN_REVIEW',
+            policyDecision: policyResult.decision
+          }
+        });
+        console.log(`🛑 Pipeline stopped by Policy Engine. Case marked as ${policyResult.decision}.`);
+      } else {
+        await prisma.recoveryCase.update({
+          where: { id: recoveryCase.id },
+          data: { 
+            status: 'AUTO_RECOVERED', // Will be updated by Execution Layer later
+            policyDecision: policyResult.decision
+          }
+        });
+        console.log("✅ Policy Engine authorized AUTONOMOUS execution. Proceeding to Execution Layer...");
+      }
 
       // ⬇️ POLICY ENGINE WILL GO HERE NEXT
       // 3. Create AI Audit Record
