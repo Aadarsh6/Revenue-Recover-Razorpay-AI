@@ -1,4 +1,4 @@
-import { Bot, AlertTriangle, Clock } from 'lucide-react';
+import { Bot, AlertTriangle, Clock, ShieldX, UserSearch } from 'lucide-react';
 import type { RecoveryCase } from '../types';
 
 export default function CaseDetails({ c }: { c: RecoveryCase }) {
@@ -9,14 +9,46 @@ export default function CaseDetails({ c }: { c: RecoveryCase }) {
   return (
     <tr className="bg-slate-50/50">
       <td colSpan={7} className="p-6">
-        {/* Strict 2-column grid */}
         <div className="grid grid-cols-2 gap-8">
           
-          {/* Left Column */}
+          {/* Left Column: AI & Execution Details */}
           <div className="space-y-4 border-r border-slate-200 pr-8">
             <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wider">AI Analysis & Execution</h3>
             
-            {c.aiAnalysis && c.aiAnalysis.length > 0 ? (
+            {/* SPECIAL CASE: BLOCKED */}
+            {c.status === 'BLOCKED' && (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <ShieldX size={16} className="text-red-600" />
+                  <span className="font-semibold text-red-900 text-sm">Recovery blocked before execution.</span>
+                </div>
+                <div className="text-xs text-red-700">
+                  <strong>Reason:</strong> Live payment was already captured (Race Condition Guard).
+                </div>
+                <div className="text-xs text-red-700 mt-1">
+                  No AI analysis was performed. No money moved.
+                </div>
+              </div>
+            )}
+
+            {/* SPECIAL CASE: PENDING HUMAN REVIEW */}
+            {c.status === 'PENDING_HUMAN_REVIEW' && (
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <UserSearch size={16} className="text-yellow-600" />
+                  <span className="font-semibold text-yellow-900 text-sm">Escalated to Human Review</span>
+                </div>
+                <div className="text-xs text-yellow-700">
+                  <strong>Reason:</strong> AI flagged HIGH risk or requested escalation.
+                </div>
+                <div className="text-xs text-yellow-700 mt-1">
+                  No autonomous recovery action was executed.
+                </div>
+              </div>
+            )}
+
+            {/* NORMAL CASE: AI ANALYSIS EXISTS */}
+            {c.aiAnalysis && c.aiAnalysis.length > 0 && (
               <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
                 <div className="flex items-center gap-2 mb-2">
                   <Bot size={16} className="text-purple-600" />
@@ -36,10 +68,9 @@ export default function CaseDetails({ c }: { c: RecoveryCase }) {
                   </div>
                 )}
               </div>
-            ) : (
-              <div className="text-xs text-slate-400 italic">No AI analysis recorded.</div>
             )}
 
+            {/* EXECUTION DETAILS (Only show if attempt was made) */}
             {c.recoveryAttempt && (
               <div className="bg-white border border-slate-200 rounded-lg p-4">
                 <h4 className="text-xs font-bold text-slate-600 uppercase mb-2">Recovery Attempt</h4>
