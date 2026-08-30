@@ -1,6 +1,10 @@
 import { useEffect, useState, Fragment } from 'react';
 import axios from 'axios';
-import { ShieldCheck, Activity, ChevronDown, ChevronUp, Bot } from 'lucide-react';
+// import { ShieldCheck, Activity, ChevronDown, ChevronUp, Bot } from 'lucide-react';
+// Update this import to include Bot
+import { ShieldCheck, Bot, Activity, ChevronDown, ChevronUp } from 'lucide-react';
+
+
 import type { RecoveryCase } from './types';
 import CaseDetails from './Components/CaseDetails';
 // import { RecoveryCase } from './types';

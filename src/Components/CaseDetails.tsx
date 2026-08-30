@@ -1,4 +1,4 @@
-import { Bot, AlertTriangle, Clock, ShieldCheck } from 'lucide-react';
+import { Bot, AlertTriangle, Clock } from 'lucide-react';
 import type { RecoveryCase } from '../types';
 
 export default function CaseDetails({ c }: { c: RecoveryCase }) {
@@ -9,10 +9,11 @@ export default function CaseDetails({ c }: { c: RecoveryCase }) {
   return (
     <tr className="bg-slate-50/50">
       <td colSpan={7} className="p-6">
-        <div className="flex flex-col md:flex-row gap-8">
+        {/* Strict 2-column grid */}
+        <div className="grid grid-cols-2 gap-8">
           
-          {/* Left Column: AI & Execution Details */}
-          <div className="space-y-4 md:w-1/2">
+          {/* Left Column */}
+          <div className="space-y-4 border-r border-slate-200 pr-8">
             <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wider">AI Analysis & Execution</h3>
             
             {c.aiAnalysis && c.aiAnalysis.length > 0 ? (
@@ -58,7 +59,7 @@ export default function CaseDetails({ c }: { c: RecoveryCase }) {
           </div>
 
           {/* Right Column: Audit Timeline */}
-          <div className="md:w-1/2">
+          <div className="pl-4">
             <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wider mb-4">Audit Timeline</h3>
             {c.auditLogs && c.auditLogs.length > 0 ? (
               <div className="relative border-l-2 border-slate-200 pl-4 space-y-6">
@@ -78,8 +79,8 @@ export default function CaseDetails({ c }: { c: RecoveryCase }) {
                 ))}
               </div>
             ) : (
-              <div className="text-xs text-slate-400 italic flex items-center gap-1">
-                <ShieldCheck size={12} /> No audit logs recorded for this case.
+              <div className="text-xs text-red-500 font-bold italic flex items-center gap-1">
+                <AlertTriangle size={12} /> NO AUDIT LOGS FOUND IN DATA
               </div>
             )}
           </div>
