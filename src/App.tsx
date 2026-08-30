@@ -88,11 +88,12 @@ export default function App() {
                       {c.aiDiagnosis || 'N/A'}
                     </td>
                     <td className="p-4 text-sm text-slate-600">
-                      <span className={`px-2 py-1 rounded-full text-xs font-semibold border ${
-                        c.policyDecision === 'AUTO' ? 'bg-green-50 text-green-700 border-green-200' : 
-                        c.policyDecision === 'HUMAN' ? 'bg-yellow-50 text-yellow-700 border-yellow-200' : 
-                        'bg-slate-50 text-slate-500 border-slate-200'
+                      <span className={`px-3 py-1 rounded-full text-xs font-bold border ${
+                        c.policyDecision === 'AUTO' ? 'bg-green-100 text-green-800 border-green-300' : 
+                        c.policyDecision === 'HUMAN' ? 'bg-yellow-100 text-yellow-800 border-yellow-300' : 
+                        'bg-slate-100 text-slate-500 border-slate-300'
                       }`}>
+                        {c.policyDecision || 'N/A'}
                       </span>
                     </td>
                     <td className="p-4">
