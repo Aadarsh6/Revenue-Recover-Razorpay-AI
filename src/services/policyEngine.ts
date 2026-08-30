@@ -1,7 +1,7 @@
 import { AIAnalysisResult } from './aiAnalyst';
-import { LivePayment } from './stateValidator';
-import prisma from '../lib/prismaClient';
+import { LivePayment, PaymentStatus } from './stateValidator';
 import Razorpay from 'razorpay';
+import prisma from '../lib/prismaClient';
 
 export type PolicyDecision = 'AUTO' | 'HUMAN' | 'BLOCK';
 
@@ -9,6 +9,15 @@ export interface PolicyResult {
   decision: PolicyDecision;
   reason: string;
 }
+
+// Explicit Action/State Compatibility Matrix
+const ALLOWED_ACTIONS: Record<PaymentStatus, AIAnalysisResult['recommended_action'][]> = {
+  failed: ['CREATE_RECOVERY_LINK', 'SEND_INVOICE_NOTIFICATION', 'ESCALATE_HUMAN', 'BLOCK'],
+  captured: [], // No recovery actions allowed if already captured
+  authorized: [],
+  refunded: [],
+  created: []
+};
 
 const POLICY_MATRIX: Record<AIAnalysisResult['recommended_action'], Record<AIAnalysisResult['risk_level'], PolicyDecision>> = {
   CREATE_RECOVERY_LINK: { LOW: 'AUTO', MEDIUM: 'AUTO', HIGH: 'HUMAN' },
@@ -23,50 +32,37 @@ export async function evaluatePolicy(
   aiResult: AIAnalysisResult
 ): Promise<PolicyResult> {
   
-  // 1. 🔥 RE-FETCH LIVE RAZORPAY STATE IMMEDIATELY BEFORE EXECUTION
+  // 1. 🔥 RE-FETCH LIVE RAZORPAY STATE
+  let freshLivePayment: LivePayment;
   try {
     const razorpay = new Razorpay({
       key_id: process.env.RAZORPAY_KEY_ID!,
       key_secret: process.env.RAZORPAY_KEY_SECRET!
     });
-
-    const freshLivePayment = await razorpay.payments.fetch(paymentId) as LivePayment;
-
-    if (freshLivePayment.status !== 'failed') {
-      return { 
-        decision: 'BLOCK', 
-        reason: `🛑 RACE CONDITION CAUGHT: Live payment status is now ${freshLivePayment.status}. Aborting to prevent duplicate collection.` 
-      };
-    }
+    freshLivePayment = await razorpay.payments.fetch(paymentId) as LivePayment;
   } catch (error) {
-    return { decision: 'BLOCK', reason: 'Failed to re-fetch live state from Razorpay. Aborting for safety.' };
+    return { decision: 'BLOCK', reason: 'Failed to re-fetch live state. Aborting.' };
   }
 
-  // 2. Check if we already attempted recovery (Only check terminal/active states, NOT PENDING_EXECUTION)
-  const existingCase = await prisma.recoveryCase.findUnique({
-    where: { id: recoveryCaseId }
-  });
-
-  if (existingCase && (
-      existingCase.status === 'RECOVERY_LINK_CREATED' || 
-      existingCase.status === 'AUTO_RECOVERED' || 
-      existingCase.status === 'PENDING_HUMAN_REVIEW' ||
-      existingCase.status === 'BLOCKED'
-  )) {
+  // 2. ACTION-STATE COMPATIBILITY CHECK
+  const allowed = ALLOWED_ACTIONS[freshLivePayment.status] || [];
+  if (!allowed.includes(aiResult.recommended_action)) {
     return { 
       decision: 'BLOCK', 
-      reason: `RecoveryCase ${recoveryCaseId} is already in terminal status ${existingCase.status}.` 
+      reason: `🛑 GUARD: Action ${aiResult.recommended_action} is not allowed for payment state ${freshLivePayment.status}.` 
     };
   }
 
-  // 3. Evaluate using the Explicit Policy Matrix
+  // 3. CHECK TERMINAL CASE STATUSES
+  const existingCase = await prisma.recoveryCase.findUnique({ where: { id: recoveryCaseId } });
+  if (existingCase && ['RECOVERY_LINK_CREATED', 'AUTO_RECOVERED', 'PENDING_HUMAN_REVIEW', 'BLOCKED'].includes(existingCase.status)) {
+    return { decision: 'BLOCK', reason: `Case ${recoveryCaseId} already in terminal status ${existingCase.status}.` };
+  }
+
+  // 4. EVALUATE POLICY MATRIX
   const decision = POLICY_MATRIX[aiResult.recommended_action][aiResult.risk_level];
 
-  if (decision === 'AUTO') {
-    return { decision: 'AUTO', reason: `Policy Matrix allows ${aiResult.recommended_action} with ${aiResult.risk_level} risk. Live state verified.` };
-  } else if (decision === 'HUMAN') {
-    return { decision: 'HUMAN', reason: `Policy Matrix requires human review for ${aiResult.recommended_action} with ${aiResult.risk_level} risk.` };
-  } else {
-    return { decision: 'BLOCK', reason: `Policy Matrix blocked action.` };
-  }
+  if (decision === 'AUTO') return { decision: 'AUTO', reason: `Policy Matrix allows ${aiResult.recommended_action} with ${aiResult.risk_level} risk.` };
+  if (decision === 'HUMAN') return { decision: 'HUMAN', reason: `Policy Matrix requires human review for ${aiResult.recommended_action} with ${aiResult.risk_level} risk.` };
+  return { decision: 'BLOCK', reason: 'Policy Matrix blocked action.' };
 }
