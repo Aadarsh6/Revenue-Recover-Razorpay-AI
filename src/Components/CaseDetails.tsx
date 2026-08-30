@@ -1,5 +1,5 @@
 import { Bot, AlertTriangle, Clock, ShieldCheck } from 'lucide-react';
-import { RecoveryCase } from '../types';
+import type { RecoveryCase } from '../types';
 
 export default function CaseDetails({ c }: { c: RecoveryCase }) {
   const formatTime = (dateString: string) => {
