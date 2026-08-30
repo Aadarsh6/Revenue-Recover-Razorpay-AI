@@ -7,6 +7,7 @@ import { ShieldCheck, Bot, Activity, ChevronDown, ChevronUp } from 'lucide-react
 
 import type { RecoveryCase } from './types';
 import CaseDetails from './Components/CaseDetails';
+import StatsCards from './Components/StatsCards';
 // import { RecoveryCase } from './types';
 // import CaseDetails from './components/CaseDetails';
 
@@ -54,6 +55,9 @@ export default function App() {
       ) : cases.length === 0 ? (
         <div className="text-center text-slate-500 py-10">No recovery cases found. Trigger a webhook to see magic happen!</div>
       ) : (
+         <>
+          {/* ADD STATS CARDS HERE */}
+          <StatsCards cases={cases} />
         <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
           <table className="w-full text-left border-collapse">
             <thead>
@@ -110,6 +114,7 @@ export default function App() {
             </tbody>
           </table>
         </div>
+        </>
       )}
     </div>
   );
