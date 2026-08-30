@@ -2,7 +2,7 @@ export interface AuditLog {
   id: number;
   event: string;
   createdAt: string;
-  metadata?: any;
+  metadata?: Record<string, unknown>;
 }
 
 export interface AIAnalysis {
