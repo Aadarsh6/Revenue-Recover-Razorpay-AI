@@ -42,3 +42,8 @@ export type PaymentRecord = Prisma.PaymentRecordModel
  * 
  */
 export type RecoveryAttempt = Prisma.RecoveryAttemptModel
+/**
+ * Model AuditLog
+ * 
+ */
+export type AuditLog = Prisma.AuditLogModel

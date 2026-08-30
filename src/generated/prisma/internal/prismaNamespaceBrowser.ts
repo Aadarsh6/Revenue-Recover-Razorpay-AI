@@ -55,7 +55,8 @@ export const ModelName = {
   WebhookEvent: 'WebhookEvent',
   AIAnalysis: 'AIAnalysis',
   PaymentRecord: 'PaymentRecord',
-  RecoveryAttempt: 'RecoveryAttempt'
+  RecoveryAttempt: 'RecoveryAttempt',
+  AuditLog: 'AuditLog'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -147,6 +148,17 @@ export const RecoveryAttemptScalarFieldEnum = {
 export type RecoveryAttemptScalarFieldEnum = (typeof RecoveryAttemptScalarFieldEnum)[keyof typeof RecoveryAttemptScalarFieldEnum]
 
 
+export const AuditLogScalarFieldEnum = {
+  id: 'id',
+  caseId: 'caseId',
+  event: 'event',
+  metadata: 'metadata',
+  createdAt: 'createdAt'
+} as const
+
+export type AuditLogScalarFieldEnum = (typeof AuditLogScalarFieldEnum)[keyof typeof AuditLogScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -160,6 +172,14 @@ export const JsonNullValueInput = {
 } as const
 
 export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
+
+
+export const NullableJsonNullValueInput = {
+  DbNull: DbNull,
+  JsonNull: JsonNull
+} as const
+
+export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
 
 
 export const QueryMode = {

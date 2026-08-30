@@ -41,7 +41,8 @@ model RecoveryCase{
 
   webhookEvent        WebhookEvent @relation(fields: [webhookEventId], references: [id])
   aiAnalysis          AIAnalysis[]
-  recoveryAttempt RecoveryAttempt?
+  recoveryAttempt     RecoveryAttempt?
+  auditLogs           AuditLog[]
 }
 
 
@@ -96,4 +97,14 @@ model RecoveryAttempt {
   updatedAt      DateTime @updatedAt
 
   recoveryCase   RecoveryCase @relation(fields: [recoveryCaseId], references: [id])
+}
+
+model AuditLog{
+  id           Int @id @default(autoincrement())
+  caseId       Int?
+  event        String
+  metadata     Json?
+  createdAt    DateTime @default(now())
+
+  recoveryCase RecoveryCase? @relation(fields: [caseId], references: [id])
 }
