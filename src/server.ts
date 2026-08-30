@@ -10,10 +10,14 @@ import { AIAnalystService } from "./services/aiAnalyst";
 import { evaluatePolicy } from "./services/policyEngine";
 import { ExecutionLayer } from "./services/executionLayer";
 import { logAudit } from "./services/auditLog";
+// @ts-ignore
+import cors from "cors";
 
 dotenv.config();
-
 const app = express();
+
+app.use(cors())
+
 
 app.post(
   "/webhook/razorpay",
