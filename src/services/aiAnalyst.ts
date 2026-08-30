@@ -11,7 +11,7 @@ export class AIAnalystService {
   private apiKey: string;
   private endpoint = 'https://api.groq.com/openai/v1/chat/completions';
   private model = 'openai/gpt-oss-20b';
-  
+
   constructor() {
     this.apiKey = process.env.GROQ_API_KEY || '';
     if (!this.apiKey) {
@@ -75,7 +75,7 @@ export class AIAnalystService {
     }
   }
 
-  private constructPrompt(context: AggregatedContext): string {
+   private constructPrompt(context: AggregatedContext): string {
     return `
       Analyze the following clean context JSON of a failed payment and diagnose the most likely reason for failure.
       Based on the customer's history, recommend a safe action to recover this revenue.
@@ -88,6 +88,9 @@ export class AIAnalystService {
       2. "evidence": An array of SHORT strings explaining WHY (e.g., ["Failed via card", "4 past UPI successes"]).
       3. "recommended_action": MUST be exactly one of ["CREATE_RECOVERY_LINK", "SEND_INVOICE_NOTIFICATION", "ESCALATE_HUMAN", "BLOCK"].
       4. "risk_level": MUST be exactly one of ["LOW", "MEDIUM", "HIGH"].
+         - STRICT RULE: If the customer has 0 previous successful payments, the risk_level MUST be "HIGH".
+         - STRICT RULE: If the customer has 1-3 previous successful payments, the risk_level MUST be "MEDIUM".
+         - STRICT RULE: If the customer has 4+ previous successful payments, the risk_level MUST be "LOW".
 
       OUTPUT FORMAT: Strict JSON matching this TypeScript interface:
       {
