@@ -318,6 +318,9 @@ app.get("/api/cases", async (req: Request, res: Response) => {
       include: {
         aiAnalysis: true,
         recoveryAttempt: true,
+        auditLogs:{
+          orderBy: { createdAt: 'asc' }
+        }
       },
       orderBy: {
         createdAt: 'desc',
