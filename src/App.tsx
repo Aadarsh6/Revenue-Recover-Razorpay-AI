@@ -24,10 +24,20 @@ export default function App() {
   const [cases, setCases] = useState<RecoveryCase[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    axios.get('/api/cases')
-      .then(res => setCases(res.data))
-      .catch(err => console.error(err))
+    useEffect(() => {
+    axios.get('http://localhost:3000/api/cases')
+      .then(res => {
+        console.log("API Response:", res.data);
+        if (Array.isArray(res.data)) {
+          setCases(res.data);
+        } else {
+          setCases([]);
+        }
+      })
+      .catch(err => {
+        console.error("Axios error:", err);
+        setCases([]);
+      })
       .finally(() => setLoading(false));
   }, []);
 
