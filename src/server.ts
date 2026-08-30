@@ -9,6 +9,7 @@ import { aggregateContext } from "./services/contextAggregator";
 import { AIAnalystService } from "./services/aiAnalyst";
 import { evaluatePolicy } from "./services/policyEngine";
 import { ExecutionLayer } from "./services/executionLayer";
+import { logAudit } from "./services/auditLog";
 
 dotenv.config();
 
@@ -59,6 +60,7 @@ app.post(
           status: "PENDING",
         },
       });
+      await logAudit('WEBHOOK_RECEIVED', undefined, { eventId, eventType });
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError && error.code === "P2002") {
         console.error(`Duplicate webhook received: ${eventId}`);
@@ -75,6 +77,7 @@ app.post(
       console.log(`Processing event ${eventId}(${eventType})`);
       
       const stateResult: StateDecision = await validateState(eventType, paymentId);
+      await logAudit('STATE_VALIDATED', undefined, { paymentId, decision: stateResult.decision });
       
       // 1. Save Payment Record for history
       if (stateResult.decision === 'VALID_FAILURE' || stateResult.decision === 'ALREADY_CAPTURED' || stateResult.decision === 'VALID_CAPTURE') {
@@ -103,13 +106,17 @@ app.post(
           
           await prisma.recoveryCase.update({
             where: { id: parseInt(recoveryCaseId) },
-            data: { status: 'AUTO_RECOVERED' as any }
+            data: { status: 'AUTO_RECOVERED' } // Removed `as any` if Prisma is generated
           });
 
           await prisma.recoveryAttempt.updateMany({
             where: { recoveryCaseId: parseInt(recoveryCaseId) },
-            data: { status: 'SUCCESS' as any }
+            data: { status: 'SUCCESS' } // Removed `as any`
           });
+
+          // ✅ MOVED INSIDE THE IF BLOCK
+          await logAudit('RECOVERY_PAYMENT_CAPTURED', parseInt(recoveryCaseId), { paymentId });
+          await logAudit('LOOP_CLOSED', parseInt(recoveryCaseId), { status: 'AUTO_RECOVERED' });
 
           console.log(`🎉🎉 LOOP CLOSED! Case ${recoveryCaseId} is now AUTO_RECOVERED!`);
         } else {
@@ -120,11 +127,12 @@ app.post(
           where: { id: newEvent.id },
           data: { status: "PROCESSED", processedAt: new Date() },
         });
+
         return; // Stop processing! Do not create a new RecoveryCase for a successful payment.
       }
-
       // 3. --- Normal Failed Payment Flow ---
       const recoveryCase = await createRecoveryCase(newEvent.id, paymentId, stateResult);
+      await logAudit('RECOVERY_CASE_CREATED', recoveryCase.id, { status: recoveryCase.status })
 
       if (recoveryCase.status !== 'OPEN') {
         await prisma.webhookEvent.update({
@@ -156,6 +164,7 @@ app.post(
       console.log("🧠 Sending clean context to Groq AI for diagnosis...");
       const aiService = new AIAnalystService();
       const aiResult = await aiService.analyzeFailure(context);
+      await logAudit('AI_ANALYSIS_COMPLETED', recoveryCase.id, { action: aiResult.recommended_action, risk: aiResult.risk_level });
       console.log("🤖 AI Recommendation:", aiResult);
       
       await prisma.aIAnalysis.upsert({
@@ -187,6 +196,7 @@ app.post(
 
       console.log("⚖️ Evaluating Policy Engine...");
       const policyResult = await evaluatePolicy(recoveryCase.id, paymentId, aiResult);
+      await logAudit('POLICY_DECIDED', recoveryCase.id, { decision: policyResult.decision });
       
       console.log(`Policy Decision: ${policyResult.decision} - ${policyResult.reason}`);
 
@@ -253,6 +263,7 @@ app.post(
         });
 
         if (executionResult.success) {
+          await logAudit('RECOVERY_LINK_CREATED', recoveryCase.id, { url: executionResult.razorpayResponse?.short_url });
           await prisma.recoveryCase.update({
             where: { id: recoveryCase.id },
             data: { status: 'RECOVERY_LINK_CREATED' }
