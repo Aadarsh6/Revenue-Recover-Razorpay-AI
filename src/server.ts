@@ -302,7 +302,6 @@ app.post(
 );
 
 // API Route for the Dashboard
-// API Route for the Dashboard
 app.get("/api/cases", async (req: Request, res: Response) => {
   try {
     const cases = await prisma.recoveryCase.findMany({
@@ -318,6 +317,30 @@ app.get("/api/cases", async (req: Request, res: Response) => {
   } catch (error: any) {
     console.error("[API Error] Failed to fetch cases:", error);
     res.status(500).json({ error: "Failed to fetch cases", details: error.message });
+  }
+});
+
+
+// API Route for single case details (for the frontend timeline)
+app.get("/api/cases/:id", async (req: Request, res: Response) => {
+  try {
+    const caseId = parseInt(Array.isArray(req.params.id) ? req.params.id[0] : req.params.id);
+    const recoveryCase = await prisma.recoveryCase.findUnique({
+      where: { id: caseId },
+      include: {
+        aiAnalysis: true,
+        recoveryAttempt: true,
+        auditLogs: {
+          orderBy: { createdAt: 'asc' }
+        },
+        webhookEvent: true
+      }
+    });
+    if (!recoveryCase) return res.status(404).json({ error: "Case not found" });
+    res.json(recoveryCase);
+  } catch (error: any) {
+    console.error("[API Error] Failed to fetch case:", error);
+    res.status(500).json({ error: "Failed to fetch case", details: error.message });
   }
 });
 
