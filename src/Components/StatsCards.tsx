@@ -1,5 +1,5 @@
 import { CheckCircle2, ShieldX, UserSearch, XCircle, ListChecks } from 'lucide-react';
-import { RecoveryCase } from '../types';
+import type { RecoveryCase } from '../types';
 
 export default function StatsCards({ cases }: { cases: RecoveryCase[] }) {
   const total = cases.length;
