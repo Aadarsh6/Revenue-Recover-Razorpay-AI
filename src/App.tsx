@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Fragment } from 'react';
 import axios from 'axios';
 import { ShieldCheck, Bot, Activity, ChevronDown, ChevronUp, AlertTriangle, Clock } from 'lucide-react';
 
 // TypeScript Interfaces
-interface AuditLog { id: number; event: string; createdAt: string; metadata?: Record<string, unknown>; }
+interface AuditLog { id: number; event: string; createdAt: string; metadata?: any; }
 interface AIAnalysis { diagnosis: string; recommendedAction: string; riskLevel: string; evidence: string[]; }
 interface RecoveryAttempt { recoveryUrl: string | null; status: string | null; errorMessage: string | null; }
 interface RecoveryCase {
@@ -15,9 +15,9 @@ interface RecoveryCase {
   aiAction: string | null;
   policyDecision: string | null;
   createdAt: string;
-  aiAnalysis: AIAnalysis[] | null;
+  aiAnalysis: AIAnalysis[] | null; // Can be null
   recoveryAttempt: RecoveryAttempt | null;
-  auditLogs: AuditLog[];
+  auditLogs: AuditLog[]; // Should exist, but just in case
 }
 
 export default function App() {
@@ -83,9 +83,8 @@ export default function App() {
             </thead>
             <tbody>
               {cases.map((c) => (
-                <>
+                <Fragment key={c.id}>
                   <tr 
-                    key={c.id} 
                     className="border-b border-slate-100 hover:bg-slate-50 cursor-pointer transition-colors"
                     onClick={() => setExpandedCaseId(expandedCaseId === c.id ? null : c.id)}
                   >
@@ -140,12 +139,14 @@ export default function App() {
                                   <span className="mx-2">•</span>
                                   Risk: <span className="font-mono font-bold">{c.aiAnalysis[0].riskLevel}</span>
                                 </div>
-                                <div className="mt-2 text-xs text-slate-600">
-                                  <strong>Evidence:</strong>
-                                  <ul className="list-disc list-inside mt-1 space-y-1">
-                                    {c.aiAnalysis[0].evidence.map((ev, i) => <li key={i}>{ev}</li>)}
-                                  </ul>
-                                </div>
+                                {c.aiAnalysis[0].evidence && c.aiAnalysis[0].evidence.length > 0 && (
+                                  <div className="mt-2 text-xs text-slate-600">
+                                    <strong>Evidence:</strong>
+                                    <ul className="list-disc list-inside mt-1 space-y-1">
+                                      {c.aiAnalysis[0].evidence.map((ev, i) => <li key={i}>{ev}</li>)}
+                                    </ul>
+                                  </div>
+                                )}
                               </div>
                             )}
 
@@ -171,7 +172,7 @@ export default function App() {
                           <div>
                             <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wider mb-4">Audit Timeline</h3>
                             <div className="relative border-l-2 border-slate-200 pl-4 space-y-6">
-                              {c.auditLogs.map((log) => (
+                              {c.auditLogs?.map((log) => (
                                 <div key={log.id} className="relative">
                                   <div className="absolute -left-[1.65rem] top-1 w-3 h-3 rounded-full bg-blue-500 border-2 border-white"></div>
                                   <div className="text-xs text-slate-400 flex items-center gap-1">
@@ -192,7 +193,7 @@ export default function App() {
                       </td>
                     </tr>
                   )}
-                </>
+                </Fragment>
               ))}
             </tbody>
           </table>
