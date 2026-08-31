@@ -8,7 +8,11 @@ export type PolicyDecision = 'AUTO' | 'HUMAN' | 'BLOCK';
 export interface PolicyResult {
   decision: PolicyDecision;
   reason: string;
+  freshPayment?: LivePayment; // the re-fetched live state, passed to execution
 }
+
+// Autonomous execution cap (in paise). Default ₹50,000. Override in .env.
+const MAX_AUTO_AMOUNT_PAISE = Number(process.env.MAX_AUTO_AMOUNT_PAISE || 5_000_000);
 
 // Explicit Action/State Compatibility Matrix
 const ALLOWED_ACTIONS: Record<PaymentStatus, AIAnalysisResult['recommended_action'][]> = {
@@ -26,12 +30,17 @@ const POLICY_MATRIX: Record<AIAnalysisResult['recommended_action'], Record<AIAna
   BLOCK: { LOW: 'BLOCK', MEDIUM: 'BLOCK', HIGH: 'BLOCK' }
 };
 
+interface CustomerHistory {
+  previousSuccessfulPayments: number;
+}
+
 export async function evaluatePolicy(
   recoveryCaseId: number,
   paymentId: string,
-  aiResult: AIAnalysisResult
+  aiResult: AIAnalysisResult,
+  customerHistory?: CustomerHistory
 ): Promise<PolicyResult> {
-  
+
   // 1. 🔥 RE-FETCH LIVE RAZORPAY STATE
   let freshLivePayment: LivePayment;
   try {
@@ -47,22 +56,41 @@ export async function evaluatePolicy(
   // 2. ACTION-STATE COMPATIBILITY CHECK
   const allowed = ALLOWED_ACTIONS[freshLivePayment.status] || [];
   if (!allowed.includes(aiResult.recommended_action)) {
-    return { 
-      decision: 'BLOCK', 
-      reason: `🛑 GUARD: Action ${aiResult.recommended_action} is not allowed for payment state ${freshLivePayment.status}.` 
+    return {
+      decision: 'BLOCK',
+      reason: `🛑 GUARD: Action ${aiResult.recommended_action} is not allowed for payment state ${freshLivePayment.status}.`
     };
   }
 
-  // 3. CHECK TERMINAL CASE STATUSES
+  // 3. 🔒 DETERMINISTIC HARD RULES — cannot be overridden by the AI
+  // 3a. Zero payment history ALWAYS requires human review, no matter what the AI said.
+  if (customerHistory && customerHistory.previousSuccessfulPayments === 0) {
+    return {
+      decision: 'HUMAN',
+      reason: `Hard rule: customer has 0 previous successful payments. Human review required regardless of AI risk assessment (AI said ${aiResult.risk_level}).`,
+      freshPayment: freshLivePayment
+    };
+  }
+
+  // 3b. Amount cap on autonomous execution.
+  if (freshLivePayment.amount > MAX_AUTO_AMOUNT_PAISE) {
+    return {
+      decision: 'HUMAN',
+      reason: `Hard rule: amount ₹${(freshLivePayment.amount / 100).toLocaleString('en-IN')} exceeds the autonomous execution cap. Human review required.`,
+      freshPayment: freshLivePayment
+    };
+  }
+
+  // 4. CHECK TERMINAL CASE STATUSES
   const existingCase = await prisma.recoveryCase.findUnique({ where: { id: recoveryCaseId } });
   if (existingCase && ['RECOVERY_LINK_CREATED', 'AUTO_RECOVERED', 'PENDING_HUMAN_REVIEW', 'BLOCKED'].includes(existingCase.status)) {
     return { decision: 'BLOCK', reason: `Case ${recoveryCaseId} already in terminal status ${existingCase.status}.` };
   }
 
-  // 4. EVALUATE POLICY MATRIX
+  // 5. EVALUATE POLICY MATRIX
   const decision = POLICY_MATRIX[aiResult.recommended_action][aiResult.risk_level];
 
-  if (decision === 'AUTO') return { decision: 'AUTO', reason: `Policy Matrix allows ${aiResult.recommended_action} with ${aiResult.risk_level} risk.` };
-  if (decision === 'HUMAN') return { decision: 'HUMAN', reason: `Policy Matrix requires human review for ${aiResult.recommended_action} with ${aiResult.risk_level} risk.` };
+  if (decision === 'AUTO') return { decision: 'AUTO', reason: `Policy Matrix allows ${aiResult.recommended_action} with ${aiResult.risk_level} risk.`, freshPayment: freshLivePayment };
+  if (decision === 'HUMAN') return { decision: 'HUMAN', reason: `Policy Matrix requires human review for ${aiResult.recommended_action} with ${aiResult.risk_level} risk.`, freshPayment: freshLivePayment };
   return { decision: 'BLOCK', reason: 'Policy Matrix blocked action.' };
 }
