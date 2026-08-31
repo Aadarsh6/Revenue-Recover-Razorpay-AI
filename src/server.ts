@@ -175,7 +175,7 @@ if (!skipSignatureValidation) {
         await prisma.webhookEvent.update({
           where: { id: newEvent.id },
           data: { 
-            status: recoveryCase.status === 'BLOCKED' ? 'IGNORED' : 'FAILED', 
+            status: ['BLOCKED', 'PENDING_HUMAN_REVIEW'].includes(recoveryCase.status) ? 'IGNORED' : 'FAILED', 
             processedAt: new Date() 
           },
         });
