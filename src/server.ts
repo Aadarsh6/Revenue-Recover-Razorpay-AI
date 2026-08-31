@@ -77,6 +77,8 @@ if (!skipSignatureValidation) {
             console.log(`⏭️ Event ${eventType} has no payment entity. Ignored.`);
           return res.status(200).json({ status: "event type not handled" });
         }
+        let webhookAuditEntry: { id: number } | null = null;
+        let stateAuditEntry: { id: number } | null = null;
 
     let newEvent;
     try {
@@ -88,7 +90,7 @@ if (!skipSignatureValidation) {
           status: "PENDING",
         },
       });
-      await logAudit('WEBHOOK_RECEIVED', undefined, { eventId, eventType });
+      webhookAuditEntry = await logAudit('WEBHOOK_RECEIVED', undefined, { eventId, eventType });
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError && error.code === "P2002") {
         console.error(`Duplicate webhook received: ${eventId}`);
@@ -105,7 +107,7 @@ if (!skipSignatureValidation) {
       console.log(`Processing event ${eventId}(${eventType})`);
       
       const stateResult: StateDecision = await validateState(eventType, paymentId);
-      await logAudit('STATE_VALIDATED', undefined, { paymentId, decision: stateResult.decision });
+      stateAuditEntry = await logAudit('STATE_VALIDATED', undefined, { paymentId, decision: stateResult.decision });
       
       // 1. Save Payment Record for history
       if (stateResult.decision === 'VALID_FAILURE' || stateResult.decision === 'ALREADY_CAPTURED' || stateResult.decision === 'VALID_CAPTURE') {
@@ -161,6 +163,13 @@ if (!skipSignatureValidation) {
       // 3. --- Normal Failed Payment Flow ---
       const recoveryCase = await createRecoveryCase(newEvent.id, paymentId, stateResult);
       await logAudit('RECOVERY_CASE_CREATED', recoveryCase.id, { status: recoveryCase.status })
+      // Attach pre-case audit entries (webhook + state validation) to this case so they appear in the timeline
+        for (const entry of [webhookAuditEntry, stateAuditEntry]) {
+      if (entry) {
+          await prisma.auditLog.update({ where: { id: entry.id }, data: { caseId: recoveryCase.id } });
+        }
+      }
+
 
       if (recoveryCase.status !== 'OPEN') {
         await prisma.webhookEvent.update({
