@@ -6,10 +6,10 @@ import { PrismaClientKnownRequestError } from "./generated/prisma/internal/prism
 import { validateState, StateDecision } from "./services/stateValidator";
 import { createRecoveryCase } from "./services/recoveryCaseService";
 import { aggregateContext } from "./services/contextAggregator";
-import { AIAnalystService } from "./services/aiAnalyst";
 import { evaluatePolicy } from "./services/policyEngine";
 import { ExecutionLayer } from "./services/executionLayer";
 import { logAudit } from "./services/auditLog";
+import { AIAnalystService, AI_MODEL } from "./services/aiAnalyst";
 // @ts-ignore
 import cors from "cors";
 
@@ -211,7 +211,7 @@ if (!skipSignatureValidation) {
           evidence: aiResult.evidence,
           recommendedAction: aiResult.recommended_action,
           riskLevel: aiResult.risk_level,
-          model: 'openai/gpt-oss-20b'
+          model: AI_MODEL
         },
         create: {
           recoveryCaseId: recoveryCase.id,
@@ -386,4 +386,20 @@ app.get("/api/cases/:id", async (req: Request, res: Response) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(` Server running on port ${PORT}`));
+
+async function recoverOrphanedExecutions() {
+  const result = await prisma.recoveryCase.updateMany({
+    where: { status: 'EXECUTING' },
+    data: { status: 'FAILED' },
+  });
+  if (result.count > 0) {
+    console.log(`[Startup] Reset ${result.count} orphaned EXECUTING case(s) to FAILED.`);
+    await logAudit('ORPHANED_EXECUTION_RESET', undefined, { resetCount: result.count });
+  }
+}
+
+recoverOrphanedExecutions()
+  .catch((e) => console.error('[Startup] Orphan recovery failed:', e))
+  .finally(() => {
+    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+  });
