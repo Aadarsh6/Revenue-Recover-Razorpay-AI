@@ -71,7 +71,7 @@ Recovery Case
 ↓
 Context Aggregator
 ↓
-Gemini AI Analyst
+Groq AI Analyst
 ↓
 Deterministic Policy Engine
 ↓
@@ -122,7 +122,7 @@ Escalate to human review.
 ## 5. AI Analyst
 
 AI provider:
-Google Gemini
+Groq
 
 AI role:
 Analysis and recommendation only.
@@ -268,7 +268,7 @@ Database:
 PostgreSQL + Prisma
 
 AI:
-Gemini API + structured output
+Groq API + structured output
 
 Frontend:
 React + TypeScript + TailwindCSS
