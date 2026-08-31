@@ -8,10 +8,10 @@ interface PaymentContext {
   method: string;
   status: string;
   failureReason: string;
-  errorCode: null; // Razorpay doesn't expose a separate code on payment entities
-  errorDescription: livePayment.error_description || null;
-  errorStep: livePayment.error_step || null;
-  errorSource: livePayment.error_source || null;
+  errorCode: string | null;
+  errorDescription: string | null;
+  errorStep: string | null;
+  errorSource: string | null;
 }
 
 interface CustomerContext {
@@ -42,10 +42,10 @@ export async function aggregateContext(livePayment: LivePayment): Promise<Aggreg
     method: livePayment.method,
     status: livePayment.status,
     failureReason: livePayment.error_reason || 'unknown',
-    errorCode: null,
-    errorStep: null,
-    errorSource: null,
-    errorDescription: null
+    errorCode: null, // Razorpay doesn't expose a separate error code on the payment entity
+    errorDescription: livePayment.error_description || null,
+    errorStep: livePayment.error_step || null,
+    errorSource: livePayment.error_source || null
   };
 
   // 2. Real Customer History (Query our DB)
