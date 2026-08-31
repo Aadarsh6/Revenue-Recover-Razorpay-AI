@@ -232,7 +232,7 @@ if (!skipSignatureValidation) {
       });
 
       console.log("⚖️ Evaluating Policy Engine...");
-      const policyResult = await evaluatePolicy(recoveryCase.id, paymentId, aiResult);
+      const policyResult = await evaluatePolicy(recoveryCase.id, paymentId, aiResult, context.customer);
       await logAudit('POLICY_DECIDED', recoveryCase.id, { decision: policyResult.decision });
       
       console.log(`Policy Decision: ${policyResult.decision} - ${policyResult.reason}`);
