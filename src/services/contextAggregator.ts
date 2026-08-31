@@ -8,10 +8,10 @@ interface PaymentContext {
   method: string;
   status: string;
   failureReason: string;
-  errorCode: string | null;
-  errorStep: string | null;
-  errorSource: string | null;
-  errorDescription: string | null;
+  errorCode: null; // Razorpay doesn't expose a separate code on payment entities
+  errorDescription: livePayment.error_description || null;
+  errorStep: livePayment.error_step || null;
+  errorSource: livePayment.error_source || null;
 }
 
 interface CustomerContext {

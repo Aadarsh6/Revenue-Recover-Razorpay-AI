@@ -12,6 +12,9 @@ export type LivePayment = {
   email?: string;
   contact?: string;
   error_reason?: string | null;
+  error_description?: string | null;
+  error_step?: string | null;
+  error_source?: string | null;
   notes?: any;
 };
 
