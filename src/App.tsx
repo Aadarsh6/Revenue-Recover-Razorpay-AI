@@ -16,18 +16,24 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [expandedCaseId, setExpandedCaseId] = useState<number | null>(null);
 
-  useEffect(() => {
-    axios.get('http://localhost:3000/api/cases')
-      .then(res => {
-        if (Array.isArray(res.data)) setCases(res.data);
-        else setCases([]);
-      })
-      .catch(err => {
-        console.error("Axios error:", err);
-        setCases([]);
-      })
-      .finally(() => setLoading(false));
-  }, []);
+useEffect(() => {
+  let cancelled = false;
+
+  const fetchCases = async () => {
+    try {
+      const res = await axios.get('http://localhost:3000/api/cases');
+      if (!cancelled) setCases(Array.isArray(res.data) ? res.data : []);
+    } catch (err) {
+      console.error("Axios error:", err);
+    } finally {
+      if (!cancelled) setLoading(false);
+    }
+  };
+
+  fetchCases();
+  const interval = setInterval(fetchCases, 5000);
+  return () => { cancelled = true; clearInterval(interval); };
+}, []);
 
   const getStatusColor = (status: string) => {
     if (status === 'AUTO_RECOVERED') return 'bg-green-100 text-green-800 border-green-200';

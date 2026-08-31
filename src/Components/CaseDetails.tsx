@@ -2,6 +2,18 @@ import { Bot, AlertTriangle, Clock, ShieldX, UserSearch } from 'lucide-react';
 import type { RecoveryCase } from '../types';
 
 export default function CaseDetails({ c }: { c: RecoveryCase }) {
+  // Derived audit facts — MUST be at component body level, not inside formatTime
+  const stateAudit = c.auditLogs?.find(l => l.event === 'STATE_VALIDATED');
+  const stateDecision = (stateAudit?.metadata as { decision?: string } | undefined)?.decision;
+
+  const policyAudit = c.auditLogs?.find(l => l.event === 'POLICY_DECIDED');
+  const policyReason = (policyAudit?.metadata as { reason?: string } | undefined)?.reason;
+
+  const blockedReason =
+    stateDecision === 'ALREADY_CAPTURED'
+      ? 'Live payment was already captured on Razorpay (Race Condition Guard).'
+      : policyReason || 'Policy Engine blocked this recovery before execution.';
+
   const formatTime = (dateString: string) => {
     return new Date(dateString).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
   };
@@ -10,11 +22,11 @@ export default function CaseDetails({ c }: { c: RecoveryCase }) {
     <tr className="bg-slate-50/50">
       <td colSpan={7} className="p-6">
         <div className="grid grid-cols-2 gap-8">
-          
+
           {/* Left Column: AI & Execution Details */}
           <div className="space-y-4 border-r border-slate-200 pr-8">
             <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wider">AI Analysis & Execution</h3>
-            
+
             {/* SPECIAL CASE: BLOCKED */}
             {c.status === 'BLOCKED' && (
               <div className="bg-red-50 border border-red-200 rounded-lg p-4">
@@ -23,10 +35,10 @@ export default function CaseDetails({ c }: { c: RecoveryCase }) {
                   <span className="font-semibold text-red-900 text-sm">Recovery blocked before execution.</span>
                 </div>
                 <div className="text-xs text-red-700">
-                  <strong>Reason:</strong> Live payment was already captured (Race Condition Guard).
+                  <strong>Reason:</strong> {blockedReason}
                 </div>
                 <div className="text-xs text-red-700 mt-1">
-                  No AI analysis was performed. No money moved.
+                  {stateDecision === 'ALREADY_CAPTURED' ? 'No AI analysis was performed. No money moved.' : 'No money moved.'}
                 </div>
               </div>
             )}
@@ -96,7 +108,7 @@ export default function CaseDetails({ c }: { c: RecoveryCase }) {
               <div className="relative border-l-2 border-slate-200 pl-4 space-y-6">
                 {c.auditLogs.map((log) => (
                   <div key={log.id} className="relative">
-                    <div className="absolute -left-[1.65rem] top-1 w-3 h-3 rounded-full bg-blue-500 border-2 border-white"></div>
+                    <div className="absolute left-[1.65rem] top-1 w-3 h-3 rounded-full bg-blue-500 border-2 border-white"></div>
                     <div className="text-xs text-slate-400 flex items-center gap-1">
                       <Clock size={10} /> {formatTime(log.createdAt)}
                     </div>
