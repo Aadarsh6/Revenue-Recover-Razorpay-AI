@@ -63,7 +63,20 @@ if (!skipSignatureValidation) {
     }
 
     const eventType: string = body.event;
-    const paymentId: string = body.payload.payment.entity.id;
+    const paymentId: string | undefined = body.payload?.payment?.entity?.id;
+
+    if (!paymentId) {
+  // Events like payment_link.expired / refund.processed have no payment entity.
+      try {
+          await prisma.webhookEvent.create({
+                data: { eventId, eventType, payload: body, status: "IGNORED", processedAt: new Date() },
+          });
+          } catch {
+    // duplicate eventId — already stored
+          }
+            console.log(`⏭️ Event ${eventType} has no payment entity. Ignored.`);
+          return res.status(200).json({ status: "event type not handled" });
+        }
 
     let newEvent;
     try {
