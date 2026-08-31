@@ -1,8 +1,8 @@
 import "dotenv/config"
-import crypto from "crypto"
 import prisma from "../lib/prismaClient"
 
 const EVENT_ID = "TU4MOzmGgACoWi"
+const replayEventId = `replay-${EVENT_ID}-${Date.now()}`;
 
 async function main() {
   // Get the original webhook from our database
@@ -22,14 +22,6 @@ async function main() {
   // Generate a valid Razorpay-style signature
     const signature = "This is  a fake signature"
 
-//   const signature = crypto
-//     .createHmac(
-//       "sha256",
-//       process.env.RAZORPAY_WEBHOOK_SECRET as string
-//     )
-//     .update(rawBody)
-//     .digest("hex")
-
   console.log("Replaying event:", EVENT_ID)
   console.log("Signature:", signature)
 
@@ -39,7 +31,7 @@ async function main() {
     headers: {
       "Content-Type": "application/json",
       "x-razorpay-signature": signature,
-      "x-razorpay-event-id": EVENT_ID,
+      "x-razorpay-event-id": replayEventId,
     },
     body: rawBody,
   })
