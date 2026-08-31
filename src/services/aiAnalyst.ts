@@ -1,5 +1,7 @@
 import { AggregatedContext } from './contextAggregator';
 
+export const AI_MODEL = 'openai/gpt-oss-20b';
+
 export interface AIAnalysisResult {
   diagnosis: string;
   evidence: string[];
@@ -10,8 +12,7 @@ export interface AIAnalysisResult {
 export class AIAnalystService {
   private apiKey: string;
   private endpoint = 'https://api.groq.com/openai/v1/chat/completions';
-  private model = 'openai/gpt-oss-20b';
-
+  private model = AI_MODEL;
   constructor() {
     this.apiKey = process.env.GROQ_API_KEY || '';
     if (!this.apiKey) {
