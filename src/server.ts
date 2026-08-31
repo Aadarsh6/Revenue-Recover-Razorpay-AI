@@ -39,12 +39,21 @@ app.post(
       .update(rawBody)
       .digest("hex");
 
-    const skipSignatureValidation = process.env.SKIP_SIGNATURE_VALIDATION === "true";
+      
+const skipSignatureValidation =
+  process.env.SKIP_SIGNATURE_VALIDATION === "true" &&
+  process.env.NODE_ENV !== "production";
 
-    if (!skipSignatureValidation && signature !== expectedSignature) {
-      console.error("Invalid signature, rejecting webhook");
-      return res.status(400).send("Invalid signature");
-    }
+if (!skipSignatureValidation) {
+  const sigBuf = Buffer.from(signature, "utf8");
+  const expBuf = Buffer.from(expectedSignature, "utf8");
+  const signaturesMatch =
+    sigBuf.length === expBuf.length && crypto.timingSafeEqual(sigBuf, expBuf);
+  if (!signaturesMatch) {
+    console.error("Invalid signature, rejecting webhook");
+    return res.status(400).send("Invalid signature");
+  }
+}
 
     let body;
     try {
