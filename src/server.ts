@@ -285,8 +285,9 @@ if (!skipSignatureValidation) {
           return;
         }
 
-        const executor = new ExecutionLayer();
-        const executionResult = await executor.executeAction(stateResult.livePayment, aiResult, recoveryCase.id);
+      const executor = new ExecutionLayer();
+      const paymentForExecution = policyResult.freshPayment ?? stateResult.livePayment;
+      const executionResult = await executor.executeAction(paymentForExecution, aiResult, recoveryCase.id);
 
         await prisma.recoveryAttempt.create({
           data: {
