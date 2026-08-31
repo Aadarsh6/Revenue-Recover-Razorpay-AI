@@ -14,6 +14,11 @@ export default function CaseDetails({ c }: { c: RecoveryCase }) {
       ? 'Live payment was already captured on Razorpay (Race Condition Guard).'
       : policyReason || 'Policy Engine blocked this recovery before execution.';
 
+    const humanReason =
+  stateDecision === 'API_ERROR'
+    ? 'Live Razorpay state could not be verified (API error). System failed safe to human review.'
+    : policyReason || 'AI flagged HIGH risk or requested escalation.';
+
   const formatTime = (dateString: string) => {
     return new Date(dateString).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
   };
@@ -50,12 +55,14 @@ export default function CaseDetails({ c }: { c: RecoveryCase }) {
                   <UserSearch size={16} className="text-yellow-600" />
                   <span className="font-semibold text-yellow-900 text-sm">Escalated to Human Review</span>
                 </div>
-                <div className="text-xs text-yellow-700">
-                  <strong>Reason:</strong> AI flagged HIGH risk or requested escalation.
-                </div>
-                <div className="text-xs text-yellow-700 mt-1">
-                  No autonomous recovery action was executed.
-                </div>
+               <div className="text-xs text-yellow-700">
+  <strong>Reason:</strong> {humanReason}
+</div>
+<div className="text-xs text-yellow-700 mt-1">
+  {stateDecision === 'API_ERROR'
+    ? 'AI analysis was not performed (upstream API failure). No money moved.'
+    : 'No autonomous recovery action was executed.'}
+</div>
               </div>
             )}
 
@@ -108,7 +115,7 @@ export default function CaseDetails({ c }: { c: RecoveryCase }) {
               <div className="relative border-l-2 border-slate-200 pl-4 space-y-6">
                 {c.auditLogs.map((log) => (
                   <div key={log.id} className="relative">
-                    <div className="absolute left-[1.65rem] top-1 w-3 h-3 rounded-full bg-blue-500 border-2 border-white"></div>
+                    <div className="absolute -left-[1.65rem] top-1 w-3 h-3 rounded-full bg-blue-500 border-2 border-white"></div>
                     <div className="text-xs text-slate-400 flex items-center gap-1">
                       <Clock size={10} /> {formatTime(log.createdAt)}
                     </div>
