@@ -9,6 +9,18 @@ export interface AIAnalysisResult {
   risk_level: 'LOW' | 'MEDIUM' | 'HIGH';
 }
 
+export interface AIUsage {
+  promptTokens: number;
+  completionTokens: number;
+  totalTokens: number;
+}
+
+export interface AIAnalysisWithUsage extends AIAnalysisResult {
+  usage?: AIUsage;
+}
+
+
+
 export class AIAnalystService {
   private apiKey: string;
   private endpoint = 'https://api.groq.com/openai/v1/chat/completions';
