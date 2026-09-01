@@ -32,7 +32,7 @@ export class AIAnalystService {
     }
   }
 
-  async analyzeFailure(context: AggregatedContext): Promise<AIAnalysisResult> {
+   async analyzeFailure(context: AggregatedContext): Promise<AIAnalysisWithUsage> {
     const prompt = this.constructPrompt(context);
 
     try {
@@ -48,7 +48,7 @@ export class AIAnalystService {
             { role: "system", content: "You are an expert Fintech AI. You output ONLY valid JSON." },
             { role: "user", content: prompt }
           ],
-          response_format: { type: "json_object" }, // Native JSON mode
+          response_format: { type: "json_object" },
           temperature: 0.1,
           max_tokens: 1024
         })
@@ -62,7 +62,15 @@ export class AIAnalystService {
       const data = await response.json();
       const responseText = data.choices[0].message.content;
 
-      // Because we use response_format: json_object, this is guaranteed to be valid JSON
+      // Capture real token usage from the API response (ROI tracking)
+      const usage: AIUsage | undefined = data.usage
+        ? {
+            promptTokens: data.usage.prompt_tokens ?? 0,
+            completionTokens: data.usage.completion_tokens ?? 0,
+            totalTokens: data.usage.total_tokens ?? 0
+          }
+        : undefined;
+
       const parsedResult = JSON.parse(responseText) as AIAnalysisResult;
 
       if (!this.validateAIResult(parsedResult)) {
@@ -71,11 +79,12 @@ export class AIAnalystService {
           diagnosis: 'ai_output_validation_failed',
           evidence: ['AI returned an out-of-bounds recommended_action or risk_level'],
           recommended_action: 'ESCALATE_HUMAN',
-          risk_level: 'HIGH'
+          risk_level: 'HIGH',
+          usage
         };
       }
 
-      return parsedResult;
+      return { ...parsedResult, usage };
 
     } catch (error) {
       console.error('[AI Analyst] Error calling Groq API:', error);
