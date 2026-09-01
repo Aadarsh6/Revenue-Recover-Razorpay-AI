@@ -36,21 +36,22 @@ export default function CaseDetails({ c }: { c: RecoveryCase }) {
             <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wider">AI Analysis & Execution</h3>
 
             {/* SPECIAL CASE: BLOCKED */}
+                        {/* SPECIAL CASE: BLOCKED */}
             {c.status === 'BLOCKED' && (
               <div className="bg-red-50 border border-red-200 rounded-lg p-4">
                 <div className="flex items-center gap-2 mb-2">
                   <ShieldX size={16} className="text-red-600" />
                   <span className="font-semibold text-red-900 text-sm">Recovery blocked before execution.</span>
                 </div>
-                  <div className="text-xs text-red-700 mt-1">
+                <div className="text-xs text-red-700">
+                  <strong>Reason:</strong> {blockedReason}
+                </div>
+                <div className="text-xs text-red-700 mt-1">
                   {floorMeta
                     ? 'No AI cost incurred. No money moved.'
                     : stateDecision === 'ALREADY_CAPTURED'
                       ? 'No AI analysis was performed. No money moved.'
                       : 'No money moved.'}
-                </div>
-                <div className="text-xs text-red-700 mt-1">
-                  {stateDecision === 'ALREADY_CAPTURED' ? 'No AI analysis was performed. No money moved.' : 'No money moved.'}
                 </div>
               </div>
             )}
