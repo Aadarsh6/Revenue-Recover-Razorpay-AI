@@ -47,6 +47,13 @@ export class ExecutionLayer {
           }
         };
 
+        // Configurable TTL so recovery opportunities expire (demo: lower in .env)
+        const ttlMinutes = Number(process.env.RECOVERY_LINK_TTL_MINUTES || 60);
+        if (ttlMinutes > 0) {
+          payload.expire_by = Math.floor(Date.now() / 1000) + ttlMinutes * 60;
+        }
+
+
         const paymentLink: any = await this.razorpay.paymentLink.create(payload);
         
         console.log(`[Execution Layer] ✅ Recovery Link Created: ${paymentLink.short_url}`);

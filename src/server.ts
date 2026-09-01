@@ -14,6 +14,7 @@ import { AIAnalystService, AI_MODEL } from "./services/aiAnalyst";
 import cors from "cors";
 
 dotenv.config();
+const MIN_RECOVERY_AMOUNT_PAISE = Number(process.env.MIN_RECOVERY_AMOUNT_PAISE || 10000);
 const app = express();
 
 app.use(cors({
@@ -64,8 +65,9 @@ if (!skipSignatureValidation) {
 
     const eventType: string = body.event;
     const paymentId: string | undefined = body.payload?.payment?.entity?.id;
+    const isLinkExpiry = eventType === 'payment_link.expired';
 
-    if (!paymentId) {
+    if (!paymentId && !isLinkExpiry) {
   // Events like payment_link.expired / refund.processed have no payment entity.
       try {
           await prisma.webhookEvent.create({
@@ -105,6 +107,45 @@ if (!skipSignatureValidation) {
     // 4. Asynchronous processing
     try {
       console.log(`Processing event ${eventId}(${eventType})`);
+
+            // ─── PAYMENT LINK EXPIRY: lifecycle close ───────────────────────
+      if (isLinkExpiry) {
+        const linkEntity = body.payload?.payment_link?.entity;
+        const caseIdStr: string | undefined = linkEntity?.notes?.revive_recovery_case_id;
+
+        if (caseIdStr) {
+          const caseId = parseInt(caseIdStr);
+          // Conditional transition: customer may have paid at the very last second
+          const expired = await prisma.recoveryCase.updateMany({
+            where: { id: caseId, status: 'RECOVERY_LINK_CREATED' },
+            data: { status: 'RECOVERY_EXPIRED' },
+          });
+          if (expired.count > 0) {
+            await logAudit('RECOVERY_LINK_EXPIRED', caseId, { paymentLinkId: linkEntity?.id });
+            console.log(`⌛ Case ${caseId}: recovery link expired → RECOVERY_EXPIRED`);
+          } else {
+            console.log(`⌛ Expiry for Case ${caseId} — no longer awaiting payment (likely recovered). No-op.`);
+          }
+          if (webhookAuditEntry) {
+            await prisma.auditLog.update({ where: { id: webhookAuditEntry.id }, data: { caseId } });
+          }
+        } else {
+          console.log('⌛ Link expiry without revive notes — not our recovery link. Ignoring.');
+        }
+
+        await prisma.webhookEvent.update({
+          where: { id: newEvent.id },
+          data: { status: "PROCESSED", processedAt: new Date() },
+        });
+        return;
+      }
+      if (!paymentId) {
+        await prisma.webhookEvent.update({
+          where: { id: newEvent.id },
+          data: { status: "IGNORED", processedAt: new Date() },
+        });
+        return;
+      }
       
       const stateResult: StateDecision = await validateState(eventType, paymentId);
       stateAuditEntry = await logAudit('STATE_VALIDATED', undefined, { paymentId, decision: stateResult.decision });
@@ -130,6 +171,11 @@ if (!skipSignatureValidation) {
       if (stateResult.decision === 'VALID_CAPTURE') {
         const notes = stateResult.livePayment.notes;
         const recoveryCaseId = notes?.revive_recovery_case_id;
+
+            await prisma.recoveryCase.update({
+            where: { id: parseInt(recoveryCaseId) },
+            data: { status: 'AUTO_RECOVERED', recoveredAt: new Date() }
+          });
 
         if (recoveryCaseId) {
           console.log(`🔔 Recovery payment detected for Case ${recoveryCaseId}! Closing the loop...`);
@@ -188,6 +234,32 @@ if (!skipSignatureValidation) {
         return;
       }
 
+            // ─── Persist amount (floor input + future ROI) ───
+      const amountPaise = stateResult.livePayment.amount;
+      await prisma.recoveryCase.update({
+        where: { id: recoveryCase.id },
+        data: { amount: amountPaise },
+      });
+
+      // ─── ECONOMIC FLOOR GATE (pre-AI, deterministic) ───
+      // Recovery value below floor → AI costs more than it's worth. Skip entirely.
+      if (amountPaise < MIN_RECOVERY_AMOUNT_PAISE) {
+        await prisma.recoveryCase.update({
+          where: { id: recoveryCase.id },
+          data: { status: 'BLOCKED', policyDecision: 'BLOCK' },
+        });
+        await logAudit('ECONOMIC_FLOOR_BLOCKED', recoveryCase.id, {
+          amount: amountPaise,
+          floor: MIN_RECOVERY_AMOUNT_PAISE,
+        });
+        await prisma.webhookEvent.update({
+          where: { id: newEvent.id },
+          data: { status: "PROCESSED", processedAt: new Date() },
+        });
+        console.log(`💰 ECONOMIC FLOOR: Case ${recoveryCase.id} blocked (₹${amountPaise / 100} < floor ₹${MIN_RECOVERY_AMOUNT_PAISE / 100}). AI skipped — no cost incurred.`);
+        return;
+      }
+
       console.log(`➡️ Recovery Case ${recoveryCase.id} OPEN. Proceeding to Context Aggregation...`);
 
       const context = await aggregateContext(stateResult.livePayment);
@@ -203,6 +275,11 @@ if (!skipSignatureValidation) {
       const aiResult = await aiService.analyzeFailure(context);
       await logAudit('AI_ANALYSIS_COMPLETED', recoveryCase.id, { action: aiResult.recommended_action, risk: aiResult.risk_level });
       console.log("🤖 AI Recommendation:", aiResult);
+
+      const costPer1k = Number(process.env.ESTIMATED_COST_PER_1K_TOKENS_INR || 0.01);
+      const estimatedCost = aiResult.usage
+        ? (aiResult.usage.totalTokens / 1000) * costPer1k
+        : null;
       
       await prisma.aIAnalysis.upsert({
         where: { recoveryCaseId: recoveryCase.id },
@@ -211,7 +288,11 @@ if (!skipSignatureValidation) {
           evidence: aiResult.evidence,
           recommendedAction: aiResult.recommended_action,
           riskLevel: aiResult.risk_level,
-          model: AI_MODEL
+          model: AI_MODEL,
+          promptTokens: aiResult.usage?.promptTokens ?? null,
+          completionTokens: aiResult.usage?.completionTokens ?? null,
+          totalTokens: aiResult.usage?.totalTokens ?? null,
+          estimatedCost: estimatedCost,
         },
         create: {
           recoveryCaseId: recoveryCase.id,
@@ -219,7 +300,11 @@ if (!skipSignatureValidation) {
           evidence: aiResult.evidence,
           recommendedAction: aiResult.recommended_action,
           riskLevel: aiResult.risk_level,
-          model: 'openai/gpt-oss-20b'
+          model: AI_MODEL,
+          promptTokens: aiResult.usage?.promptTokens ?? null,
+          completionTokens: aiResult.usage?.completionTokens ?? null,
+          totalTokens: aiResult.usage?.totalTokens ?? null,
+          estimatedCost: estimatedCost,
         }
       });
 
