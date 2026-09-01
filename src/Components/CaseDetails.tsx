@@ -7,10 +7,13 @@ export default function CaseDetails({ c }: { c: RecoveryCase }) {
   const stateDecision = (stateAudit?.metadata as { decision?: string } | undefined)?.decision;
 
   const policyAudit = c.auditLogs?.find(l => l.event === 'POLICY_DECIDED');
+  const floorAudit = c.auditLogs?.find(l => l.event === 'ECONOMIC_FLOOR_BLOCKED');
+  const floorMeta = floorAudit?.metadata as { amount?: number; floor?: number } | undefined;
   const policyReason = (policyAudit?.metadata as { reason?: string } | undefined)?.reason;
 
-  const blockedReason =
-    stateDecision === 'ALREADY_CAPTURED'
+    const blockedReason = floorMeta
+    ? `Amount ₹${((floorMeta.amount ?? 0) / 100).toLocaleString('en-IN')} is below the economic floor (₹${((floorMeta.floor ?? 0) / 100).toLocaleString('en-IN')}). AI analysis skipped — recovery would cost more than it's worth.`
+    : stateDecision === 'ALREADY_CAPTURED'
       ? 'Live payment was already captured on Razorpay (Race Condition Guard).'
       : policyReason || 'Policy Engine blocked this recovery before execution.';
 
@@ -39,8 +42,12 @@ export default function CaseDetails({ c }: { c: RecoveryCase }) {
                   <ShieldX size={16} className="text-red-600" />
                   <span className="font-semibold text-red-900 text-sm">Recovery blocked before execution.</span>
                 </div>
-                <div className="text-xs text-red-700">
-                  <strong>Reason:</strong> {blockedReason}
+                  <div className="text-xs text-red-700 mt-1">
+                  {floorMeta
+                    ? 'No AI cost incurred. No money moved.'
+                    : stateDecision === 'ALREADY_CAPTURED'
+                      ? 'No AI analysis was performed. No money moved.'
+                      : 'No money moved.'}
                 </div>
                 <div className="text-xs text-red-700 mt-1">
                   {stateDecision === 'ALREADY_CAPTURED' ? 'No AI analysis was performed. No money moved.' : 'No money moved.'}
