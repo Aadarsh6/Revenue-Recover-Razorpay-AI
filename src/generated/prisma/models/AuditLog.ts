@@ -400,14 +400,6 @@ export type AuditLogUncheckedUpdateManyWithoutRecoveryCaseNestedInput = {
   deleteMany?: Prisma.AuditLogScalarWhereInput | Prisma.AuditLogScalarWhereInput[]
 }
 
-export type NullableIntFieldUpdateOperationsInput = {
-  set?: number | null
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
-}
-
 export type AuditLogCreateWithoutRecoveryCaseInput = {
   event: string
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue

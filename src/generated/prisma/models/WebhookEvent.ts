@@ -414,10 +414,6 @@ export type EnumWebhookEventStatusFieldUpdateOperationsInput = {
   set?: $Enums.WebhookEventStatus
 }
 
-export type NullableDateTimeFieldUpdateOperationsInput = {
-  set?: Date | string | null
-}
-
 export type WebhookEventCreateWithoutRecoveryCasesInput = {
   eventId: string
   eventType: string

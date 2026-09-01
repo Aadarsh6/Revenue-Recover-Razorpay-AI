@@ -16,6 +16,7 @@ enum RecoveryStatus {
   RECOVERY_LINK_CREATED
   AUTO_RECOVERED
   PENDING_HUMAN_REVIEW
+  RECOVERY_EXPIRED
   BLOCKED
   FAILED
 }
@@ -36,6 +37,8 @@ model RecoveryCase{
   aiDiagnosis         String?         // Filled by AI Analyst later Added for quick summary  
   aiAction            String?         // Filled by AI Analyst later Added for quick summary
   policyDecision      String?         // Filled by Policy Engine later  Added for quick summary
+  amount      Int?       // paise — floor gate input + future ROI
+  recoveredAt DateTime?  // set when loop closes on payment.captured
   createdAt           DateTime       @default(now())
   updatedAt           DateTime       @updatedAt
 
@@ -66,6 +69,10 @@ model AIAnalysis{
   recommendedAction   String
   riskLevel           String
   model               String
+  promptTokens     Int?
+  completionTokens Int?
+  totalTokens      Int?
+  estimatedCost    Float?
   createdAt           DateTime @default(now())
 
   recoveryCase        RecoveryCase @relation(fields: [recoveryCaseId], references: [id])

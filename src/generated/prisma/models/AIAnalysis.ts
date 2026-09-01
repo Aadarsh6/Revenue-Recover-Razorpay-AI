@@ -29,11 +29,19 @@ export type AggregateAIAnalysis = {
 export type AIAnalysisAvgAggregateOutputType = {
   id: number | null
   recoveryCaseId: number | null
+  promptTokens: number | null
+  completionTokens: number | null
+  totalTokens: number | null
+  estimatedCost: number | null
 }
 
 export type AIAnalysisSumAggregateOutputType = {
   id: number | null
   recoveryCaseId: number | null
+  promptTokens: number | null
+  completionTokens: number | null
+  totalTokens: number | null
+  estimatedCost: number | null
 }
 
 export type AIAnalysisMinAggregateOutputType = {
@@ -43,6 +51,10 @@ export type AIAnalysisMinAggregateOutputType = {
   recommendedAction: string | null
   riskLevel: string | null
   model: string | null
+  promptTokens: number | null
+  completionTokens: number | null
+  totalTokens: number | null
+  estimatedCost: number | null
   createdAt: Date | null
 }
 
@@ -53,6 +65,10 @@ export type AIAnalysisMaxAggregateOutputType = {
   recommendedAction: string | null
   riskLevel: string | null
   model: string | null
+  promptTokens: number | null
+  completionTokens: number | null
+  totalTokens: number | null
+  estimatedCost: number | null
   createdAt: Date | null
 }
 
@@ -64,6 +80,10 @@ export type AIAnalysisCountAggregateOutputType = {
   recommendedAction: number
   riskLevel: number
   model: number
+  promptTokens: number
+  completionTokens: number
+  totalTokens: number
+  estimatedCost: number
   createdAt: number
   _all: number
 }
@@ -72,11 +92,19 @@ export type AIAnalysisCountAggregateOutputType = {
 export type AIAnalysisAvgAggregateInputType = {
   id?: true
   recoveryCaseId?: true
+  promptTokens?: true
+  completionTokens?: true
+  totalTokens?: true
+  estimatedCost?: true
 }
 
 export type AIAnalysisSumAggregateInputType = {
   id?: true
   recoveryCaseId?: true
+  promptTokens?: true
+  completionTokens?: true
+  totalTokens?: true
+  estimatedCost?: true
 }
 
 export type AIAnalysisMinAggregateInputType = {
@@ -86,6 +114,10 @@ export type AIAnalysisMinAggregateInputType = {
   recommendedAction?: true
   riskLevel?: true
   model?: true
+  promptTokens?: true
+  completionTokens?: true
+  totalTokens?: true
+  estimatedCost?: true
   createdAt?: true
 }
 
@@ -96,6 +128,10 @@ export type AIAnalysisMaxAggregateInputType = {
   recommendedAction?: true
   riskLevel?: true
   model?: true
+  promptTokens?: true
+  completionTokens?: true
+  totalTokens?: true
+  estimatedCost?: true
   createdAt?: true
 }
 
@@ -107,6 +143,10 @@ export type AIAnalysisCountAggregateInputType = {
   recommendedAction?: true
   riskLevel?: true
   model?: true
+  promptTokens?: true
+  completionTokens?: true
+  totalTokens?: true
+  estimatedCost?: true
   createdAt?: true
   _all?: true
 }
@@ -205,6 +245,10 @@ export type AIAnalysisGroupByOutputType = {
   recommendedAction: string
   riskLevel: string
   model: string
+  promptTokens: number | null
+  completionTokens: number | null
+  totalTokens: number | null
+  estimatedCost: number | null
   createdAt: Date
   _count: AIAnalysisCountAggregateOutputType | null
   _avg: AIAnalysisAvgAggregateOutputType | null
@@ -239,6 +283,10 @@ export type AIAnalysisWhereInput = {
   recommendedAction?: Prisma.StringFilter<"AIAnalysis"> | string
   riskLevel?: Prisma.StringFilter<"AIAnalysis"> | string
   model?: Prisma.StringFilter<"AIAnalysis"> | string
+  promptTokens?: Prisma.IntNullableFilter<"AIAnalysis"> | number | null
+  completionTokens?: Prisma.IntNullableFilter<"AIAnalysis"> | number | null
+  totalTokens?: Prisma.IntNullableFilter<"AIAnalysis"> | number | null
+  estimatedCost?: Prisma.FloatNullableFilter<"AIAnalysis"> | number | null
   createdAt?: Prisma.DateTimeFilter<"AIAnalysis"> | Date | string
   recoveryCase?: Prisma.XOR<Prisma.RecoveryCaseScalarRelationFilter, Prisma.RecoveryCaseWhereInput>
 }
@@ -251,6 +299,10 @@ export type AIAnalysisOrderByWithRelationInput = {
   recommendedAction?: Prisma.SortOrder
   riskLevel?: Prisma.SortOrder
   model?: Prisma.SortOrder
+  promptTokens?: Prisma.SortOrderInput | Prisma.SortOrder
+  completionTokens?: Prisma.SortOrderInput | Prisma.SortOrder
+  totalTokens?: Prisma.SortOrderInput | Prisma.SortOrder
+  estimatedCost?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   recoveryCase?: Prisma.RecoveryCaseOrderByWithRelationInput
 }
@@ -266,6 +318,10 @@ export type AIAnalysisWhereUniqueInput = Prisma.AtLeast<{
   recommendedAction?: Prisma.StringFilter<"AIAnalysis"> | string
   riskLevel?: Prisma.StringFilter<"AIAnalysis"> | string
   model?: Prisma.StringFilter<"AIAnalysis"> | string
+  promptTokens?: Prisma.IntNullableFilter<"AIAnalysis"> | number | null
+  completionTokens?: Prisma.IntNullableFilter<"AIAnalysis"> | number | null
+  totalTokens?: Prisma.IntNullableFilter<"AIAnalysis"> | number | null
+  estimatedCost?: Prisma.FloatNullableFilter<"AIAnalysis"> | number | null
   createdAt?: Prisma.DateTimeFilter<"AIAnalysis"> | Date | string
   recoveryCase?: Prisma.XOR<Prisma.RecoveryCaseScalarRelationFilter, Prisma.RecoveryCaseWhereInput>
 }, "id" | "recoveryCaseId">
@@ -278,6 +334,10 @@ export type AIAnalysisOrderByWithAggregationInput = {
   recommendedAction?: Prisma.SortOrder
   riskLevel?: Prisma.SortOrder
   model?: Prisma.SortOrder
+  promptTokens?: Prisma.SortOrderInput | Prisma.SortOrder
+  completionTokens?: Prisma.SortOrderInput | Prisma.SortOrder
+  totalTokens?: Prisma.SortOrderInput | Prisma.SortOrder
+  estimatedCost?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.AIAnalysisCountOrderByAggregateInput
   _avg?: Prisma.AIAnalysisAvgOrderByAggregateInput
@@ -297,6 +357,10 @@ export type AIAnalysisScalarWhereWithAggregatesInput = {
   recommendedAction?: Prisma.StringWithAggregatesFilter<"AIAnalysis"> | string
   riskLevel?: Prisma.StringWithAggregatesFilter<"AIAnalysis"> | string
   model?: Prisma.StringWithAggregatesFilter<"AIAnalysis"> | string
+  promptTokens?: Prisma.IntNullableWithAggregatesFilter<"AIAnalysis"> | number | null
+  completionTokens?: Prisma.IntNullableWithAggregatesFilter<"AIAnalysis"> | number | null
+  totalTokens?: Prisma.IntNullableWithAggregatesFilter<"AIAnalysis"> | number | null
+  estimatedCost?: Prisma.FloatNullableWithAggregatesFilter<"AIAnalysis"> | number | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"AIAnalysis"> | Date | string
 }
 
@@ -306,6 +370,10 @@ export type AIAnalysisCreateInput = {
   recommendedAction: string
   riskLevel: string
   model: string
+  promptTokens?: number | null
+  completionTokens?: number | null
+  totalTokens?: number | null
+  estimatedCost?: number | null
   createdAt?: Date | string
   recoveryCase: Prisma.RecoveryCaseCreateNestedOneWithoutAiAnalysisInput
 }
@@ -318,6 +386,10 @@ export type AIAnalysisUncheckedCreateInput = {
   recommendedAction: string
   riskLevel: string
   model: string
+  promptTokens?: number | null
+  completionTokens?: number | null
+  totalTokens?: number | null
+  estimatedCost?: number | null
   createdAt?: Date | string
 }
 
@@ -327,6 +399,10 @@ export type AIAnalysisUpdateInput = {
   recommendedAction?: Prisma.StringFieldUpdateOperationsInput | string
   riskLevel?: Prisma.StringFieldUpdateOperationsInput | string
   model?: Prisma.StringFieldUpdateOperationsInput | string
+  promptTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  completionTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  totalTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  estimatedCost?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   recoveryCase?: Prisma.RecoveryCaseUpdateOneRequiredWithoutAiAnalysisNestedInput
 }
@@ -339,6 +415,10 @@ export type AIAnalysisUncheckedUpdateInput = {
   recommendedAction?: Prisma.StringFieldUpdateOperationsInput | string
   riskLevel?: Prisma.StringFieldUpdateOperationsInput | string
   model?: Prisma.StringFieldUpdateOperationsInput | string
+  promptTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  completionTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  totalTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  estimatedCost?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -350,6 +430,10 @@ export type AIAnalysisCreateManyInput = {
   recommendedAction: string
   riskLevel: string
   model: string
+  promptTokens?: number | null
+  completionTokens?: number | null
+  totalTokens?: number | null
+  estimatedCost?: number | null
   createdAt?: Date | string
 }
 
@@ -359,6 +443,10 @@ export type AIAnalysisUpdateManyMutationInput = {
   recommendedAction?: Prisma.StringFieldUpdateOperationsInput | string
   riskLevel?: Prisma.StringFieldUpdateOperationsInput | string
   model?: Prisma.StringFieldUpdateOperationsInput | string
+  promptTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  completionTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  totalTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  estimatedCost?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -370,6 +458,10 @@ export type AIAnalysisUncheckedUpdateManyInput = {
   recommendedAction?: Prisma.StringFieldUpdateOperationsInput | string
   riskLevel?: Prisma.StringFieldUpdateOperationsInput | string
   model?: Prisma.StringFieldUpdateOperationsInput | string
+  promptTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  completionTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  totalTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  estimatedCost?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -399,12 +491,20 @@ export type AIAnalysisCountOrderByAggregateInput = {
   recommendedAction?: Prisma.SortOrder
   riskLevel?: Prisma.SortOrder
   model?: Prisma.SortOrder
+  promptTokens?: Prisma.SortOrder
+  completionTokens?: Prisma.SortOrder
+  totalTokens?: Prisma.SortOrder
+  estimatedCost?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
 export type AIAnalysisAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
   recoveryCaseId?: Prisma.SortOrder
+  promptTokens?: Prisma.SortOrder
+  completionTokens?: Prisma.SortOrder
+  totalTokens?: Prisma.SortOrder
+  estimatedCost?: Prisma.SortOrder
 }
 
 export type AIAnalysisMaxOrderByAggregateInput = {
@@ -414,6 +514,10 @@ export type AIAnalysisMaxOrderByAggregateInput = {
   recommendedAction?: Prisma.SortOrder
   riskLevel?: Prisma.SortOrder
   model?: Prisma.SortOrder
+  promptTokens?: Prisma.SortOrder
+  completionTokens?: Prisma.SortOrder
+  totalTokens?: Prisma.SortOrder
+  estimatedCost?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -424,12 +528,20 @@ export type AIAnalysisMinOrderByAggregateInput = {
   recommendedAction?: Prisma.SortOrder
   riskLevel?: Prisma.SortOrder
   model?: Prisma.SortOrder
+  promptTokens?: Prisma.SortOrder
+  completionTokens?: Prisma.SortOrder
+  totalTokens?: Prisma.SortOrder
+  estimatedCost?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
 export type AIAnalysisSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
   recoveryCaseId?: Prisma.SortOrder
+  promptTokens?: Prisma.SortOrder
+  completionTokens?: Prisma.SortOrder
+  totalTokens?: Prisma.SortOrder
+  estimatedCost?: Prisma.SortOrder
 }
 
 export type AIAnalysisCreateNestedManyWithoutRecoveryCaseInput = {
@@ -483,12 +595,24 @@ export type AIAnalysisUpdateevidenceInput = {
   push?: string | string[]
 }
 
+export type NullableFloatFieldUpdateOperationsInput = {
+  set?: number | null
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
+}
+
 export type AIAnalysisCreateWithoutRecoveryCaseInput = {
   diagnosis: string
   evidence?: Prisma.AIAnalysisCreateevidenceInput | string[]
   recommendedAction: string
   riskLevel: string
   model: string
+  promptTokens?: number | null
+  completionTokens?: number | null
+  totalTokens?: number | null
+  estimatedCost?: number | null
   createdAt?: Date | string
 }
 
@@ -499,6 +623,10 @@ export type AIAnalysisUncheckedCreateWithoutRecoveryCaseInput = {
   recommendedAction: string
   riskLevel: string
   model: string
+  promptTokens?: number | null
+  completionTokens?: number | null
+  totalTokens?: number | null
+  estimatedCost?: number | null
   createdAt?: Date | string
 }
 
@@ -539,6 +667,10 @@ export type AIAnalysisScalarWhereInput = {
   recommendedAction?: Prisma.StringFilter<"AIAnalysis"> | string
   riskLevel?: Prisma.StringFilter<"AIAnalysis"> | string
   model?: Prisma.StringFilter<"AIAnalysis"> | string
+  promptTokens?: Prisma.IntNullableFilter<"AIAnalysis"> | number | null
+  completionTokens?: Prisma.IntNullableFilter<"AIAnalysis"> | number | null
+  totalTokens?: Prisma.IntNullableFilter<"AIAnalysis"> | number | null
+  estimatedCost?: Prisma.FloatNullableFilter<"AIAnalysis"> | number | null
   createdAt?: Prisma.DateTimeFilter<"AIAnalysis"> | Date | string
 }
 
@@ -549,6 +681,10 @@ export type AIAnalysisCreateManyRecoveryCaseInput = {
   recommendedAction: string
   riskLevel: string
   model: string
+  promptTokens?: number | null
+  completionTokens?: number | null
+  totalTokens?: number | null
+  estimatedCost?: number | null
   createdAt?: Date | string
 }
 
@@ -558,6 +694,10 @@ export type AIAnalysisUpdateWithoutRecoveryCaseInput = {
   recommendedAction?: Prisma.StringFieldUpdateOperationsInput | string
   riskLevel?: Prisma.StringFieldUpdateOperationsInput | string
   model?: Prisma.StringFieldUpdateOperationsInput | string
+  promptTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  completionTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  totalTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  estimatedCost?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -568,6 +708,10 @@ export type AIAnalysisUncheckedUpdateWithoutRecoveryCaseInput = {
   recommendedAction?: Prisma.StringFieldUpdateOperationsInput | string
   riskLevel?: Prisma.StringFieldUpdateOperationsInput | string
   model?: Prisma.StringFieldUpdateOperationsInput | string
+  promptTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  completionTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  totalTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  estimatedCost?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -578,6 +722,10 @@ export type AIAnalysisUncheckedUpdateManyWithoutRecoveryCaseInput = {
   recommendedAction?: Prisma.StringFieldUpdateOperationsInput | string
   riskLevel?: Prisma.StringFieldUpdateOperationsInput | string
   model?: Prisma.StringFieldUpdateOperationsInput | string
+  promptTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  completionTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  totalTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  estimatedCost?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -591,6 +739,10 @@ export type AIAnalysisSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   recommendedAction?: boolean
   riskLevel?: boolean
   model?: boolean
+  promptTokens?: boolean
+  completionTokens?: boolean
+  totalTokens?: boolean
+  estimatedCost?: boolean
   createdAt?: boolean
   recoveryCase?: boolean | Prisma.RecoveryCaseDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["aIAnalysis"]>
@@ -603,6 +755,10 @@ export type AIAnalysisSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ex
   recommendedAction?: boolean
   riskLevel?: boolean
   model?: boolean
+  promptTokens?: boolean
+  completionTokens?: boolean
+  totalTokens?: boolean
+  estimatedCost?: boolean
   createdAt?: boolean
   recoveryCase?: boolean | Prisma.RecoveryCaseDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["aIAnalysis"]>
@@ -615,6 +771,10 @@ export type AIAnalysisSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
   recommendedAction?: boolean
   riskLevel?: boolean
   model?: boolean
+  promptTokens?: boolean
+  completionTokens?: boolean
+  totalTokens?: boolean
+  estimatedCost?: boolean
   createdAt?: boolean
   recoveryCase?: boolean | Prisma.RecoveryCaseDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["aIAnalysis"]>
@@ -627,10 +787,14 @@ export type AIAnalysisSelectScalar = {
   recommendedAction?: boolean
   riskLevel?: boolean
   model?: boolean
+  promptTokens?: boolean
+  completionTokens?: boolean
+  totalTokens?: boolean
+  estimatedCost?: boolean
   createdAt?: boolean
 }
 
-export type AIAnalysisOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "recoveryCaseId" | "diagnosis" | "evidence" | "recommendedAction" | "riskLevel" | "model" | "createdAt", ExtArgs["result"]["aIAnalysis"]>
+export type AIAnalysisOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "recoveryCaseId" | "diagnosis" | "evidence" | "recommendedAction" | "riskLevel" | "model" | "promptTokens" | "completionTokens" | "totalTokens" | "estimatedCost" | "createdAt", ExtArgs["result"]["aIAnalysis"]>
 export type AIAnalysisInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   recoveryCase?: boolean | Prisma.RecoveryCaseDefaultArgs<ExtArgs>
 }
@@ -654,6 +818,10 @@ export type $AIAnalysisPayload<ExtArgs extends runtime.Types.Extensions.Internal
     recommendedAction: string
     riskLevel: string
     model: string
+    promptTokens: number | null
+    completionTokens: number | null
+    totalTokens: number | null
+    estimatedCost: number | null
     createdAt: Date
   }, ExtArgs["result"]["aIAnalysis"]>
   composites: {}
@@ -1086,6 +1254,10 @@ export interface AIAnalysisFieldRefs {
   readonly recommendedAction: Prisma.FieldRef<"AIAnalysis", 'String'>
   readonly riskLevel: Prisma.FieldRef<"AIAnalysis", 'String'>
   readonly model: Prisma.FieldRef<"AIAnalysis", 'String'>
+  readonly promptTokens: Prisma.FieldRef<"AIAnalysis", 'Int'>
+  readonly completionTokens: Prisma.FieldRef<"AIAnalysis", 'Int'>
+  readonly totalTokens: Prisma.FieldRef<"AIAnalysis", 'Int'>
+  readonly estimatedCost: Prisma.FieldRef<"AIAnalysis", 'Float'>
   readonly createdAt: Prisma.FieldRef<"AIAnalysis", 'DateTime'>
 }
     

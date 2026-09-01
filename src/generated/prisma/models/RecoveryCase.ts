@@ -29,11 +29,13 @@ export type AggregateRecoveryCase = {
 export type RecoveryCaseAvgAggregateOutputType = {
   id: number | null
   webhookEventId: number | null
+  amount: number | null
 }
 
 export type RecoveryCaseSumAggregateOutputType = {
   id: number | null
   webhookEventId: number | null
+  amount: number | null
 }
 
 export type RecoveryCaseMinAggregateOutputType = {
@@ -45,6 +47,8 @@ export type RecoveryCaseMinAggregateOutputType = {
   aiDiagnosis: string | null
   aiAction: string | null
   policyDecision: string | null
+  amount: number | null
+  recoveredAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -58,6 +62,8 @@ export type RecoveryCaseMaxAggregateOutputType = {
   aiDiagnosis: string | null
   aiAction: string | null
   policyDecision: string | null
+  amount: number | null
+  recoveredAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -71,6 +77,8 @@ export type RecoveryCaseCountAggregateOutputType = {
   aiDiagnosis: number
   aiAction: number
   policyDecision: number
+  amount: number
+  recoveredAt: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -80,11 +88,13 @@ export type RecoveryCaseCountAggregateOutputType = {
 export type RecoveryCaseAvgAggregateInputType = {
   id?: true
   webhookEventId?: true
+  amount?: true
 }
 
 export type RecoveryCaseSumAggregateInputType = {
   id?: true
   webhookEventId?: true
+  amount?: true
 }
 
 export type RecoveryCaseMinAggregateInputType = {
@@ -96,6 +106,8 @@ export type RecoveryCaseMinAggregateInputType = {
   aiDiagnosis?: true
   aiAction?: true
   policyDecision?: true
+  amount?: true
+  recoveredAt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -109,6 +121,8 @@ export type RecoveryCaseMaxAggregateInputType = {
   aiDiagnosis?: true
   aiAction?: true
   policyDecision?: true
+  amount?: true
+  recoveredAt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -122,6 +136,8 @@ export type RecoveryCaseCountAggregateInputType = {
   aiDiagnosis?: true
   aiAction?: true
   policyDecision?: true
+  amount?: true
+  recoveredAt?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -222,6 +238,8 @@ export type RecoveryCaseGroupByOutputType = {
   aiDiagnosis: string | null
   aiAction: string | null
   policyDecision: string | null
+  amount: number | null
+  recoveredAt: Date | null
   createdAt: Date
   updatedAt: Date
   _count: RecoveryCaseCountAggregateOutputType | null
@@ -258,6 +276,8 @@ export type RecoveryCaseWhereInput = {
   aiDiagnosis?: Prisma.StringNullableFilter<"RecoveryCase"> | string | null
   aiAction?: Prisma.StringNullableFilter<"RecoveryCase"> | string | null
   policyDecision?: Prisma.StringNullableFilter<"RecoveryCase"> | string | null
+  amount?: Prisma.IntNullableFilter<"RecoveryCase"> | number | null
+  recoveredAt?: Prisma.DateTimeNullableFilter<"RecoveryCase"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"RecoveryCase"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"RecoveryCase"> | Date | string
   webhookEvent?: Prisma.XOR<Prisma.WebhookEventScalarRelationFilter, Prisma.WebhookEventWhereInput>
@@ -275,6 +295,8 @@ export type RecoveryCaseOrderByWithRelationInput = {
   aiDiagnosis?: Prisma.SortOrderInput | Prisma.SortOrder
   aiAction?: Prisma.SortOrderInput | Prisma.SortOrder
   policyDecision?: Prisma.SortOrderInput | Prisma.SortOrder
+  amount?: Prisma.SortOrderInput | Prisma.SortOrder
+  recoveredAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   webhookEvent?: Prisma.WebhookEventOrderByWithRelationInput
@@ -295,6 +317,8 @@ export type RecoveryCaseWhereUniqueInput = Prisma.AtLeast<{
   aiDiagnosis?: Prisma.StringNullableFilter<"RecoveryCase"> | string | null
   aiAction?: Prisma.StringNullableFilter<"RecoveryCase"> | string | null
   policyDecision?: Prisma.StringNullableFilter<"RecoveryCase"> | string | null
+  amount?: Prisma.IntNullableFilter<"RecoveryCase"> | number | null
+  recoveredAt?: Prisma.DateTimeNullableFilter<"RecoveryCase"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"RecoveryCase"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"RecoveryCase"> | Date | string
   webhookEvent?: Prisma.XOR<Prisma.WebhookEventScalarRelationFilter, Prisma.WebhookEventWhereInput>
@@ -312,6 +336,8 @@ export type RecoveryCaseOrderByWithAggregationInput = {
   aiDiagnosis?: Prisma.SortOrderInput | Prisma.SortOrder
   aiAction?: Prisma.SortOrderInput | Prisma.SortOrder
   policyDecision?: Prisma.SortOrderInput | Prisma.SortOrder
+  amount?: Prisma.SortOrderInput | Prisma.SortOrder
+  recoveredAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.RecoveryCaseCountOrderByAggregateInput
@@ -333,6 +359,8 @@ export type RecoveryCaseScalarWhereWithAggregatesInput = {
   aiDiagnosis?: Prisma.StringNullableWithAggregatesFilter<"RecoveryCase"> | string | null
   aiAction?: Prisma.StringNullableWithAggregatesFilter<"RecoveryCase"> | string | null
   policyDecision?: Prisma.StringNullableWithAggregatesFilter<"RecoveryCase"> | string | null
+  amount?: Prisma.IntNullableWithAggregatesFilter<"RecoveryCase"> | number | null
+  recoveredAt?: Prisma.DateTimeNullableWithAggregatesFilter<"RecoveryCase"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"RecoveryCase"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"RecoveryCase"> | Date | string
 }
@@ -344,6 +372,8 @@ export type RecoveryCaseCreateInput = {
   aiDiagnosis?: string | null
   aiAction?: string | null
   policyDecision?: string | null
+  amount?: number | null
+  recoveredAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   webhookEvent: Prisma.WebhookEventCreateNestedOneWithoutRecoveryCasesInput
@@ -361,6 +391,8 @@ export type RecoveryCaseUncheckedCreateInput = {
   aiDiagnosis?: string | null
   aiAction?: string | null
   policyDecision?: string | null
+  amount?: number | null
+  recoveredAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   aiAnalysis?: Prisma.AIAnalysisUncheckedCreateNestedManyWithoutRecoveryCaseInput
@@ -375,6 +407,8 @@ export type RecoveryCaseUpdateInput = {
   aiDiagnosis?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   aiAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   policyDecision?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  amount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  recoveredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   webhookEvent?: Prisma.WebhookEventUpdateOneRequiredWithoutRecoveryCasesNestedInput
@@ -392,6 +426,8 @@ export type RecoveryCaseUncheckedUpdateInput = {
   aiDiagnosis?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   aiAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   policyDecision?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  amount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  recoveredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   aiAnalysis?: Prisma.AIAnalysisUncheckedUpdateManyWithoutRecoveryCaseNestedInput
@@ -408,6 +444,8 @@ export type RecoveryCaseCreateManyInput = {
   aiDiagnosis?: string | null
   aiAction?: string | null
   policyDecision?: string | null
+  amount?: number | null
+  recoveredAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -419,6 +457,8 @@ export type RecoveryCaseUpdateManyMutationInput = {
   aiDiagnosis?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   aiAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   policyDecision?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  amount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  recoveredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -432,6 +472,8 @@ export type RecoveryCaseUncheckedUpdateManyInput = {
   aiDiagnosis?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   aiAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   policyDecision?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  amount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  recoveredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -445,6 +487,8 @@ export type RecoveryCaseCountOrderByAggregateInput = {
   aiDiagnosis?: Prisma.SortOrder
   aiAction?: Prisma.SortOrder
   policyDecision?: Prisma.SortOrder
+  amount?: Prisma.SortOrder
+  recoveredAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -452,6 +496,7 @@ export type RecoveryCaseCountOrderByAggregateInput = {
 export type RecoveryCaseAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
   webhookEventId?: Prisma.SortOrder
+  amount?: Prisma.SortOrder
 }
 
 export type RecoveryCaseMaxOrderByAggregateInput = {
@@ -463,6 +508,8 @@ export type RecoveryCaseMaxOrderByAggregateInput = {
   aiDiagnosis?: Prisma.SortOrder
   aiAction?: Prisma.SortOrder
   policyDecision?: Prisma.SortOrder
+  amount?: Prisma.SortOrder
+  recoveredAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -476,6 +523,8 @@ export type RecoveryCaseMinOrderByAggregateInput = {
   aiDiagnosis?: Prisma.SortOrder
   aiAction?: Prisma.SortOrder
   policyDecision?: Prisma.SortOrder
+  amount?: Prisma.SortOrder
+  recoveredAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -483,6 +532,7 @@ export type RecoveryCaseMinOrderByAggregateInput = {
 export type RecoveryCaseSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
   webhookEventId?: Prisma.SortOrder
+  amount?: Prisma.SortOrder
 }
 
 export type RecoveryCaseListRelationFilter = {
@@ -515,6 +565,18 @@ export type EnumRecoveryStatusFieldUpdateOperationsInput = {
 
 export type NullableStringFieldUpdateOperationsInput = {
   set?: string | null
+}
+
+export type NullableIntFieldUpdateOperationsInput = {
+  set?: number | null
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
+}
+
+export type NullableDateTimeFieldUpdateOperationsInput = {
+  set?: Date | string | null
 }
 
 export type DateTimeFieldUpdateOperationsInput = {
@@ -622,6 +684,8 @@ export type RecoveryCaseCreateWithoutWebhookEventInput = {
   aiDiagnosis?: string | null
   aiAction?: string | null
   policyDecision?: string | null
+  amount?: number | null
+  recoveredAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   aiAnalysis?: Prisma.AIAnalysisCreateNestedManyWithoutRecoveryCaseInput
@@ -637,6 +701,8 @@ export type RecoveryCaseUncheckedCreateWithoutWebhookEventInput = {
   aiDiagnosis?: string | null
   aiAction?: string | null
   policyDecision?: string | null
+  amount?: number | null
+  recoveredAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   aiAnalysis?: Prisma.AIAnalysisUncheckedCreateNestedManyWithoutRecoveryCaseInput
@@ -682,6 +748,8 @@ export type RecoveryCaseScalarWhereInput = {
   aiDiagnosis?: Prisma.StringNullableFilter<"RecoveryCase"> | string | null
   aiAction?: Prisma.StringNullableFilter<"RecoveryCase"> | string | null
   policyDecision?: Prisma.StringNullableFilter<"RecoveryCase"> | string | null
+  amount?: Prisma.IntNullableFilter<"RecoveryCase"> | number | null
+  recoveredAt?: Prisma.DateTimeNullableFilter<"RecoveryCase"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"RecoveryCase"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"RecoveryCase"> | Date | string
 }
@@ -693,6 +761,8 @@ export type RecoveryCaseCreateWithoutAiAnalysisInput = {
   aiDiagnosis?: string | null
   aiAction?: string | null
   policyDecision?: string | null
+  amount?: number | null
+  recoveredAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   webhookEvent: Prisma.WebhookEventCreateNestedOneWithoutRecoveryCasesInput
@@ -709,6 +779,8 @@ export type RecoveryCaseUncheckedCreateWithoutAiAnalysisInput = {
   aiDiagnosis?: string | null
   aiAction?: string | null
   policyDecision?: string | null
+  amount?: number | null
+  recoveredAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   recoveryAttempt?: Prisma.RecoveryAttemptUncheckedCreateNestedOneWithoutRecoveryCaseInput
@@ -738,6 +810,8 @@ export type RecoveryCaseUpdateWithoutAiAnalysisInput = {
   aiDiagnosis?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   aiAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   policyDecision?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  amount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  recoveredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   webhookEvent?: Prisma.WebhookEventUpdateOneRequiredWithoutRecoveryCasesNestedInput
@@ -754,6 +828,8 @@ export type RecoveryCaseUncheckedUpdateWithoutAiAnalysisInput = {
   aiDiagnosis?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   aiAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   policyDecision?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  amount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  recoveredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   recoveryAttempt?: Prisma.RecoveryAttemptUncheckedUpdateOneWithoutRecoveryCaseNestedInput
@@ -767,6 +843,8 @@ export type RecoveryCaseCreateWithoutRecoveryAttemptInput = {
   aiDiagnosis?: string | null
   aiAction?: string | null
   policyDecision?: string | null
+  amount?: number | null
+  recoveredAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   webhookEvent: Prisma.WebhookEventCreateNestedOneWithoutRecoveryCasesInput
@@ -783,6 +861,8 @@ export type RecoveryCaseUncheckedCreateWithoutRecoveryAttemptInput = {
   aiDiagnosis?: string | null
   aiAction?: string | null
   policyDecision?: string | null
+  amount?: number | null
+  recoveredAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   aiAnalysis?: Prisma.AIAnalysisUncheckedCreateNestedManyWithoutRecoveryCaseInput
@@ -812,6 +892,8 @@ export type RecoveryCaseUpdateWithoutRecoveryAttemptInput = {
   aiDiagnosis?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   aiAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   policyDecision?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  amount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  recoveredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   webhookEvent?: Prisma.WebhookEventUpdateOneRequiredWithoutRecoveryCasesNestedInput
@@ -828,6 +910,8 @@ export type RecoveryCaseUncheckedUpdateWithoutRecoveryAttemptInput = {
   aiDiagnosis?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   aiAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   policyDecision?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  amount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  recoveredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   aiAnalysis?: Prisma.AIAnalysisUncheckedUpdateManyWithoutRecoveryCaseNestedInput
@@ -841,6 +925,8 @@ export type RecoveryCaseCreateWithoutAuditLogsInput = {
   aiDiagnosis?: string | null
   aiAction?: string | null
   policyDecision?: string | null
+  amount?: number | null
+  recoveredAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   webhookEvent: Prisma.WebhookEventCreateNestedOneWithoutRecoveryCasesInput
@@ -857,6 +943,8 @@ export type RecoveryCaseUncheckedCreateWithoutAuditLogsInput = {
   aiDiagnosis?: string | null
   aiAction?: string | null
   policyDecision?: string | null
+  amount?: number | null
+  recoveredAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   aiAnalysis?: Prisma.AIAnalysisUncheckedCreateNestedManyWithoutRecoveryCaseInput
@@ -886,6 +974,8 @@ export type RecoveryCaseUpdateWithoutAuditLogsInput = {
   aiDiagnosis?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   aiAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   policyDecision?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  amount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  recoveredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   webhookEvent?: Prisma.WebhookEventUpdateOneRequiredWithoutRecoveryCasesNestedInput
@@ -902,6 +992,8 @@ export type RecoveryCaseUncheckedUpdateWithoutAuditLogsInput = {
   aiDiagnosis?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   aiAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   policyDecision?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  amount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  recoveredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   aiAnalysis?: Prisma.AIAnalysisUncheckedUpdateManyWithoutRecoveryCaseNestedInput
@@ -916,6 +1008,8 @@ export type RecoveryCaseCreateManyWebhookEventInput = {
   aiDiagnosis?: string | null
   aiAction?: string | null
   policyDecision?: string | null
+  amount?: number | null
+  recoveredAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -927,6 +1021,8 @@ export type RecoveryCaseUpdateWithoutWebhookEventInput = {
   aiDiagnosis?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   aiAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   policyDecision?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  amount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  recoveredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   aiAnalysis?: Prisma.AIAnalysisUpdateManyWithoutRecoveryCaseNestedInput
@@ -942,6 +1038,8 @@ export type RecoveryCaseUncheckedUpdateWithoutWebhookEventInput = {
   aiDiagnosis?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   aiAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   policyDecision?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  amount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  recoveredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   aiAnalysis?: Prisma.AIAnalysisUncheckedUpdateManyWithoutRecoveryCaseNestedInput
@@ -957,6 +1055,8 @@ export type RecoveryCaseUncheckedUpdateManyWithoutWebhookEventInput = {
   aiDiagnosis?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   aiAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   policyDecision?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  amount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  recoveredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1010,6 +1110,8 @@ export type RecoveryCaseSelect<ExtArgs extends runtime.Types.Extensions.Internal
   aiDiagnosis?: boolean
   aiAction?: boolean
   policyDecision?: boolean
+  amount?: boolean
+  recoveredAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   webhookEvent?: boolean | Prisma.WebhookEventDefaultArgs<ExtArgs>
@@ -1028,6 +1130,8 @@ export type RecoveryCaseSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   aiDiagnosis?: boolean
   aiAction?: boolean
   policyDecision?: boolean
+  amount?: boolean
+  recoveredAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   webhookEvent?: boolean | Prisma.WebhookEventDefaultArgs<ExtArgs>
@@ -1042,6 +1146,8 @@ export type RecoveryCaseSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   aiDiagnosis?: boolean
   aiAction?: boolean
   policyDecision?: boolean
+  amount?: boolean
+  recoveredAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   webhookEvent?: boolean | Prisma.WebhookEventDefaultArgs<ExtArgs>
@@ -1056,11 +1162,13 @@ export type RecoveryCaseSelectScalar = {
   aiDiagnosis?: boolean
   aiAction?: boolean
   policyDecision?: boolean
+  amount?: boolean
+  recoveredAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type RecoveryCaseOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "paymentId" | "webhookEventId" | "status" | "liveState" | "aiDiagnosis" | "aiAction" | "policyDecision" | "createdAt" | "updatedAt", ExtArgs["result"]["recoveryCase"]>
+export type RecoveryCaseOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "paymentId" | "webhookEventId" | "status" | "liveState" | "aiDiagnosis" | "aiAction" | "policyDecision" | "amount" | "recoveredAt" | "createdAt" | "updatedAt", ExtArgs["result"]["recoveryCase"]>
 export type RecoveryCaseInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   webhookEvent?: boolean | Prisma.WebhookEventDefaultArgs<ExtArgs>
   aiAnalysis?: boolean | Prisma.RecoveryCase$aiAnalysisArgs<ExtArgs>
@@ -1092,6 +1200,8 @@ export type $RecoveryCasePayload<ExtArgs extends runtime.Types.Extensions.Intern
     aiDiagnosis: string | null
     aiAction: string | null
     policyDecision: string | null
+    amount: number | null
+    recoveredAt: Date | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["recoveryCase"]>
@@ -1529,6 +1639,8 @@ export interface RecoveryCaseFieldRefs {
   readonly aiDiagnosis: Prisma.FieldRef<"RecoveryCase", 'String'>
   readonly aiAction: Prisma.FieldRef<"RecoveryCase", 'String'>
   readonly policyDecision: Prisma.FieldRef<"RecoveryCase", 'String'>
+  readonly amount: Prisma.FieldRef<"RecoveryCase", 'Int'>
+  readonly recoveredAt: Prisma.FieldRef<"RecoveryCase", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"RecoveryCase", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"RecoveryCase", 'DateTime'>
 }

@@ -914,6 +914,8 @@ export const RecoveryCaseScalarFieldEnum = {
   aiDiagnosis: 'aiDiagnosis',
   aiAction: 'aiAction',
   policyDecision: 'policyDecision',
+  amount: 'amount',
+  recoveredAt: 'recoveredAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -942,6 +944,10 @@ export const AIAnalysisScalarFieldEnum = {
   recommendedAction: 'recommendedAction',
   riskLevel: 'riskLevel',
   model: 'model',
+  promptTokens: 'promptTokens',
+  completionTokens: 'completionTokens',
+  totalTokens: 'totalTokens',
+  estimatedCost: 'estimatedCost',
   createdAt: 'createdAt'
 } as const
 
