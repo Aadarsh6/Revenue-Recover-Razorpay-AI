@@ -166,31 +166,25 @@ if (!skipSignatureValidation) {
           }
         });
       }
-
+      
       // 2. --- CLOSE THE LOOP: Intercept successful recovery payments FIRST ---
       if (stateResult.decision === 'VALID_CAPTURE') {
         const notes = stateResult.livePayment.notes;
         const recoveryCaseId = notes?.revive_recovery_case_id;
 
-            await prisma.recoveryCase.update({
+        if (recoveryCaseId) {
+          console.log(`🔔 Recovery payment detected for Case ${recoveryCaseId}! Closing the loop...`);
+
+          await prisma.recoveryCase.update({
             where: { id: parseInt(recoveryCaseId) },
             data: { status: 'AUTO_RECOVERED', recoveredAt: new Date() }
           });
 
-        if (recoveryCaseId) {
-          console.log(`🔔 Recovery payment detected for Case ${recoveryCaseId}! Closing the loop...`);
-          
-          await prisma.recoveryCase.update({
-            where: { id: parseInt(recoveryCaseId) },
-            data: { status: 'AUTO_RECOVERED' } // Removed `as any` if Prisma is generated
-          });
-
           await prisma.recoveryAttempt.updateMany({
             where: { recoveryCaseId: parseInt(recoveryCaseId) },
-            data: { status: 'SUCCESS' } // Removed `as any`
+            data: { status: 'SUCCESS' }
           });
 
-          // ✅ MOVED INSIDE THE IF BLOCK
           await logAudit('RECOVERY_PAYMENT_CAPTURED', parseInt(recoveryCaseId), { paymentId });
           await logAudit('LOOP_CLOSED', parseInt(recoveryCaseId), { status: 'AUTO_RECOVERED' });
 
