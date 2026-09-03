@@ -50,7 +50,12 @@ async function main() {
 
   await fireConcurrentWave();
   console.log("All webhooks delivered. Waiting for pipelines to settle...\n");
-  await new Promise(r => setTimeout(r, 8000));
+  
+    for (let i = 0; i < 30; i++) {
+    await new Promise(r => setTimeout(r, 2000));
+    const check = await prisma.recoveryCase.findUnique({ where: { paymentId: CONFIG.paymentId } });
+    if (check && !['OPEN', 'AI_PROCESSING', 'PENDING_EXECUTION', 'EXECUTING'].includes(check.status)) break;
+  }
 
   const testCase = await prisma.recoveryCase.findFirst({
     where: { paymentId: CONFIG.paymentId },
