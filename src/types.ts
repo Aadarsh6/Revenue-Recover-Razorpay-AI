@@ -31,3 +31,16 @@ export interface RecoveryCase {
   recoveryAttempt: RecoveryAttempt | null;
   auditLogs: AuditLog[];
 }
+
+
+export interface FinancialStats {
+  grossRecovered: number;
+  currency: string;
+  aiComputeCost: number;
+  netRecoveryValue: number;
+  aiCallsAvoided: number;
+  guardBlocks: number;
+  avgRecoveryMinutes: number | null;
+  casesProcessed: number;
+  statusCounts: Record<string, number>;
+}
