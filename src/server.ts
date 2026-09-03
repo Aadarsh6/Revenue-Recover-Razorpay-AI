@@ -166,7 +166,7 @@ if (!skipSignatureValidation) {
           }
         });
       }
-      
+
       // 2. --- CLOSE THE LOOP: Intercept successful recovery payments FIRST ---
       if (stateResult.decision === 'VALID_CAPTURE') {
         const notes = stateResult.livePayment.notes;
@@ -463,6 +463,57 @@ app.get("/api/cases/:id", async (req: Request, res: Response) => {
     res.status(500).json({ error: "Failed to fetch case", details: error.message });
   }
 });
+
+// ─── Financial Impact Metrics ───────────────────────────────────────
+app.get("/api/stats", async (req: Request, res: Response) => {
+  try {
+    const [recoveredCases, aiRows, floorBlocks, guardBlocks, allCases] = await Promise.all([
+      prisma.recoveryCase.findMany({
+        where: { status: 'AUTO_RECOVERED', amount: { not: null } },
+        select: { amount: true, recoveredAt: true, createdAt: true },
+      }),
+      prisma.aIAnalysis.findMany({ select: { estimatedCost: true } }),
+      prisma.auditLog.findMany({ where: { event: 'ECONOMIC_FLOOR_BLOCKED' } }),
+      prisma.auditLog.findMany({ where: { event: 'STATE_VALIDATED',
+        metadata: { path: ['decision'], equals: 'ALREADY_CAPTURED' } } }),
+      prisma.recoveryCase.findMany({ select: { status: true } }),
+    ]);
+
+    const grossRecoveredPaise = recoveredCases.reduce((s, c) => s + (c.amount ?? 0), 0);
+
+    const aiCost = aiRows.reduce((s, r) => s + (r.estimatedCost ?? 0), 0);
+
+    // Avg time-to-recovery, from case creation to loop close
+    let avgRecoveryMinutes: number | null = null;
+    const timed = recoveredCases.filter(c => c.recoveredAt);
+    if (timed.length > 0) {
+      const totalMs = timed.reduce((s, c) => s + (c.recoveredAt!.getTime() - c.createdAt.getTime()), 0);
+      avgRecoveryMinutes = Math.round((totalMs / timed.length / 60000) * 10) / 10;
+    }
+
+    const statusCounts = allCases.reduce<Record<string, number>>((acc, c) => {
+      acc[c.status] = (acc[c.status] ?? 0) + 1; return acc;
+    }, {});
+
+    res.json({
+      grossRecovered: grossRecoveredPaise / 100,
+      currency: 'INR',
+      aiComputeCost: Math.round(aiCost * 1000) / 1000,
+      netRecoveryValue: Math.round((grossRecoveredPaise / 100 - aiCost) * 1000) / 1000,
+      aiCallsAvoided: floorBlocks.length,
+      guardBlocks: guardBlocks.length,
+      avgRecoveryMinutes,
+      casesProcessed: allCases.length,
+      statusCounts,
+    });
+  } catch (error: any) {
+    console.error("[API Error] Failed to compute stats:", error);
+    res.status(500).json({ error: "Failed to compute stats", details: error.message });
+  }
+});
+
+
+
 
 const PORT = process.env.PORT || 3000;
 
