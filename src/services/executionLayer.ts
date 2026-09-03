@@ -48,7 +48,8 @@ export class ExecutionLayer {
         };
 
         // Configurable TTL so recovery opportunities expire (demo: lower in .env)
-        const ttlMinutes = Number(process.env.RECOVERY_LINK_TTL_MINUTES || 60);
+                const ttlMinutes = Number(process.env.RECOVERY_LINK_TTL_MINUTES || 60);
+        console.log(`[Execution Layer] Recovery link TTL: ${ttlMinutes} min`);
         if (ttlMinutes > 0) {
           payload.expire_by = Math.floor(Date.now() / 1000) + ttlMinutes * 60;
         }
