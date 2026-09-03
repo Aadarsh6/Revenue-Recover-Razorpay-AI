@@ -5,9 +5,10 @@ import axios from 'axios';
 import { ShieldCheck, Bot, Activity, ChevronDown, ChevronUp } from 'lucide-react';
 
 
-import type { RecoveryCase } from './types';
+import type { FinancialStats, RecoveryCase } from './types';
 import CaseDetails from './Components/CaseDetails';
 import StatsCards from './Components/StatsCards';
+import FinancialImpact from './Components/FinancialImpact';
 // import { RecoveryCase } from './types';
 // import CaseDetails from './components/CaseDetails';
 
@@ -16,15 +17,23 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [expandedCaseId, setExpandedCaseId] = useState<number | null>(null);
 
+  const [stats, setStats] = useState<FinancialStats | null>(null);
+
 useEffect(() => {
   let cancelled = false;
 
   const fetchCases = async () => {
     try {
-      const res = await axios.get('http://localhost:3000/api/cases');
-      if (!cancelled) setCases(Array.isArray(res.data) ? res.data : []);
+      const [casesRes, statsRes] = await Promise.all([
+        axios.get('http://localhost:3000/api/cases'),
+        axios.get('http://localhost:3000/api/stats'),
+      ]);
+      if (!cancelled) {
+        setCases(Array.isArray(casesRes.data) ? casesRes.data : []);
+        setStats(statsRes.data ?? null);
+      }
     } catch (err) {
-      console.error("Axios error:", err);
+      console.error("Fetch error:", err);
     } finally {
       if (!cancelled) setLoading(false);
     }
@@ -62,7 +71,7 @@ useEffect(() => {
         <div className="text-center text-slate-500 py-10">No recovery cases found. Trigger a webhook to see magic happen!</div>
       ) : (
          <>
-          {/* ADD STATS CARDS HERE */}
+          {stats && <FinancialImpact stats={stats} />}
           <StatsCards cases={cases} />
         <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
           <table className="w-full text-left border-collapse">
