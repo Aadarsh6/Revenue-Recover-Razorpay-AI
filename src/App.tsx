@@ -11,6 +11,7 @@ import CaseDetails from './Components/CaseDetails';
 import FinancialImpact from './Components/FinancialImpact';
 // import PolicyRules from './Components/PolicyRules';
 import { policyBadgeClass, statusBadgeClass } from './Theme';
+import PolicyRules from './Components/PolicyRules';
 
 type Page = 'dashboard' | 'policy' | 'audit';
 
