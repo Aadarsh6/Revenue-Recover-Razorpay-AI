@@ -2,7 +2,7 @@ import { Fragment, useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import {
   ArrowUpRight, Bot, ChevronDown, ChevronUp,
-  LayoutDashboard, Scale, ScrollText, ShieldCheck,
+  LayoutDashboard, Scale, ShieldCheck,
 } from 'lucide-react';
 
 import type { FinancialStats, RecoveryCase } from './types';
@@ -13,7 +13,7 @@ import FinancialImpact from './Components/FinancialImpact';
 import { policyBadgeClass, statusBadgeClass } from './Theme';
 import PolicyRules from './Components/PolicyRules';
 
-type Page = 'dashboard' | 'policy' | 'audit';
+type Page = 'dashboard' | 'policy';
 
 const FILTERS: { key: string; label: string }[] = [
   { key: 'ALL', label: 'All' },
@@ -112,7 +112,7 @@ export default function App() {
             {([
               { key: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
               { key: 'policy', label: 'Policy Rules', icon: Scale },
-              { key: 'audit', label: 'Audit Log', icon: ScrollText },
+              // { key: 'audit', label: 'Audit Log', icon: ScrollText },
             ] as { key: Page; label: string; icon: typeof LayoutDashboard }[]).map(item => {
               const active = page === item.key;
               return (
