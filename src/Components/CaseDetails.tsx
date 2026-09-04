@@ -22,9 +22,29 @@ export default function CaseDetails({ c }: { c: RecoveryCase }) {
     ? 'Live Razorpay state could not be verified (API error). System failed safe to human review.'
     : policyReason || 'AI flagged HIGH risk or requested escalation.';
 
+
+const has = (e: string) => c.auditLogs?.some(l => l.event === e);
+
+const stages = [
+  { label: 'Webhook',      done: has('WEBHOOK_RECEIVED') },
+  { label: 'State ✓',      done: has('STATE_VALIDATED') },
+  { label: 'AI',           done: has('AI_ANALYSIS_COMPLETED') },
+  { label: 'Policy',       done: has('POLICY_DECIDED') || !!floorMeta },
+  { label: 'Execute',      done: has('RECOVERY_LINK_CREATED') },
+  { label: 'Recovered',    done: c.status === 'AUTO_RECOVERED' },
+];
+
+
   const formatTime = (dateString: string) => {
     return new Date(dateString).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
   };
+
+  const haltNote =
+  c.status === 'BLOCKED' ? '🛑 Pipeline halted — guard fired, no money moved'
+  : c.status === 'PENDING_HUMAN_REVIEW' ? '⏸ Pipeline halted — awaiting human review'
+  : c.status === 'RECOVERY_EXPIRED' ? '⌛ Recovery opportunity expired'
+  : c.status === 'FAILED' ? '⚠ Execution failed — no money moved'
+  : null;
 
   return (
     <tr className="bg-slate-50/50">
@@ -35,7 +55,19 @@ export default function CaseDetails({ c }: { c: RecoveryCase }) {
           <div className="space-y-4 border-r border-slate-200 pr-8">
             <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wider">AI Analysis & Execution</h3>
 
-            {/* SPECIAL CASE: BLOCKED */}
+            <div className="flex items-center gap-1 mb-4 flex-wrap">
+  {stages.map((s, i) => (
+    <div key={s.label} className="flex items-center gap-1">
+      {i > 0 && <div className={`w-4 h-px ${s.done ? 'bg-blue-400' : 'bg-slate-300'}`} />}
+      <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${
+        s.done ? 'bg-blue-100 text-blue-800' : 'bg-slate-100 text-slate-400'
+      }`}>{s.label}</span>
+    </div>
+  ))}
+</div>
+
+{haltNote && <div className="text-xs text-slate-500 mt-1">{haltNote}</div>}
+
                         {/* SPECIAL CASE: BLOCKED */}
             {c.status === 'BLOCKED' && (
               <div className="bg-red-50 border border-red-200 rounded-lg p-4">
