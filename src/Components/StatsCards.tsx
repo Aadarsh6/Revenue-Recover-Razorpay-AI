@@ -1,4 +1,3 @@
-import { CheckCircle2, ShieldX, UserSearch, XCircle, ListChecks } from 'lucide-react';
 import type { RecoveryCase } from '../types';
 
 export default function StatsCards({ cases }: { cases: RecoveryCase[] }) {
@@ -9,24 +8,20 @@ export default function StatsCards({ cases }: { cases: RecoveryCase[] }) {
   const failed = cases.filter(c => c.status === 'FAILED').length;
 
   const stats = [
-    { label: 'Total Cases', value: total, icon: ListChecks, color: 'text-blue-600 bg-blue-50' },
-    { label: 'Recovered', value: recovered, icon: CheckCircle2, color: 'text-green-600 bg-green-50' },
-    { label: 'Blocked', value: blocked, icon: ShieldX, color: 'text-red-600 bg-red-50' },
-    { label: 'Human Review', value: human, icon: UserSearch, color: 'text-yellow-600 bg-yellow-50' },
-    { label: 'Failed', value: failed, icon: XCircle, color: 'text-slate-600 bg-slate-100' },
+    { label: 'Total cases', value: total, dot: '#2872EF' },
+    { label: 'Recovered', value: recovered, dot: '#14804A' },
+    { label: 'Blocked', value: blocked, dot: '#C4361D' },
+    { label: 'Human review', value: human, dot: '#A15C00' },
+    { label: 'Failed', value: failed, dot: '#9AA1AC' },
   ];
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
-      {stats.map((stat) => (
-        <div key={stat.label} className="bg-white rounded-xl border border-slate-200 p-4 flex items-center gap-3 shadow-sm">
-          <div className={`p-2 rounded-lg ${stat.color}`}>
-            <stat.icon size={20} />
-          </div>
-          <div>
-            <div className="text-2xl font-bold text-slate-800 leading-none">{stat.value}</div>
-            <div className="text-xs text-slate-500 mt-1">{stat.label}</div>
-          </div>
+    <div className="flex flex-wrap items-center gap-x-7 gap-y-2 mb-6 px-1 py-1">
+      {stats.map((s) => (
+        <div key={s.label} className="flex items-center gap-2">
+          <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: s.dot }} />
+          <span className="text-base font-mono tabular-nums font-semibold text-[#0B1120]">{s.value}</span>
+          <span className="text-sm text-[#5B6472]">{s.label}</span>
         </div>
       ))}
     </div>

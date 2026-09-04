@@ -18,7 +18,7 @@ export default function FinancialImpact({ stats }: { stats: FinancialStats }) {
         <span className="text-xs text-[#9AA1AC]">AI recommendation ≠ AI authority — every rupee tracked</span>
       </div>
       <div className="bg-[#0B1120] rounded-2xl overflow-hidden">
-        <div className="grid grid-cols-2 md:grid-cols-5 divide-x divide-white/[0.08]">
+        <div className="grid grid-cols-2 md:grid-cols-5 divide-x divide-white/8">
           {items.map(({ label, value, tone }) => (
             <div key={label} className="px-5 py-4">
               <div className="text-[11px] text-[#7C8494] mb-1.5">{label}</div>
