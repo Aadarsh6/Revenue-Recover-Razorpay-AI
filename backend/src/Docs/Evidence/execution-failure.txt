@@ -1,0 +1,18 @@
+// Execution-failure path — Razorpay rejects payment_link.create
+// Run 1 (Sep 3): 5-webhook concurrency test, first generation.
+// With TTL below Razorpay's 15-minute minimum, the API rejected link creation:
+
+[Execution Layer] Executing action: CREATE_RECOVERY_LINK for Case 8
+[Execution Layer] Recovery link TTL: 10 min
+[Execution Layer] ❌ Razorpay API Error: expire_by: timestamp must be atleast 15 minutes in future.
+⚠️ Execution failed. Case 8 marked as FAILED.
+
+// Outcome: case → FAILED, error persisted on RecoveryAttempt, webhook marked
+// PROCESSED, no partial state. Fix applied: TTL clamped to the 15-min minimum.
+//
+// Run 2 (Sep 4): recurrence — clamping to EXACTLY 900s still failed
+// (sub-second truncation + boundary check), caught by the duplicate-webhook
+// replay test. Final fix: 60-second safety margin added to expire_by.
+
+[Execution Layer] ❌ Razorpay API Error: expire_by: timestamp must be atleast 15 minutes in future.
+⚠️ Execution failed. Case 5 marked as FAILED.
