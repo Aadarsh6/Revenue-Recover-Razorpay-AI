@@ -1,0 +1,56 @@
+// Replay of an already-processed event (evt_replay_proof) — client responses + server log, <date>
+
+
+
+Adarsh@Adarsh MINGW64 ~/OneDrive/Desktop/RAZORPAY/RAZORPAY BACKEND (main)
+$ URL="http://localhost:3000/webhook/razorpay"
+PAY_ID="pay_TXr5CMIL6IONa5"
+SECRET=$(grep '^RAZORPAY_WEBHOOK_SECRET=' .env | cut -d '=' -f2-)
+PAYLOAD='{"entity":"event","event":"payment.failed","payload":{"payment":{"entity":{"id":"'$PAY_ID'"}}}}'
+SIG=$(echo -n "$PAYLOAD" | openssl dgst -sha256 -hmac "$SECRET" | sed 's/^.* //')
+
+for i in 1 2; do
+curl -X POST "$URL" -H "Content-Type: application/json" \
+  -H "X-Razorpay-Signature: $SIG" \
+  -H "X-Razorpay-Event-Id: evt_replay_proof" -d "$PAYLOAD"
+echo ""
+done
+{"status":"ok"}
+{"status":"duplicate ignored"}
+
+
+Adarsh@Adarsh MINGW64 ~/OneDrive/Desktop/RAZORPAY/RAZORPAY BACKEND (main)
+$ npm run dev
+> razorpay@1.0.0 dev
+> tsx watch src/server.ts
+◇ injected env (11) from .env // tip: ⌘ override existing { override: true }
+◇ injected env (0) from .env // tip: ⌁ auth for agents [www.vestauth.com]
+Server running on port 3000
+Processing event evt_replay_proof(payment.failed)
+Duplicate webhook received: evt_replay_proof
+[StateValidator] ✅ VALID_FAILURE confirmed for pay_TXr5CMIL6IONa5
+[RecoveryCase] Case 5 for payment pay_TXr5CMIL6IONa5. Status: OPEN
+➡️ Recovery Case 5 OPEN. Proceeding to Context Aggregation...
+Context built for pay_TXr5CMIL6IONa5. Real facts extracted.
+🧠 Sending clean context to Groq AI for diagnosis...
+🤖 AI Recommendation: {
+  diagnosis: 'card_authorization_failure',
+  evidence: [
+    'Failed via card',
+    '5 previous successful payments',
+    'errorStep payment_authorization'
+  ],
+  recommended_action: 'CREATE_RECOVERY_LINK',
+  risk_level: 'LOW',
+  usage: { promptTokens: 593, completionTokens: 270, totalTokens: 863 }
+}
+⚖️ Evaluating Policy Engine...
+Policy Decision: AUTO - Policy Matrix allows CREATE_RECOVERY_LINK with LOW risk.
+✅ Policy Engine authorized AUTONOMOUS execution. Case claimed → PENDING_EXECUTION.
+[Execution Layer] Executing action: CREATE_RECOVERY_LINK for Case 5
+[Execution Layer] Recovery link TTL: 15 min
+[Execution Layer] ❌ Razorpay API Error: expire_by: timestamp must be atleast 15 minutes in future.
+⚠️ Execution failed. Case 5 marked as FAILED.
+Successfully Processed Event: evt_replay_proof
+
+
