@@ -1,34 +1,50 @@
 import type { FinancialStats } from '../types';
 
+function Stat({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <div className="text-[11px] font-medium uppercase tracking-wider text-[#9AA1AC] mb-1">{label}</div>
+      <div className="text-lg font-semibold text-[#0B1120] tabular-nums">{value}</div>
+    </div>
+  );
+}
+
 export default function FinancialImpact({ stats }: { stats: FinancialStats }) {
   const fmt = (n: number) => `₹${n.toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
 
-  const items = [
-    { label: 'Gross recovered', value: fmt(stats.grossRecovered), tone: '#4ADE80' },
-    { label: 'AI compute cost', value: fmt(stats.aiComputeCost), tone: '#C4A8F5' },
-    { label: 'Net recovery value', value: fmt(stats.netRecoveryValue), tone: '#7EABF7' },
-    { label: 'AI calls avoided', value: String(stats.aiCallsAvoided), tone: '#C7CBD1' },
-    { label: 'Avg. time to recovery', value: stats.avgRecoveryMinutes !== null ? `${stats.avgRecoveryMinutes} min` : '—', tone: '#C7CBD1' },
-  ];
-
   return (
-    <div className="mb-6">
-      <div className="flex items-baseline justify-between mb-2 px-1">
-        <span className="text-sm font-semibold text-[#0B1120]">Financial impact</span>
-        <span className="text-xs text-[#9AA1AC]">AI recommendation ≠ AI authority — every rupee tracked</span>
-      </div>
-      <div className="bg-[#0B1120] rounded-2xl overflow-hidden">
-        <div className="grid grid-cols-2 md:grid-cols-5 divide-x divide-white/8">
-          {items.map(({ label, value, tone }) => (
-            <div key={label} className="px-5 py-4">
-              <div className="text-[11px] text-[#7C8494] mb-1.5">{label}</div>
-              <div className="text-xl font-mono tabular-nums font-semibold" style={{ color: tone }}>
-                {value}
-              </div>
-            </div>
-          ))}
+    <section className="bg-white rounded-lg border border-[#EDEEF1] p-6 mb-6">
+      <div className="flex flex-wrap items-end gap-x-12 gap-y-6">
+        {/* Hero — size is the hierarchy, ink is the color */}
+        <div className="min-w-[240px]">
+          <div className="text-[11px] font-medium uppercase tracking-wider text-[#9AA1AC] mb-1.5">
+            Net recovery value
+          </div>
+          <div className="text-4xl font-semibold text-[#0B1120] tracking-tight tabular-nums">
+            {fmt(stats.netRecoveryValue)}
+          </div>
+          <div className="text-sm text-[#58666E] mt-2">
+            {fmt(stats.grossRecovered)} gross recovered − {fmt(stats.aiComputeCost)} AI compute
+          </div>
+        </div>
+
+        <div className="hidden lg:block h-16 w-px bg-[#EDEEF1]" />
+
+        {/* Supporting figures */}
+        <div className="flex flex-wrap gap-x-12 gap-y-5">
+          <Stat label="Cases processed" value={String(stats.casesProcessed)} />
+          <Stat label="Guard blocks" value={String(stats.guardBlocks)} />
+          <Stat label="AI calls avoided" value={String(stats.aiCallsAvoided)} />
+          <Stat
+            label="Avg. time to recovery"
+            value={stats.avgRecoveryMinutes !== null ? `${stats.avgRecoveryMinutes} min` : '—'}
+          />
         </div>
       </div>
-    </div>
+
+      <div className="mt-5 pt-4 border-t border-[#EDEEF1] text-xs text-[#9AA1AC]">
+        AI recommendation ≠ AI authority — every rupee is tracked through the policy engine.
+      </div>
+    </section>
   );
 }
