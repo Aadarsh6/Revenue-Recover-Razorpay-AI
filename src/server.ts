@@ -322,12 +322,13 @@ if (!skipSignatureValidation) {
           data: { status: 'BLOCKED', policyDecision: 'BLOCK' }
         });
         console.log(`🛑 Pipeline stopped by Policy Engine. Case marked as BLOCKED.`);
-      } else if (policyResult.decision === 'HUMAN') {
-        await prisma.recoveryCase.update({
-          where: { id: recoveryCase.id },
+        } else if (policyResult.decision === 'HUMAN') {
+        const esc = await prisma.recoveryCase.updateMany({
+          where: { id: recoveryCase.id, status: 'AI_PROCESSING' },
           data: { status: 'PENDING_HUMAN_REVIEW', policyDecision: 'HUMAN' }
         });
-        console.log(`👤 Escalated to HUMAN review by Policy Engine.`);
+        if (esc.count > 0) console.log(`👤 Escalated to HUMAN review by Policy Engine.`);
+        else console.log(`⚠️ Case ${recoveryCase.id} changed state mid-flight — escalation skipped.`);
       } else {
         // AUTO: ATOMIC CLAIM — only the first pipeline to arrive may proceed
         const claim = await prisma.recoveryCase.updateMany({
