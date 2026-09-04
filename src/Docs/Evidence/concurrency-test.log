@@ -1,0 +1,104 @@
+Adarsh@Adarsh MINGW64 ~/OneDrive/Desktop/RAZORPAY/RAZORPAY BACKEND (main)
+$ npm run dev
+
+> razorpay@1.0.0 dev
+> tsx watch src/server.ts
+
+◇ injected env (11) from .env // tip: ⌁ auth for agents [www.vestauth.com]
+◇ injected env (0) from .env // tip: ⌘ suppress logs { quiet: true }
+Server running on port 3000
+Processing event evt_concurrency_1788502186545_0(payment.failed)
+Processing event evt_concurrency_1788502186596_1(payment.failed)
+Processing event evt_concurrency_1788502186598_2(payment.failed)
+Processing event evt_concurrency_1788502186599_3(payment.failed)
+Processing event evt_concurrency_1788502186600_4(payment.failed)
+[StateValidator] ✅ VALID_FAILURE confirmed for pay_TXr5CMIL6IONa5
+[StateValidator] ✅ VALID_FAILURE confirmed for pay_TXr5CMIL6IONa5
+[StateValidator] ✅ VALID_FAILURE confirmed for pay_TXr5CMIL6IONa5
+[StateValidator] ✅ VALID_FAILURE confirmed for pay_TXr5CMIL6IONa5
+[StateValidator] ✅ VALID_FAILURE confirmed for pay_TXr5CMIL6IONa5
+[RecoveryCase] Case 11 for payment pay_TXr5CMIL6IONa5. Status: OPEN
+[RecoveryCase] Concurrent creation detected for pay_TXr5CMIL6IONa5 → attaching to Case 11
+[RecoveryCase] Concurrent creation detected for pay_TXr5CMIL6IONa5 → attaching to Case 11
+[RecoveryCase] Case 11 for payment pay_TXr5CMIL6IONa5. Status: OPEN
+➡️ Recovery Case 11 OPEN. Proceeding to Context Aggregation...
+Context built for pay_TXr5CMIL6IONa5. Real facts extracted.
+➡️ Recovery Case 11 OPEN. Proceeding to Context Aggregation...
+🧠 Sending clean context to Groq AI for diagnosis...
+➡️ Recovery Case 11 OPEN. Proceeding to Context Aggregation...
+Context built for pay_TXr5CMIL6IONa5. Real facts extracted.
+[RecoveryCase] Case 11 for payment pay_TXr5CMIL6IONa5. Status: AI_PROCESSING
+Context built for pay_TXr5CMIL6IONa5. Real facts extracted.
+➡️ Recovery Case 11 OPEN. Proceeding to Context Aggregation...
+🧠 Sending clean context to Groq AI for diagnosis...
+Context built for pay_TXr5CMIL6IONa5. Real facts extracted.
+🧠 Sending clean context to Groq AI for diagnosis...
+🧠 Sending clean context to Groq AI for diagnosis...
+🛑 Pipeline stopped. Recovery Case 11 is AI_PROCESSING. No money moved.
+🤖 AI Recommendation: {
+  diagnosis: 'payment_authorization_failure',
+  evidence: [
+    'Failed via card',
+    '5 past successful payments',
+    '2 card successes'
+  ],
+  recommended_action: 'CREATE_RECOVERY_LINK',
+  risk_level: 'LOW',
+  usage: { promptTokens: 593, completionTokens: 191, totalTokens: 784 }
+}
+⚖️ Evaluating Policy Engine...
+🤖 AI Recommendation: {
+  diagnosis: 'card_authorization_failure',
+  evidence: [
+    'Failed via card',
+    'payment_authorization step',
+    'gateway error source'
+  ],
+  recommended_action: 'CREATE_RECOVERY_LINK',
+  risk_level: 'LOW',
+  usage: { promptTokens: 593, completionTokens: 212, totalTokens: 805 }
+}
+🤖 AI Recommendation: {
+  diagnosis: 'card_authorization_failure',
+  evidence: [
+    'Failed via card',
+    'payment_authorization step',
+    'gateway source',
+    '5 previous successful payments'
+  ],
+  recommended_action: 'CREATE_RECOVERY_LINK',
+  risk_level: 'LOW',
+  usage: { promptTokens: 593, completionTokens: 253, totalTokens: 846 }
+}
+⚖️ Evaluating Policy Engine...
+⚖️ Evaluating Policy Engine...
+🤖 AI Recommendation: {
+  diagnosis: 'card_authorization_failure',
+  evidence: [
+    'Failed via card',
+    'Error step payment_authorization',
+    'Gateway source',
+    '5 previous successes'
+  ],
+  recommended_action: 'CREATE_RECOVERY_LINK',
+  risk_level: 'LOW',
+  usage: { promptTokens: 593, completionTokens: 246, totalTokens: 839 }
+}
+⚖️ Evaluating Policy Engine...
+Policy Decision: AUTO - Policy Matrix allows CREATE_RECOVERY_LINK with LOW risk.
+✅ Policy Engine authorized AUTONOMOUS execution. Case claimed → PENDING_EXECUTION.
+[Execution Layer] Executing action: CREATE_RECOVERY_LINK for Case 11
+[Execution Layer] Recovery link TTL: 15 min
+Policy Decision: AUTO - Policy Matrix allows CREATE_RECOVERY_LINK with LOW risk.
+Policy Decision: AUTO - Policy Matrix allows CREATE_RECOVERY_LINK with LOW risk.
+⚠️ Concurrency Control: Case 11 already claimed by another pipeline. Aborting.
+⚠️ Concurrency Control: Case 11 already claimed by another pipeline. Aborting.
+Policy Decision: AUTO - Policy Matrix allows CREATE_RECOVERY_LINK with LOW risk.
+⚠️ Concurrency Control: Case 11 already claimed by another pipeline. Aborting.
+[Execution Layer] ✅ Recovery Link Created: https://rzp.io/rzp/8Mz1DYp
+🔗 Recovery Link saved to DB. Case 11 marked as RECOVERY_LINK_CREATED. Awaiting customer payment...
+Successfully Processed Event: evt_concurrency_1788502186596_1
+Processing event TXr5HsVtgbV9PV(payment.failed)
+[StateValidator] ✅ VALID_FAILURE confirmed for pay_TXr5CMIL6IONa5
+[RecoveryCase] Case 11 for payment pay_TXr5CMIL6IONa5. Status: RECOVERY_LINK_CREATED
+🛑 Pipeline stopped. Recovery Case 11 is RECOVERY_LINK_CREATED. No money moved.
