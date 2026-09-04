@@ -1,0 +1,14 @@
+@import "tailwindcss";
+
+body {
+  font-family: Inter, 'Inter Fallback Arial', Arial, Lato, Helvetica, sans-serif;
+}
+
+/* New case rows fade in highlighted, then hand control back to hover */
+@keyframes rowFlash {
+  from { background-color: #EAF1FE; }
+  to   { background-color: transparent; }
+}
+.row-flash {
+  animation: rowFlash 5s ease-out;
+}
