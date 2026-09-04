@@ -53,12 +53,12 @@ export default function PolicyRules() {
     <div>
       <div className="mb-6">
         <h1 className="text-xl font-semibold text-[#0B1120] tracking-tight">Policy Rules</h1>
-        <p className="text-sm text-[#58666E] mt-0.5">
+        <p className="text-sm text-[#667085] mt-0.5">
           The AI recommends. The policy engine decides. Razorpay executes.
         </p>
       </div>
 
-      <div className="bg-[#EAF1FE] border border-[#CFE0FB] rounded-lg p-4 mb-6 flex items-start gap-3">
+      <div className="bg-[#EFF4FF] border border-[#B2CCFF] rounded-lg p-4 mb-6 flex items-start gap-3">
         <ShieldCheck size={18} className="text-[#0E54CD] mt-0.5 shrink-0" />
         <p className="text-sm text-[#0E54CD]">
           Every recovery must pass all of these guardrails before a single rupee moves.
@@ -68,15 +68,15 @@ export default function PolicyRules() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {RULES.map(r => (
-          <div key={r.name} className="bg-white rounded-lg border border-[#EDEEF1] p-5">
+          <div key={r.name} className="bg-white rounded-lg border border-[#EAECF0] p-5">
             <div className="flex items-center gap-2.5 mb-3">
-              <div className="w-7 h-7 rounded-md bg-[#F1F2F4] flex items-center justify-center shrink-0">
+              <div className="w-7 h-7 rounded-md bg-[#F2F4F7] flex items-center justify-center shrink-0">
                 <r.icon size={14} className="text-[#0E54CD]" />
               </div>
               <h2 className="text-sm font-semibold text-[#0B1120]">{r.name}</h2>
             </div>
             <div className="text-sm text-[#0B1120] font-medium mb-1.5">{r.rule}</div>
-            <p className="text-xs text-[#58666E] leading-relaxed">{r.detail}</p>
+            <p className="text-xs text-[#667085] leading-relaxed">{r.detail}</p>
           </div>
         ))}
       </div>
