@@ -1,0 +1,117 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  // url      = env("DATABASE_URL")
+}
+
+enum RecoveryStatus {
+  OPEN
+  AI_PROCESSING 
+  PENDING_EXECUTION
+  EXECUTING
+  RECOVERY_LINK_CREATED
+  AUTO_RECOVERED
+  PENDING_HUMAN_REVIEW
+  RECOVERY_EXPIRED
+  BLOCKED
+  FAILED
+}
+
+enum WebhookEventStatus {
+  PENDING
+  PROCESSED
+  IGNORED
+  FAILED
+}
+
+model RecoveryCase{
+  id                  Int             @id @default(autoincrement())
+  paymentId           String          @unique //Razorpay id we will try to recover
+  webhookEventId      Int             @unique //link to trigger event
+  status              RecoveryStatus  @default(OPEN)
+  liveState           String          //The state razorpay will return
+  aiDiagnosis         String?         // Filled by AI Analyst later Added for quick summary  
+  aiAction            String?         // Filled by AI Analyst later Added for quick summary
+  policyDecision      String?         // Filled by Policy Engine later  Added for quick summary
+  amount      Int?       // paise — floor gate input + future ROI
+  recoveredAt DateTime?  // set when loop closes on payment.captured
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+
+  webhookEvent        WebhookEvent @relation(fields: [webhookEventId], references: [id])
+  aiAnalysis          AIAnalysis[]
+  recoveryAttempt     RecoveryAttempt?
+  auditLogs           AuditLog[]
+}
+
+
+model WebhookEvent {
+  id          Int                @id @default(autoincrement())
+  eventId     String             @unique
+  eventType   String
+  payload     Json
+  status      WebhookEventStatus @default(PENDING)
+  createdAt   DateTime           @default(now())
+  processedAt DateTime?
+
+  recoveryCases         RecoveryCase[]
+}
+
+model AIAnalysis{
+  id                  Int @id @default(autoincrement())
+  recoveryCaseId      Int @unique
+  diagnosis           String  
+  evidence            String[]
+  recommendedAction   String
+  riskLevel           String
+  model               String
+  promptTokens     Int?
+  completionTokens Int?
+  totalTokens      Int?
+  estimatedCost    Float?
+  createdAt           DateTime @default(now())
+
+  recoveryCase        RecoveryCase @relation(fields: [recoveryCaseId], references: [id])
+}
+
+//To track real customer payment history
+
+model PaymentRecord{
+  id            Int       @id @default(autoincrement())
+  paymentId     String    @unique
+  contact       String?
+  email         String?
+  amount        Int
+  currency      String
+  method        String
+  status        String
+  createdAt     DateTime @default(now())
+}
+
+model RecoveryAttempt {
+  id             Int      @id @default(autoincrement())
+  recoveryCaseId Int      @unique
+  action         String
+  razorpayLinkId String?
+  recoveryUrl    String?
+  status         String
+  errorMessage   String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  recoveryCase   RecoveryCase @relation(fields: [recoveryCaseId], references: [id])
+}
+
+model AuditLog{
+  id           Int @id @default(autoincrement())
+  caseId       Int?
+  event        String
+  metadata     Json?
+  createdAt    DateTime @default(now())
+
+  recoveryCase RecoveryCase? @relation(fields: [caseId], references: [id])
+}
