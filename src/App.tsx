@@ -44,10 +44,11 @@ useEffect(() => {
   return () => { cancelled = true; clearInterval(interval); };
 }, []);
 
-  const getStatusColor = (status: string) => {
+    const getStatusColor = (status: string) => {
     if (status === 'AUTO_RECOVERED') return 'bg-green-100 text-green-800 border-green-200';
     if (status === 'BLOCKED' || status === 'FAILED') return 'bg-red-100 text-red-800 border-red-200';
     if (status === 'PENDING_HUMAN_REVIEW') return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+    if (status === 'RECOVERY_EXPIRED') return 'bg-slate-100 text-slate-600 border-slate-200';
     return 'bg-blue-100 text-blue-800 border-blue-200';
   };
 
