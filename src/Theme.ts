@@ -1,68 +1,92 @@
-// theme.ts
-// Design tokens for Revive AI — Razorpay-aligned blue/white palette.
-// Centralized here so App.tsx and CaseDetails.tsx don't duplicate color logic.
-// Pure presentation only — no data or business logic lives in this file.
+// Theme.ts — Revive AI design tokens
+// One place documenting every color used across the app. Tailwind needs
+// literal hex strings in classNames (can't interpolate JS values into
+// utility classes), so components hardcode these same hex values in
+// their className strings — this file is the source of truth to copy
+// from when adding new UI, not a runtime import for styling.
 
 export const colors = {
   canvas: '#FFFFFF',
-  surface: '#F7F7F7',
-  ink: '#0B1120',
-  inkSoft: '#5B6472',
-  primary: '#2872EF',      // CTA — normal
-  primaryPress: '#0E54CD', // CTA — hover/active
-  primaryTint: '#EAF1FE',
+  surface: '#F9FAFB',
+  border: '#EAECF0',
+
+  ink900: '#0B1120', // headings, primary numbers
+  ink700: '#344054', // emphasis body text
+  ink500: '#667085', // secondary text — labels, captions
+  ink400: '#98A2B3', // tertiary — muted text, icons, dividers-adjacent
+
+  primary: '#2872EF',       // CTA — normal
+  primaryPress: '#0E54CD',  // CTA — hover / active
+  primaryTint: '#EFF4FF',
+  primaryBorder: '#B2CCFF',
+
+  violet: '#6941C6',        // AI layer accent
+  violetTint: '#F4F3FF',
+  violetBorder: '#D9D6FE',
+  violetHeading: '#42307D',
+  violetBody: '#5925DC',
+
+  success: '#079455',
+  successTint: '#ECFDF3',
+  successBorder: '#ABEFC6',
+
+  danger: '#D92D20',
+  dangerTint: '#FEF3F2',
+  dangerBorder: '#FECDCA',
+  dangerHeading: '#912018',
+  dangerBody: '#B42318',
+
+  warning: '#DC6803',
+  warningTint: '#FFFAEB',
+  warningBorder: '#FEDF89',
+  warningHeading: '#93370D',
+  warningBody: '#B54708',
+
+  sidebarFrom: '#0B0F1A',
+  sidebarTo: '#10162A',
+  sidebarText: '#8B93A7',
+  sidebarTextDim: '#5D6579',
 };
 
-/**
- * Case status → badge classes (background / text / border)
- */
+/** Case status → badge classes */
 export function statusBadgeClass(status: string): string {
-  if (status === 'AUTO_RECOVERED') return 'bg-[#E7F6EC] text-[#14804A] border-[#BFE6CC]';
-  if (status === 'BLOCKED' || status === 'FAILED') return 'bg-[#FDEDE9] text-[#C4361D] border-[#F5CFC4]';
-  if (status === 'PENDING_HUMAN_REVIEW') return 'bg-[#FCF1DC] text-[#A15C00] border-[#F3DDAE]';
-  if (status === 'RECOVERY_EXPIRED') return 'bg-[#F1F2F4] text-[#5B6472] border-[#E1E3E7]';
-  return 'bg-[#EAF1FE] text-[#0E54CD] border-[#CFE0FB]';
+  if (status === 'AUTO_RECOVERED') return 'bg-[#ECFDF3] text-[#079455] border-[#ABEFC6]';
+  if (status === 'BLOCKED' || status === 'FAILED') return 'bg-[#FEF3F2] text-[#D92D20] border-[#FECDCA]';
+  if (status === 'PENDING_HUMAN_REVIEW') return 'bg-[#FFFAEB] text-[#DC6803] border-[#FEDF89]';
+  if (status === 'RECOVERY_EXPIRED') return 'bg-[#F2F4F7] text-[#667085] border-[#EAECF0]';
+  return 'bg-[#EFF4FF] text-[#2872EF] border-[#B2CCFF]';
 }
 
-/**
- * Policy decision → badge classes
- */
+/** Policy decision → badge classes */
 export function policyBadgeClass(decision: string | null): string {
-  if (decision === 'AUTO') return 'bg-[#E7F6EC] text-[#14804A] border-[#BFE6CC]';
-  if (decision === 'HUMAN') return 'bg-[#FCF1DC] text-[#A15C00] border-[#F3DDAE]';
-  return 'bg-[#F1F2F4] text-[#5B6472] border-[#E1E3E7]';
+  if (decision === 'AUTO') return 'bg-[#ECFDF3] text-[#079455] border-[#ABEFC6]';
+  if (decision === 'HUMAN') return 'bg-[#FFFAEB] text-[#DC6803] border-[#FEDF89]';
+  return 'bg-[#F2F4F7] text-[#667085] border-[#EAECF0]';
 }
 
 /**
- * Pipeline layer colors — this is the visual encoding of your core
- * architectural pitch: AI recommends (violet) -> Policy decides (blue)
- * -> API executes (green). "system" covers the plumbing stages
- * (webhook received / state validated) that aren't part of that story.
+ * Pipeline layer colors — encodes the core pitch directly in the UI:
+ * AI recommends (violet) -> Policy decides (blue) -> API executes (green).
  */
 export type PipelineLayer = 'system' | 'ai' | 'policy' | 'execute';
 
 export function layerDoneClass(layer: PipelineLayer): string {
-  if (layer === 'ai') return 'bg-[#F2ECFB] text-[#6E42CB]';
-  if (layer === 'policy') return 'bg-[#EAF1FE] text-[#0E54CD]';
-  if (layer === 'execute') return 'bg-[#E7F6EC] text-[#14804A]';
-  return 'bg-[#F1F2F4] text-[#5B6472]';
+  if (layer === 'ai') return 'bg-[#F4F3FF] text-[#6941C6]';
+  if (layer === 'policy') return 'bg-[#EFF4FF] text-[#2872EF]';
+  if (layer === 'execute') return 'bg-[#ECFDF3] text-[#079455]';
+  return 'bg-[#F2F4F7] text-[#667085]';
 }
 
-export const stageNeutralClass = 'bg-[#F1F2F4] text-[#9AA1AC]';
+export const stageNeutralClass = 'bg-[#F2F4F7] text-[#98A2B3]';
 
-/**
- * When the pipeline halts (blocked/failed) or is paused (human review),
- * every completed stage switches to a single alert color so the failure
- * reads instantly, overriding the per-layer coloring above.
- */
 export function stageOverrideClass(status: string): string | null {
-  if (status === 'BLOCKED' || status === 'FAILED') return 'bg-[#FDEDE9] text-[#C4361D]';
-  if (status === 'PENDING_HUMAN_REVIEW') return 'bg-[#FCF1DC] text-[#A15C00]';
+  if (status === 'BLOCKED' || status === 'FAILED') return 'bg-[#FEF3F2] text-[#D92D20]';
+  if (status === 'PENDING_HUMAN_REVIEW') return 'bg-[#FFFAEB] text-[#DC6803]';
   return null;
 }
 
 export function stageLineClass(status: string): string {
-  if (status === 'BLOCKED' || status === 'FAILED') return 'bg-[#F0A38C]';
-  if (status === 'PENDING_HUMAN_REVIEW') return 'bg-[#EAC26C]';
-  return 'bg-[#8FB4F5]';
+  if (status === 'BLOCKED' || status === 'FAILED') return 'bg-[#F0A6A0]';
+  if (status === 'PENDING_HUMAN_REVIEW') return 'bg-[#F3C57E]';
+  return 'bg-[#9AC0F7]';
 }
