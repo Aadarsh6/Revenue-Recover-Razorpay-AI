@@ -27,12 +27,19 @@ const has = (e: string) => c.auditLogs?.some(l => l.event === e);
 
 const stages = [
   { label: 'Webhook',      done: has('WEBHOOK_RECEIVED') },
-  { label: 'State ✓',      done: has('STATE_VALIDATED') },
+  { label: 'State',      done: has('STATE_VALIDATED') },
   { label: 'AI',           done: has('AI_ANALYSIS_COMPLETED') },
   { label: 'Policy',       done: has('POLICY_DECIDED') || !!floorMeta },
   { label: 'Execute',      done: has('RECOVERY_LINK_CREATED') },
   { label: 'Recovered',    done: c.status === 'AUTO_RECOVERED' },
 ];
+
+const halted = c.status === 'BLOCKED' || c.status === 'FAILED';
+const warn   = c.status === 'PENDING_HUMAN_REVIEW';
+const doneCls = halted ? 'bg-red-100 text-red-800'
+             : warn   ? 'bg-yellow-100 text-yellow-800'
+             :          'bg-blue-100 text-blue-800';
+const lineCls = halted ? 'bg-red-400' : warn ? 'bg-yellow-400' : 'bg-blue-400';
 
 
   const formatTime = (dateString: string) => {
@@ -56,15 +63,15 @@ const stages = [
             <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wider">AI Analysis & Execution</h3>
 
             <div className="flex items-center gap-1 mb-4 flex-wrap">
-  {stages.map((s, i) => (
-    <div key={s.label} className="flex items-center gap-1">
-      {i > 0 && <div className={`w-4 h-px ${s.done ? 'bg-blue-400' : 'bg-slate-300'}`} />}
-      <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${
-        s.done ? 'bg-blue-100 text-blue-800' : 'bg-slate-100 text-slate-400'
-      }`}>{s.label}</span>
-    </div>
-  ))}
-</div>
+              {stages.map((s, i) => (
+                <div key={s.label} className="flex items-center gap-1">
+                  {i > 0 && <div className={`w-4 h-px ${s.done ? lineCls : 'bg-slate-300'}`} />}
+                  <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${
+                    s.done ? doneCls : 'bg-slate-100 text-slate-400'
+                  }`}>{s.label}</span>
+                </div>
+              ))}
+            </div>
 
 {haltNote && <div className="text-xs text-slate-500 mt-1">{haltNote}</div>}
 
