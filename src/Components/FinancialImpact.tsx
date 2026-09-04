@@ -14,23 +14,24 @@ export default function FinancialImpact({ stats }: { stats: FinancialStats }) {
 
   return (
     <section className="bg-white rounded-lg border border-[#EDEEF1] p-6 mb-6">
-      <div className="flex flex-wrap items-end gap-x-12 gap-y-6">
-        {/* Hero — size is the hierarchy, ink is the color */}
+      <div className="flex flex-wrap items-start gap-x-12 gap-y-6">
+        {/* Hero — size is the hierarchy, ink is the only color */}
         <div className="min-w-[240px]">
           <div className="text-[11px] font-medium uppercase tracking-wider text-[#9AA1AC] mb-1.5">
             Net recovery value
           </div>
-          <div className="text-4xl font-semibold text-[#0B1120] tracking-tight tabular-nums">
+          <div className="text-4xl font-semibold text-[#0B1120] tracking-tight tabular-nums leading-none">
             {fmt(stats.netRecoveryValue)}
           </div>
-          <div className="text-sm text-[#58666E] mt-2">
+          <div className="text-sm text-[#58666E] mt-2.5">
             {fmt(stats.grossRecovered)} gross recovered − {fmt(stats.aiComputeCost)} AI compute
           </div>
         </div>
 
-        <div className="hidden lg:block h-16 w-px bg-[#EDEEF1]" />
+        <div className="hidden lg:block h-16 w-px bg-[#EDEEF1] self-center" />
+        <div className="lg:hidden w-full h-px bg-[#EDEEF1]" />
 
-        {/* Supporting figures */}
+        {/* Supporting figures — same weight, smaller scale, no icons */}
         <div className="flex flex-wrap gap-x-12 gap-y-5">
           <Stat label="Cases processed" value={String(stats.casesProcessed)} />
           <Stat label="Guard blocks" value={String(stats.guardBlocks)} />
