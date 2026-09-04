@@ -329,16 +329,18 @@ if (!skipSignatureValidation) {
         });
         console.log(`👤 Escalated to HUMAN review by Policy Engine.`);
       } else {
-        // AUTO: Transition to PENDING_EXECUTION
-        await prisma.recoveryCase.update({
-          where: { id: recoveryCase.id },
-          data: { 
-            status: 'PENDING_EXECUTION', 
-            policyDecision: 'AUTO'
-          }
+        // AUTO: ATOMIC CLAIM — only the first pipeline to arrive may proceed
+        const claim = await prisma.recoveryCase.updateMany({
+          where: { id: recoveryCase.id, status: 'OPEN' },
+          data: { status: 'PENDING_EXECUTION', policyDecision: 'AUTO' }
         });
-        console.log("✅ Policy Engine authorized AUTONOMOUS execution. Case marked as PENDING_EXECUTION.");
-        
+
+        if (claim.count === 0) {
+          console.log(`⚠️ Concurrency Control: Case ${recoveryCase.id} already claimed by another pipeline. Aborting.`);
+          await prisma.webhookEvent.update({ where: { id: newEvent.id }, data: { status: "PROCESSED", processedAt: new Date() } });
+          return;
+        }
+        console.log("✅ Policy Engine authorized AUTONOMOUS execution. Case claimed → PENDING_EXECUTION.");
         // --- EXECUTION LAYER WITH ATOMIC LOCK & DUPLICATE CHECK ---
 
         const lockResult = await prisma.recoveryCase.updateMany({
