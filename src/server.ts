@@ -337,7 +337,7 @@ if (!skipSignatureValidation) {
       } else {
         // AUTO: ATOMIC CLAIM — only the first pipeline to arrive may proceed
         const claim = await prisma.recoveryCase.updateMany({
-          where: { id: recoveryCase.id, status: 'OPEN' },
+          where: { id: recoveryCase.id, status: 'AI_PROCESSING' },
           data: { status: 'PENDING_EXECUTION', policyDecision: 'AUTO' }
         });
 

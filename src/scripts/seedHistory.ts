@@ -21,7 +21,11 @@ async function main() {
   for (let i = 0; i < 4; i++) {
     await prisma.paymentRecord.upsert({
       where: { paymentId: `seed_hist_${i}` },
-      update: {},
+      update: {
+        contact,
+        email,
+        status: "captured",
+      },
       create: {
         paymentId: `seed_hist_${i}`,
         contact,
