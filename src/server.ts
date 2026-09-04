@@ -152,6 +152,7 @@ if (!skipSignatureValidation) {
       
       // 1. Save Payment Record for history
       if (stateResult.decision === 'VALID_FAILURE' || stateResult.decision === 'ALREADY_CAPTURED' || stateResult.decision === 'VALID_CAPTURE') {
+        try{
         await prisma.paymentRecord.upsert({
           where: { paymentId },
           update: {},
@@ -165,6 +166,10 @@ if (!skipSignatureValidation) {
             status: stateResult.livePayment.status,
           }
         });
+      }catch(e){
+        if (!(e instanceof PrismaClientKnownRequestError && e.code === "P2002")) throw e;
+          // Concurrent pipeline already stored this payment — desired end state, carry on.
+      }
       }
 
       // 2. --- CLOSE THE LOOP: Intercept successful recovery payments FIRST ---
