@@ -1,17 +1,15 @@
 import { Fragment, useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import {
-  ArrowUpRight, Bot, ChevronDown, ChevronUp,
+  ArrowUpRight, Bot, ChevronDown, ChevronUp, FlaskConical,
   LayoutDashboard, Scale, ShieldCheck,
 } from 'lucide-react';
 
 import type { FinancialStats, RecoveryCase } from './types';
-// import AuditLogPage from './Components/AuditLogPage';
 import CaseDetails from './Components/CaseDetails';
 import FinancialImpact from './Components/FinancialImpact';
-// import PolicyRules from './Components/PolicyRules';
-import { policyBadgeClass, statusBadgeClass } from './Theme';
 import PolicyRules from './Components/PolicyRules';
+import { policyBadgeClass, statusBadgeClass } from './Theme';
 
 type Page = 'dashboard' | 'policy';
 
@@ -22,6 +20,11 @@ const FILTERS: { key: string; label: string }[] = [
   { key: 'BLOCKED', label: 'Blocked' },
   { key: 'FAILED', label: 'Failed' },
   { key: 'RECOVERY_EXPIRED', label: 'Expired' },
+];
+
+const NAV_ITEMS: { key: Page; label: string; icon: typeof LayoutDashboard }[] = [
+  { key: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { key: 'policy', label: 'Policy Rules', icon: Scale },
 ];
 
 export default function App() {
@@ -85,80 +88,88 @@ export default function App() {
     key === 'ALL' ? cases.length : cases.filter(c => c.status === key).length;
 
   return (
-    <div className="min-h-screen bg-[#F7F7F7]">
-      {/* ── Top bar (black, Razorpay shell style) ────────────────────── */}
-      <header className="h-12 bg-[#000000] flex items-center justify-between px-4 lg:px-5 sticky top-0 z-20">
-        <div className="flex items-center gap-2.5">
-          <div className="w-6 h-6 rounded-md bg-[#2872EF] flex items-center justify-center">
-            <ShieldCheck size={14} className="text-white" />
-          </div>
-          <span className="text-sm font-semibold text-white tracking-tight">Revive AI</span>
-        </div>
-        <div className="flex items-center gap-3">
-          <span className="text-[10px] font-bold tracking-widest bg-[#FFD666] text-[#3A2E00] px-2 py-0.5 rounded-sm">
-            TEST MODE
-          </span>
-          <div className="flex items-center gap-1.5 text-xs text-[#B8BDC4]">
-            <span className={`w-1.5 h-1.5 rounded-full ${fetchError ? 'bg-[#F0704A]' : 'bg-[#33C27A] animate-pulse'}`} />
-            {fetchError ? 'Reconnecting…' : 'Live'}
-          </div>
-        </div>
-      </header>
+    <div className="flex min-h-screen bg-white">
 
-      <div className="flex">
-        {/* ── Sidebar (same gray as canvas, border-separated — Razorpay pattern) ── */}
-        <aside className="w-56 shrink-0 border-r border-[#EDEEF1] sticky top-12 h-[calc(100vh-3rem)] px-3 py-4 hidden md:block">
-          <nav className="space-y-1">
-            {([
-              { key: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-              { key: 'policy', label: 'Policy Rules', icon: Scale },
-              // { key: 'audit', label: 'Audit Log', icon: ScrollText },
-            ] as { key: Page; label: string; icon: typeof LayoutDashboard }[]).map(item => {
-              const active = page === item.key;
-              return (
-                <button
-                  key={item.key}
-                  onClick={() => setPage(item.key)}
-                  className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-sm transition-colors ${
-                    active
-                      ? 'bg-white text-[#0B1120] font-semibold shadow-[0_1px_2px_rgba(11,17,32,0.08)]'
-                      : 'text-[#58666E] hover:bg-white/70 hover:text-[#0B1120]'
-                  }`}
-                >
-                  <item.icon size={16} className={active ? 'text-[#2872EF]' : 'text-[#9AA1AC]'} />
-                  {item.label}
-                </button>
-              );
-            })}
-          </nav>
-        </aside>
+      {/* ── Sidebar — one dark control rail: brand, nav, live status, env ── */}
+      <aside
+        className="w-60 shrink-0 sticky top-0 h-screen flex flex-col"
+        style={{ background: 'linear-gradient(180deg, #0B0F1A 0%, #10162A 100%)' }}
+      >
+        <div className="flex items-center gap-2.5 px-5 h-16 border-b border-white/[0.06]">
+          <div
+            className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
+            style={{ background: 'linear-gradient(135deg, #2872EF 0%, #6941C6 100%)' }}
+          >
+            <ShieldCheck size={16} className="text-white" strokeWidth={2.5} />
+          </div>
+          <span className="text-[15px] font-semibold text-white tracking-tight">Revive AI</span>
+        </div>
 
-        {/* ── Main content ────────────────────────────────────────────── */}
-        <main className="flex-1 min-w-0 px-6 lg:px-10 py-8">
+        <nav className="flex-1 px-3 py-5 space-y-1">
+          {NAV_ITEMS.map(item => {
+            const active = page === item.key;
+            return (
+              <button
+                key={item.key}
+                onClick={() => setPage(item.key)}
+                className={`relative w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors ${
+                  active
+                    ? 'bg-white/[0.07] text-white font-medium'
+                    : 'text-[#8B93A7] hover:bg-white/[0.04] hover:text-white'
+                }`}
+              >
+                {active && (
+                  <span
+                    className="absolute left-0 top-1.5 bottom-1.5 w-[3px] rounded-full"
+                    style={{ background: 'linear-gradient(180deg, #2872EF 0%, #6941C6 100%)' }}
+                  />
+                )}
+                <item.icon size={16} className={active ? 'text-[#7CAAF7]' : 'text-[#5D6579]'} />
+                {item.label}
+              </button>
+            );
+          })}
+        </nav>
+
+        <div className="px-5 py-4 border-t border-white/[0.06] space-y-3">
+          <div className="flex items-center gap-1.5 text-xs">
+            <span className={`w-1.5 h-1.5 rounded-full ${fetchError ? 'bg-[#F97066]' : 'bg-[#32D583] animate-pulse'}`} />
+            <span className="text-[#8B93A7]">{fetchError ? 'Reconnecting…' : 'Live'}</span>
+          </div>
+          <div className="inline-flex items-center gap-1.5 text-[11px] font-medium text-[#F3C57E] bg-white/[0.05] border border-white/[0.08] px-2 py-1 rounded-md">
+            <FlaskConical size={11} />
+            Test mode
+          </div>
+        </div>
+      </aside>
+
+      {/* ── Main content ────────────────────────────────────────────── */}
+      <main className="flex-1 min-w-0 bg-white">
+        <div className="max-w-[1400px] mx-auto px-8 lg:px-12 py-8">
           {page === 'policy' && <PolicyRules />}
 
           {page === 'dashboard' && (
             <>
               {loading ? (
-                <div className="text-center text-[#58666E] py-10">Loading recovery cases…</div>
+                <div className="text-center text-[#667085] py-10">Loading recovery cases…</div>
               ) : cases.length === 0 ? (
-                <div className="text-center text-[#58666E] py-10">
+                <div className="text-center text-[#667085] py-10">
                   No recovery cases yet. Trigger a webhook to see it work.
                 </div>
               ) : (
                 <>
                   <div className="mb-6">
                     <h1 className="text-xl font-semibold text-[#0B1120] tracking-tight">Dashboard</h1>
-                    <p className="text-sm text-[#58666E] mt-0.5">
+                    <p className="text-sm text-[#667085] mt-0.5">
                       Autonomous revenue recovery for Razorpay merchants
                     </p>
                   </div>
 
                   {stats && <FinancialImpact stats={stats} />}
 
-                  <div className="bg-white rounded-lg border border-[#EDEEF1] overflow-hidden">
-                    {/* Filter tabs (replaces the old stats dots — now clickable) */}
-                    <div className="flex items-center gap-6 px-5 border-b border-[#EDEEF1] overflow-x-auto">
+                  <div className="bg-white rounded-lg border border-[#EAECF0] overflow-hidden">
+                    {/* Filter tabs */}
+                    <div className="flex items-center gap-6 px-5 border-b border-[#EAECF0] overflow-x-auto">
                       {FILTERS.map(f => {
                         const active = filter === f.key;
                         return (
@@ -168,11 +179,11 @@ export default function App() {
                             className={`py-3 text-sm border-b-2 -mb-px whitespace-nowrap transition-colors ${
                               active
                                 ? 'border-[#2872EF] text-[#0B1120] font-semibold'
-                                : 'border-transparent text-[#58666E] hover:text-[#0B1120]'
+                                : 'border-transparent text-[#667085] hover:text-[#0B1120]'
                             }`}
                           >
                             {f.label}
-                            <span className={`ml-1.5 text-xs tabular-nums ${active ? 'text-[#2872EF]' : 'text-[#9AA1AC]'}`}>
+                            <span className={`ml-1.5 text-xs tabular-nums ${active ? 'text-[#2872EF]' : 'text-[#98A2B3]'}`}>
                               {countFor(f.key)}
                             </span>
                           </button>
@@ -183,33 +194,33 @@ export default function App() {
                     <div className="overflow-x-auto">
                       <table className="w-full text-left border-collapse">
                         <thead>
-                          <tr className="border-b border-[#EDEEF1] bg-[#F6F6F6]">
-                            <th className="px-4 py-2.5 font-medium text-xs text-[#58666E] w-8"></th>
-                            <th className="px-4 py-2.5 font-medium text-xs text-[#58666E]">Case ID</th>
-                            <th className="px-4 py-2.5 font-medium text-xs text-[#58666E]">Payment ID</th>
-                            <th className="px-4 py-2.5 font-medium text-xs text-[#58666E]">AI diagnosis</th>
-                            <th className="px-4 py-2.5 font-medium text-xs text-[#58666E]">Policy</th>
-                            <th className="px-4 py-2.5 font-medium text-xs text-[#58666E]">Status</th>
-                            <th className="px-4 py-2.5 font-medium text-xs text-[#58666E]">Recovery link</th>
+                          <tr className="border-b border-[#EAECF0] bg-[#F9FAFB]">
+                            <th className="px-4 py-2.5 font-medium text-xs text-[#667085] w-8"></th>
+                            <th className="px-4 py-2.5 font-medium text-xs text-[#667085]">Case ID</th>
+                            <th className="px-4 py-2.5 font-medium text-xs text-[#667085]">Payment ID</th>
+                            <th className="px-4 py-2.5 font-medium text-xs text-[#667085]">AI diagnosis</th>
+                            <th className="px-4 py-2.5 font-medium text-xs text-[#667085]">Policy</th>
+                            <th className="px-4 py-2.5 font-medium text-xs text-[#667085]">Status</th>
+                            <th className="px-4 py-2.5 font-medium text-xs text-[#667085]">Recovery link</th>
                           </tr>
                         </thead>
                         <tbody>
                           {visibleCases.map((c) => (
                             <Fragment key={c.id}>
                               <tr
-                                className={`border-b border-[#F1F2F4] hover:bg-[#F7F7F7] cursor-pointer transition-colors ${
+                                className={`border-b border-[#F1F2F4] hover:bg-[#F9FAFB] cursor-pointer transition-colors ${
                                   flashIds.has(c.id) ? 'row-flash' : ''
                                 }`}
                                 onClick={() => setExpandedCaseId(expandedCaseId === c.id ? null : c.id)}
                               >
-                                <td className="px-4 py-3 text-[#9AA1AC]">
+                                <td className="px-4 py-3 text-[#98A2B3]">
                                   {expandedCaseId === c.id ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                                 </td>
                                 <td className="px-4 py-3 text-sm font-medium text-[#0B1120]">#{c.id}</td>
-                                <td className="px-4 py-3 font-mono text-xs text-[#58666E]">{c.paymentId}</td>
-                                <td className="px-4 py-3 text-sm text-[#374151]">
+                                <td className="px-4 py-3 font-mono text-xs text-[#667085]">{c.paymentId}</td>
+                                <td className="px-4 py-3 text-sm text-[#344054]">
                                   <span className="flex items-center gap-1.5">
-                                    <Bot size={14} className="text-[#6E42CB] shrink-0" />
+                                    <Bot size={14} className="text-[#6941C6] shrink-0" />
                                     {c.aiDiagnosis || 'N/A'}
                                   </span>
                                 </td>
@@ -235,7 +246,7 @@ export default function App() {
                                       View link <ArrowUpRight size={12} />
                                     </a>
                                   ) : (
-                                    <span className="text-[#C7CBD1]">—</span>
+                                    <span className="text-[#D0D5DD]">—</span>
                                   )}
                                 </td>
                               </tr>
@@ -246,7 +257,7 @@ export default function App() {
 
                           {visibleCases.length === 0 && (
                             <tr>
-                              <td colSpan={7} className="p-10 text-center text-sm text-[#9AA1AC]">
+                              <td colSpan={7} className="p-10 text-center text-sm text-[#98A2B3]">
                                 No cases match this filter.
                               </td>
                             </tr>
@@ -259,8 +270,8 @@ export default function App() {
               )}
             </>
           )}
-        </main>
-      </div>
+        </div>
+      </main>
     </div>
   );
 }
