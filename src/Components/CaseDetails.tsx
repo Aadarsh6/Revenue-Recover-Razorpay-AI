@@ -1,5 +1,6 @@
 import { Bot, AlertTriangle, Clock, ShieldX, UserSearch } from 'lucide-react';
 import type { RecoveryCase } from '../types';
+import { layerDoneClass, stageNeutralClass, stageOverrideClass, stageLineClass, type PipelineLayer } from '../Theme';
 
 export default function CaseDetails({ c }: { c: RecoveryCase }) {
   // Derived audit facts — MUST be at component body level, not inside formatTime
@@ -11,81 +12,81 @@ export default function CaseDetails({ c }: { c: RecoveryCase }) {
   const floorMeta = floorAudit?.metadata as { amount?: number; floor?: number } | undefined;
   const policyReason = (policyAudit?.metadata as { reason?: string } | undefined)?.reason;
 
-    const blockedReason = floorMeta
+  const blockedReason = floorMeta
     ? `Amount ₹${((floorMeta.amount ?? 0) / 100).toLocaleString('en-IN')} is below the economic floor (₹${((floorMeta.floor ?? 0) / 100).toLocaleString('en-IN')}). AI analysis skipped — recovery would cost more than it's worth.`
     : stateDecision === 'ALREADY_CAPTURED'
-      ? 'Live payment was already captured on Razorpay (Race Condition Guard).'
+      ? 'Live payment was already captured on Razorpay (race condition guard).'
       : policyReason || 'Policy Engine blocked this recovery before execution.';
 
-    const humanReason =
-  stateDecision === 'API_ERROR'
-    ? 'Live Razorpay state could not be verified (API error). System failed safe to human review.'
-    : policyReason || 'AI flagged HIGH risk or requested escalation.';
+  const humanReason =
+    stateDecision === 'API_ERROR'
+      ? 'Live Razorpay state could not be verified (API error). System failed safe to human review.'
+      : policyReason || 'AI flagged HIGH risk or requested escalation.';
 
+  const has = (e: string) => c.auditLogs?.some(l => l.event === e);
 
-const has = (e: string) => c.auditLogs?.some(l => l.event === e);
+  // Each stage carries the pipeline "layer" it belongs to, so the stepper
+  // visually tells the recommend -> decide -> execute story, not just a
+  // generic progress bar.
+  const stages: { label: string; layer: PipelineLayer; done: boolean }[] = [
+    { label: 'Webhook',   layer: 'system',  done: !!has('WEBHOOK_RECEIVED') },
+    { label: 'State',     layer: 'system',  done: !!has('STATE_VALIDATED') },
+    { label: 'AI',        layer: 'ai',      done: !!has('AI_ANALYSIS_COMPLETED') },
+    { label: 'Policy',    layer: 'policy',  done: !!has('POLICY_DECIDED') || !!floorMeta },
+    { label: 'Execute',   layer: 'execute', done: !!has('RECOVERY_LINK_CREATED') },
+    { label: 'Recovered', layer: 'execute', done: c.status === 'AUTO_RECOVERED' },
+  ];
 
-const stages = [
-  { label: 'Webhook',      done: has('WEBHOOK_RECEIVED') },
-  { label: 'State',      done: has('STATE_VALIDATED') },
-  { label: 'AI',           done: has('AI_ANALYSIS_COMPLETED') },
-  { label: 'Policy',       done: has('POLICY_DECIDED') || !!floorMeta },
-  { label: 'Execute',      done: has('RECOVERY_LINK_CREATED') },
-  { label: 'Recovered',    done: c.status === 'AUTO_RECOVERED' },
-];
-
-const halted = c.status === 'BLOCKED' || c.status === 'FAILED';
-const warn   = c.status === 'PENDING_HUMAN_REVIEW';
-const doneCls = halted ? 'bg-red-100 text-red-800'
-             : warn   ? 'bg-yellow-100 text-yellow-800'
-             :          'bg-blue-100 text-blue-800';
-const lineCls = halted ? 'bg-red-400' : warn ? 'bg-yellow-400' : 'bg-blue-400';
-
+  const overrideCls = stageOverrideClass(c.status);
+  const lineCls = stageLineClass(c.status);
 
   const formatTime = (dateString: string) => {
     return new Date(dateString).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
   };
 
   const haltNote =
-  c.status === 'BLOCKED' ? '🛑 Pipeline halted — guard fired, no money moved'
-  : c.status === 'PENDING_HUMAN_REVIEW' ? '⏸ Pipeline halted — awaiting human review'
-  : c.status === 'RECOVERY_EXPIRED' ? '⌛ Recovery opportunity expired'
-  : c.status === 'FAILED' ? '⚠ Execution failed — no money moved'
-  : null;
+    c.status === 'BLOCKED' ? 'Pipeline halted — guard fired, no money moved'
+    : c.status === 'PENDING_HUMAN_REVIEW' ? 'Pipeline paused — awaiting human review'
+    : c.status === 'RECOVERY_EXPIRED' ? 'Recovery opportunity expired'
+    : c.status === 'FAILED' ? 'Execution failed — no money moved'
+    : null;
 
   return (
-    <tr className="bg-slate-50/50">
+    <tr className="bg-[#FAFBFC]">
       <td colSpan={7} className="p-6">
         <div className="grid grid-cols-2 gap-8">
 
           {/* Left Column: AI & Execution Details */}
-          <div className="space-y-4 border-r border-slate-200 pr-8">
-            <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wider">AI Analysis & Execution</h3>
+          <div className="space-y-4 border-r border-[#EDEEF1] pr-8">
+            <div className="flex items-center gap-2">
+              <span className="w-1 h-4 rounded-full bg-[#2872EF]" />
+              <h3 className="text-sm font-semibold text-[#0B1120]">AI analysis &amp; execution</h3>
+            </div>
 
             <div className="flex items-center gap-1 mb-4 flex-wrap">
               {stages.map((s, i) => (
                 <div key={s.label} className="flex items-center gap-1">
-                  {i > 0 && <div className={`w-4 h-px ${s.done ? lineCls : 'bg-slate-300'}`} />}
+                  {i > 0 && <div className={`w-4 h-px ${s.done ? lineCls : 'bg-[#E1E3E7]'}`} />}
                   <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${
-                    s.done ? doneCls : 'bg-slate-100 text-slate-400'
+                    s.done ? (overrideCls ?? layerDoneClass(s.layer)) : stageNeutralClass
                   }`}>{s.label}</span>
                 </div>
               ))}
             </div>
 
-{haltNote && <div className="text-xs text-slate-500 mt-1">{haltNote}</div>}
+            {haltNote && <div className="text-xs text-[#5B6472] -mt-2 mb-2">{haltNote}</div>}
 
-                        {/* SPECIAL CASE: BLOCKED */}
+            {/* SPECIAL CASE: BLOCKED */}
             {c.status === 'BLOCKED' && (
-              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+              <div className="bg-[#FDEDE9] border border-[#F5CFC4] rounded-lg p-4">
                 <div className="flex items-center gap-2 mb-2">
-                  <ShieldX size={16} className="text-red-600" />
-                  <span className="font-semibold text-red-900 text-sm">Recovery blocked before execution.</span>
+                  <ShieldX size={16} className="text-[#C4361D]" />
+                  <span className="font-semibold text-[#7A2412] text-sm">Recovery blocked before execution</span>
                 </div>
-                <div className="text-xs text-red-700">
+                <div className="text-xs text-[#8A3820]">
                   <strong>Reason:</strong> {blockedReason}
                 </div>
-                <div className="text-xs text-red-700 mt-1">
+                <div className="text-xs text-[#8A3820] mt-1">
                   {floorMeta
                     ? 'No AI cost incurred. No money moved.'
                     : stateDecision === 'ALREADY_CAPTURED'
@@ -97,37 +98,37 @@ const lineCls = halted ? 'bg-red-400' : warn ? 'bg-yellow-400' : 'bg-blue-400';
 
             {/* SPECIAL CASE: PENDING HUMAN REVIEW */}
             {c.status === 'PENDING_HUMAN_REVIEW' && (
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+              <div className="bg-[#FCF1DC] border border-[#F3DDAE] rounded-lg p-4">
                 <div className="flex items-center gap-2 mb-2">
-                  <UserSearch size={16} className="text-yellow-600" />
-                  <span className="font-semibold text-yellow-900 text-sm">Escalated to Human Review</span>
+                  <UserSearch size={16} className="text-[#A15C00]" />
+                  <span className="font-semibold text-[#7A4600] text-sm">Escalated to human review</span>
                 </div>
-               <div className="text-xs text-yellow-700">
-  <strong>Reason:</strong> {humanReason}
-</div>
-<div className="text-xs text-yellow-700 mt-1">
-  {stateDecision === 'API_ERROR'
-    ? 'AI analysis was not performed (upstream API failure). No money moved.'
-    : 'No autonomous recovery action was executed.'}
-</div>
+                <div className="text-xs text-[#8A5B0F]">
+                  <strong>Reason:</strong> {humanReason}
+                </div>
+                <div className="text-xs text-[#8A5B0F] mt-1">
+                  {stateDecision === 'API_ERROR'
+                    ? 'AI analysis was not performed (upstream API failure). No money moved.'
+                    : 'No autonomous recovery action was executed.'}
+                </div>
               </div>
             )}
 
             {/* NORMAL CASE: AI ANALYSIS EXISTS */}
             {c.aiAnalysis && c.aiAnalysis.length > 0 && (
-              <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+              <div className="bg-[#F2ECFB] border border-[#E1D3F5] rounded-lg p-4">
                 <div className="flex items-center gap-2 mb-2">
-                  <Bot size={16} className="text-purple-600" />
-                  <span className="font-semibold text-purple-900 text-sm">{c.aiAnalysis[0].diagnosis}</span>
+                  <Bot size={16} className="text-[#6E42CB]" />
+                  <span className="font-semibold text-[#4A2C8A] text-sm">{c.aiAnalysis[0].diagnosis}</span>
                 </div>
-                <div className="text-xs text-purple-700 mb-2">
-                  Recommended: <span className="font-mono font-bold">{c.aiAnalysis[0].recommendedAction}</span>
+                <div className="text-xs text-[#5B3A96] mb-2">
+                  Recommended: <span className="font-mono font-semibold">{c.aiAnalysis[0].recommendedAction}</span>
                   <span className="mx-2">•</span>
-                  Risk: <span className="font-mono font-bold">{c.aiAnalysis[0].riskLevel}</span>
+                  Risk: <span className="font-mono font-semibold">{c.aiAnalysis[0].riskLevel}</span>
                 </div>
                 {c.aiAnalysis[0].evidence && c.aiAnalysis[0].evidence.length > 0 && (
-                  <div className="mt-2 text-xs text-slate-600">
-                    <strong>Evidence:</strong>
+                  <div className="mt-2 text-xs text-[#5B6472]">
+                    <strong className="text-[#374151]">Evidence:</strong>
                     <ul className="list-disc list-inside mt-1 space-y-1">
                       {c.aiAnalysis[0].evidence.map((ev, i) => <li key={i}>{ev}</li>)}
                     </ul>
@@ -138,15 +139,15 @@ const lineCls = halted ? 'bg-red-400' : warn ? 'bg-yellow-400' : 'bg-blue-400';
 
             {/* EXECUTION DETAILS (Only show if attempt was made) */}
             {c.recoveryAttempt && (
-              <div className="bg-white border border-slate-200 rounded-lg p-4">
-                <h4 className="text-xs font-bold text-slate-600 uppercase mb-2">Recovery Attempt</h4>
-                <div className="text-sm text-slate-700 space-y-1">
-                  <div>Status: <span className="font-semibold">{c.recoveryAttempt.status}</span></div>
+              <div className="bg-white border border-[#EDEEF1] rounded-lg p-4">
+                <h4 className="text-xs font-semibold text-[#5B6472] mb-2">Recovery attempt</h4>
+                <div className="text-sm text-[#374151] space-y-1">
+                  <div>Status: <span className="font-semibold text-[#0B1120]">{c.recoveryAttempt.status}</span></div>
                   {c.recoveryAttempt.recoveryUrl && (
-                    <div>URL: <a href={c.recoveryAttempt.recoveryUrl} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline text-xs">{c.recoveryAttempt.recoveryUrl}</a></div>
+                    <div>URL: <a href={c.recoveryAttempt.recoveryUrl} target="_blank" rel="noreferrer" className="text-[#2872EF] hover:text-[#0E54CD] hover:underline text-xs">{c.recoveryAttempt.recoveryUrl}</a></div>
                   )}
                   {c.recoveryAttempt.errorMessage && (
-                    <div className="text-red-600 text-xs flex items-center gap-1 mt-2">
+                    <div className="text-[#C4361D] text-xs flex items-center gap-1 mt-2">
                       <AlertTriangle size={12} /> Error: {c.recoveryAttempt.errorMessage}
                     </div>
                   )}
@@ -157,18 +158,21 @@ const lineCls = halted ? 'bg-red-400' : warn ? 'bg-yellow-400' : 'bg-blue-400';
 
           {/* Right Column: Audit Timeline */}
           <div className="pl-4">
-            <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wider mb-4">Audit Timeline</h3>
+            <div className="flex items-center gap-2 mb-4">
+              <span className="w-1 h-4 rounded-full bg-[#2872EF]" />
+              <h3 className="text-sm font-semibold text-[#0B1120]">Audit timeline</h3>
+            </div>
             {c.auditLogs && c.auditLogs.length > 0 ? (
-              <div className="relative border-l-2 border-slate-200 pl-4 space-y-6">
+              <div className="relative border-l-2 border-[#EDEEF1] pl-4 space-y-6">
                 {c.auditLogs.map((log) => (
                   <div key={log.id} className="relative">
-                    <div className="absolute -left-[1.65rem] top-1 w-3 h-3 rounded-full bg-blue-500 border-2 border-white"></div>
-                    <div className="text-xs text-slate-400 flex items-center gap-1">
+                    <div className="absolute -left-[1.65rem] top-1 w-3 h-3 rounded-full bg-[#2872EF] border-2 border-white"></div>
+                    <div className="text-xs text-[#9AA1AC] flex items-center gap-1">
                       <Clock size={10} /> {formatTime(log.createdAt)}
                     </div>
-                    <div className="text-sm font-medium text-slate-800">{log.event.replace(/_/g, ' ')}</div>
+                    <div className="text-sm font-medium text-[#0B1120]">{log.event.replace(/_/g, ' ')}</div>
                     {log.metadata && Object.keys(log.metadata).length > 0 && (
-                      <div className="text-xs text-slate-500 mt-1 bg-slate-100 rounded px-2 py-1 inline-block">
+                      <div className="text-xs text-[#5B6472] mt-1 bg-[#F1F2F4] rounded px-2 py-1 inline-block font-mono">
                         {JSON.stringify(log.metadata)}
                       </div>
                     )}
@@ -176,8 +180,8 @@ const lineCls = halted ? 'bg-red-400' : warn ? 'bg-yellow-400' : 'bg-blue-400';
                 ))}
               </div>
             ) : (
-              <div className="text-xs text-red-500 font-bold italic flex items-center gap-1">
-                <AlertTriangle size={12} /> NO AUDIT LOGS FOUND IN DATA
+              <div className="text-xs text-[#C4361D] font-semibold italic flex items-center gap-1">
+                <AlertTriangle size={12} /> No audit logs found in data
               </div>
             )}
           </div>
