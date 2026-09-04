@@ -1,33 +1,33 @@
-import { IndianRupee, Bot, TrendingUp, ShieldX, Timer } from 'lucide-react';
 import type { FinancialStats } from '../types';
 
 export default function FinancialImpact({ stats }: { stats: FinancialStats }) {
   const fmt = (n: number) => `₹${n.toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
 
   const items = [
-    { label: 'Gross Revenue Recovered', value: fmt(stats.grossRecovered), icon: IndianRupee, color: 'text-green-600 bg-green-50' },
-    { label: 'Est. AI Compute Cost', value: fmt(stats.aiComputeCost), icon: Bot, color: 'text-purple-600 bg-purple-50' },
-    { label: 'Net Recovery Value', value: fmt(stats.netRecoveryValue), icon: TrendingUp, color: 'text-blue-600 bg-blue-50' },
-    { label: 'AI Calls Avoided', value: String(stats.aiCallsAvoided), icon: ShieldX, color: 'text-red-600 bg-red-50' },
-    { label: 'Avg Time to Recovery', value: stats.avgRecoveryMinutes !== null ? `${stats.avgRecoveryMinutes} min` : '—', icon: Timer, color: 'text-slate-600 bg-slate-100' },
+    { label: 'Gross recovered', value: fmt(stats.grossRecovered), tone: '#4ADE80' },
+    { label: 'AI compute cost', value: fmt(stats.aiComputeCost), tone: '#C4A8F5' },
+    { label: 'Net recovery value', value: fmt(stats.netRecoveryValue), tone: '#7EABF7' },
+    { label: 'AI calls avoided', value: String(stats.aiCallsAvoided), tone: '#C7CBD1' },
+    { label: 'Avg. time to recovery', value: stats.avgRecoveryMinutes !== null ? `${stats.avgRecoveryMinutes} min` : '—', tone: '#C7CBD1' },
   ];
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 mb-6">
-      <div className="flex items-center justify-between mb-3">
-        <h2 className="text-sm font-bold text-slate-700 uppercase tracking-wider">Financial Impact</h2>
-        <span className="text-xs text-slate-400">AI recommendation ≠ AI authority — every rupee tracked</span>
+    <div className="mb-6">
+      <div className="flex items-baseline justify-between mb-2 px-1">
+        <span className="text-sm font-semibold text-[#0B1120]">Financial impact</span>
+        <span className="text-xs text-[#9AA1AC]">AI recommendation ≠ AI authority — every rupee tracked</span>
       </div>
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-        {items.map(({ label, value, icon: Icon, color }) => (
-          <div key={label} className="flex items-center gap-3">
-            <div className={`p-2 rounded-lg ${color}`}><Icon size={20} /></div>
-            <div>
-              <div className="text-xl font-bold text-slate-800 leading-none">{value}</div>
-              <div className="text-xs text-slate-500 mt-1">{label}</div>
+      <div className="bg-[#0B1120] rounded-2xl overflow-hidden">
+        <div className="grid grid-cols-2 md:grid-cols-5 divide-x divide-white/[0.08]">
+          {items.map(({ label, value, tone }) => (
+            <div key={label} className="px-5 py-4">
+              <div className="text-[11px] text-[#7C8494] mb-1.5">{label}</div>
+              <div className="text-xl font-mono tabular-nums font-semibold" style={{ color: tone }}>
+                {value}
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   );
