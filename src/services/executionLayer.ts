@@ -51,7 +51,7 @@ export class ExecutionLayer {
                 const ttlMinutes = Number(process.env.RECOVERY_LINK_TTL_MINUTES || 60);
         console.log(`[Execution Layer] Recovery link TTL: ${ttlMinutes} min`);
         if (ttlMinutes > 0) {
-          payload.expire_by = Math.floor(Date.now() / 1000) + ttlMinutes * 60;
+           payload.expire_by = Math.floor(Date.now() / 1000) + Math.max(15, ttlMinutes) * 60;
         }
 
 
