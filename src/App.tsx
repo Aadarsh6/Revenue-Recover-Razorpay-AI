@@ -136,7 +136,6 @@ export default function App() {
         {/* ── Main content ────────────────────────────────────────────── */}
         <main className="flex-1 min-w-0 px-6 lg:px-10 py-8">
           {page === 'policy' && <PolicyRules />}
-          {page === 'audit' && <AuditLogPage cases={cases} />}
 
           {page === 'dashboard' && (
             <>
