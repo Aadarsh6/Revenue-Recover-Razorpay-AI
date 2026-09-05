@@ -1,3 +1,5 @@
+// Raw server log — 5-webhook concurrency storm — Case 11
+
 CONCURRENCY STORM TEST — Sep 4, 2026
 5 concurrent signed payment.failed webhooks for the same payment
 (pay_TXr5CMIL6IONa5), distinct event IDs, fired simultaneously.
